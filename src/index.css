@@ -1,0 +1,52 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  font-family: "Roboto Slab", sans-serif;
+  margin: 0;
+  padding: 0;
+  letter-spacing: "0.3px";
+}
+
+:root {
+  --primary: #0b2952;
+  --secondary: #1f4e8d;
+  --track_bg: #4a88da;
+  --bg: #f9fafb;
+}
+
+body {
+  background: var(--bg);
+}
+
+::-webkit-scrollbar {
+  width: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg);
+}
+::-webkit-scrollbar-thumb {
+  background-color: var(--track_bg);
+  border-radius: 6px;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: "Autour One", sans-serif;
+  font-weight: 600;
+}
+
+.layout {
+  max-width: 1600px !important;
+  margin: 0 auto !important;
+}
+
+.rye {
+  font-family: "Rye", cursive !important;
+}
