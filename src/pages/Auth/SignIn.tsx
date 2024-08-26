@@ -10,6 +10,7 @@ import { toast } from "react-toastify";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useSignInMutation } from "../../redux/api/authApi";
 import { storeUserInfo } from "../../services/auth.service";
+import Loading from "../../components/ui/Loading";
 
 type FormValues = {
   phone: string;
@@ -17,10 +18,15 @@ type FormValues = {
 };
 
 const SignIn = () => {
-  const [signIn] = useSignInMutation();
+  const [signIn, { isLoading }] = useSignInMutation();
   const navigate = useNavigate();
   const { state } = useLocation();
   const path = state?.path || import.meta.env.VITE_REDIRECT_URL;
+
+  if (isLoading) {
+    return <Loading />;
+  }
+
   const onSubmit: SubmitHandler<FormValues> = async (data: any) => {
     try {
       const res = await signIn(data).unwrap();
