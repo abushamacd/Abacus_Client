@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=Autour+One&family=Roboto+Slab:wght@300;400;500;600;700&family=Rye&display=swap");
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -19,31 +21,17 @@
   --track_bg: #3fb0ac;
 }
 
-body {
-  /* background: var(--bg); */
-  height: 2000px;
-}
-
 ::-webkit-scrollbar {
   width: 5px;
 }
 
-::-webkit-scrollbar-track {
-  background: var(--track_bg);
-}
-
 ::-webkit-scrollbar-thumb {
-  background-color: var(--bg_dark);
+  background-color: var(--track_bg);
   border-radius: 6px;
 }
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  font-family: "Autour One", sans-serif;
+.ao {
+  font-family: "Autour One", sans-serif !important;
   font-weight: 600;
 }
 

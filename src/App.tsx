@@ -1,5 +1,7 @@
-import "./App.css";
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { RouterProvider } from "react-router-dom";
 import { useEffect, useState } from "react";
+import routes from "./utils/routes";
 
 function App() {
   const [theme, setTheme] = useState("light");
@@ -17,14 +19,9 @@ function App() {
   };
 
   return (
-    <div>
-      <h1
-        onClick={handleTheme}
-        className="text-[2vw] text-primary bg-secondary font-bold underline"
-      >
-        Hello world!
-      </h1>
-    </div>
+    <>
+      <RouterProvider router={routes} />
+    </>
   );
 }
 
