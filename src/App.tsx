@@ -17,14 +17,14 @@ function App() {
   };
 
   return (
-    <>
+    <div>
       <h1
         onClick={handleTheme}
-        className="dark:bg-primary text-3xl dark:text-secondary text-[red] font-bold underline"
+        className="text-[2vw] text-primary bg-secondary font-bold underline"
       >
         Hello world!
       </h1>
-    </>
+    </div>
   );
 }
 

@@ -10,11 +10,13 @@ export default {
       },
     },
     colors: {
-      primary: "#0b2952",
-      secondary: "#1f4e8d",
-      track_bg: "#4a88da",
-      bg: "#f9fafb",
+      primary: "#3fb0ac",
+      secondary: "#3fb0ac26",
+      bg: "#eef2f6",
+      bg_dark: "#051114",
       white: "#ffffff",
+      mirage: "#121926",
+      track_bg: "#3fb0ac",
     },
     container: {
       center: true,
@@ -36,6 +38,10 @@ export default {
       // => @media (min-width: 1400px) { ... }
     },
   },
+  //   corePlugins: {
+  //     preflight: false,
+  //   },
+  // important: true,
   plugins: [],
   darkMode: "class",
 };

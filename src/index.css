@@ -10,14 +10,18 @@
 }
 
 :root {
-  --primary: #0b2952;
-  --secondary: #1f4e8d;
-  --track_bg: #4a88da;
-  --bg: #f9fafb;
+  --primary: #3fb0ac;
+  --secondary: #3fb0ac26;
+  --bg: #eef2f6;
+  --bg_dark: #051114;
+  --white: #ffffff;
+  --mirage: #121926;
+  --track_bg: #3fb0ac;
 }
 
 body {
-  background: var(--bg);
+  /* background: var(--bg); */
+  height: 2000px;
 }
 
 ::-webkit-scrollbar {
@@ -25,10 +29,11 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--bg);
+  background: var(--track_bg);
 }
+
 ::-webkit-scrollbar-thumb {
-  background-color: var(--track_bg);
+  background-color: var(--bg_dark);
   border-radius: 6px;
 }
 
