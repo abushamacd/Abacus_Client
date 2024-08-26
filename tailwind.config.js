@@ -38,9 +38,9 @@ export default {
       // => @media (min-width: 1400px) { ... }
     },
   },
-  //   corePlugins: {
-  //     preflight: false,
-  //   },
+  // corePlugins: {
+  //   preflight: false,
+  // },
   // important: true,
   plugins: [],
   darkMode: "class",

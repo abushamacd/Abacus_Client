@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import routes from "./utils/routes";
 
 function App() {
-  const [theme, setTheme] = useState("light");
+  const [theme, setTheme] = useState("dark");
   useEffect(() => {
     if (theme === "dark") {
       document.documentElement.classList.add("dark");

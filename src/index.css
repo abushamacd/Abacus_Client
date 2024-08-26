@@ -43,3 +43,73 @@
 .rye {
   font-family: "Rye", cursive !important;
 }
+
+.gbg {
+  background: #3fb0ac; /* fallback for old browsers */
+  background: -webkit-linear-gradient(
+    320deg,
+    #051114,
+    #3fb0ac
+  ); /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(
+    320deg,
+    #051114,
+    #3fb0ac
+  ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+}
+
+.box {
+  position: relative;
+  /* width: 340px; */
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.box::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  /* width: 340px; */
+  background: linear-gradient(
+    0deg,
+    transparent,
+    var(--primary),
+    var(--primary)
+  );
+  animation: animate 6s linear infinite;
+  transform-origin: bottom right;
+}
+
+.box::after {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  /* width: 340px; */
+  background: linear-gradient(
+    0deg,
+    transparent,
+    var(--primary),
+    var(--primary)
+  );
+  animation: animate 6s linear infinite;
+  transform-origin: bottom right;
+  animation-delay: -3s;
+}
+
+.content {
+  position: absolute;
+  inset: 4px;
+  border-radius: 7px;
+  z-index: 10;
+}
+
+@keyframes animate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
