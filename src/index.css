@@ -35,7 +35,7 @@
   font-weight: 600;
 }
 
-.layout {
+.max_width {
   max-width: 1600px !important;
   margin: 0 auto !important;
 }

@@ -7,9 +7,11 @@ import "react-toastify/dist/ReactToastify.css";
 
 createRoot(document.getElementById("root")!).render(
   // <StrictMode>
-  <Providers>
-    <App />
-    <ToastContainer />
-  </Providers>
+  <div className="max_width">
+    <Providers>
+      <App />
+      <ToastContainer />
+    </Providers>
+  </div>
   // </StrictMode>,
 );
