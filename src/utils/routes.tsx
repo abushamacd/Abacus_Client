@@ -3,6 +3,10 @@ import SiteLayout from "../layouts/SiteLayout";
 import { AuthLayout } from "../layouts/AuthLayout";
 import { NotFound } from "../pages/NotFound";
 import SignIn from "../pages/Auth/SignIn";
+import ProtectedRoute from "./ProtectedRoute";
+import { AdminLayout } from "../layouts/AdminLayout";
+
+const db_url = import.meta.env.VITE_REDIRECT_URL;
 
 const routes = createBrowserRouter([
   {
@@ -10,7 +14,7 @@ const routes = createBrowserRouter([
     element: <SiteLayout />,
   },
   {
-    path: `/signin`,
+    path: `/${db_url}_signin`,
     element: <AuthLayout />,
     children: [
       {
@@ -18,6 +22,14 @@ const routes = createBrowserRouter([
         element: <SignIn />,
       },
     ],
+  },
+  {
+    path: `/${db_url}`,
+    element: (
+      <ProtectedRoute>
+        <AdminLayout />
+      </ProtectedRoute>
+    ),
   },
   {
     path: "*",
