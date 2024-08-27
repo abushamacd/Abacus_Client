@@ -28,7 +28,7 @@ export const axiosBaseQuery =
         headers: {
           "Content-Type": contentType || "application/json",
         },
-        // withCredentials: true,
+        withCredentials: true, //for set referesh token to the cookies
       });
       return result;
     } catch (axiosError) {

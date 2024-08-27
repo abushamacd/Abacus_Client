@@ -1,8 +1,12 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { authKey } from "../../constants/storageKey";
+import { getNewAccessToken } from "../../services/auth.service";
 import { IGenericErrorResponse, ResponseSuccessType } from "../../types";
-import { getFromLocalStorage } from "../../utils/local-storage";
+import {
+  getFromLocalStorage,
+  setToLocalStorage,
+} from "../../utils/local-storage";
 import axios from "axios";
 
 const instance = axios.create();
@@ -37,15 +41,25 @@ instance.interceptors.response.use(
   },
 
   async function (error) {
-    if (error?.response?.status === 403) {
+    const config = error?.config;
+    if (error?.response?.status === 403 && !config?.sent) {
       // @ts-ignore
-      const responseObject: IGenericErrorResponse = {
-        statusCode: error?.response?.data?.statusCode || 403,
-        message: error?.response?.data?.message || "Something went wrong",
-        errorMessages: error?.response?.data?.message,
-      };
-      // return responseObject;
-      return Promise.reject(error);
+      config.sent = true;
+      // const responseObject: IGenericErrorResponse = {
+      //   statusCode: error?.response?.data?.statusCode || 403,
+      //   message: error?.response?.data?.message || "Something went wrong",
+      //   errorMessages: error?.response?.data?.message,
+      // };
+      // // return responseObject;
+      // return Promise.reject(error);
+
+      const response = await getNewAccessToken();
+      const accessToken = response?.data?.accessToken;
+      if (accessToken) {
+        config.headers.Authorization = accessToken;
+        setToLocalStorage(authKey, accessToken);
+      }
+      return instance(config);
     } else {
       // @ts-ignore
       const responseObject: IGenericErrorResponse = {
