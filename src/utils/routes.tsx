@@ -4,8 +4,6 @@ import { AuthLayout } from "../layouts/AuthLayout";
 import { NotFound } from "../pages/NotFound";
 import SignIn from "../pages/Auth/SignIn";
 
-// const db_url = import.meta.env.VITE_REDIRECT_URL;
-
 const routes = createBrowserRouter([
   {
     path: "/",

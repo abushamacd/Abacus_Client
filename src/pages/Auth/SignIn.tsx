@@ -23,7 +23,6 @@ const SignIn = () => {
   const path = state?.path || import.meta.env.VITE_REDIRECT_URL;
   const onSubmit: SubmitHandler<FormValues> = async (data: any) => {
     try {
-      console.log(data);
       const res = await signIn(data).unwrap();
       storeUserInfo({ accessToken: res?.accessToken });
       navigate(`/${path}`, { replace: true });
