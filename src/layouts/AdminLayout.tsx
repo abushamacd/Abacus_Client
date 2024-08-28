@@ -3,8 +3,9 @@ import { useEffect, useState } from "react";
 import { Breadcrumb, Layout, Menu, Switch, theme } from "antd";
 import { sidebarItems } from "../constants/sidebarItems";
 import { getUserInfo } from "../services/auth.service";
-import { CheckOutlined, CloseOutlined } from "@ant-design/icons";
 import { getFromLocalStorage, setToLocalStorage } from "../utils/local-storage";
+import { FiSun } from "react-icons/fi";
+import { FaMoon } from "react-icons/fa";
 
 const { Header, Content, Sider } = Layout;
 
@@ -15,18 +16,15 @@ export const AdminLayout = () => {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
 
-  const themeMood = getFromLocalStorage("theme");
-
-  const [globalTheme, setGlobalTheme] = useState(
-    (themeMood === "light" ? true : false) || true
-  );
+  const initialTheme = getFromLocalStorage("theme") !== "dark";
+  const [globalTheme, setGlobalTheme] = useState(initialTheme);
 
   useEffect(() => {
-    document.documentElement.classList.toggle("dark");
-    setToLocalStorage("theme", globalTheme ? "dark" : "light");
+    document.documentElement.classList.toggle("dark", !globalTheme);
+    setToLocalStorage("theme", globalTheme ? "light" : "dark");
   }, [globalTheme]);
 
-  console.log(themeMood);
+  // console.log(themeMood);
 
   // @ts-ignore
   const { role } = getUserInfo();
@@ -47,11 +45,15 @@ export const AdminLayout = () => {
         />
       </Sider>
       <Layout>
-        <Header style={{ padding: 0, background: colorBgContainer }}>
+        <Header
+          className="flex justify-end items-center"
+          style={{ padding: 0, background: colorBgContainer }}
+        >
           <Switch
+            className="!bg-primary dark:!bg-bg_dark"
             onChange={(checked) => setGlobalTheme(checked)}
-            checkedChildren={<CheckOutlined />}
-            unCheckedChildren={<CloseOutlined />}
+            checkedChildren={<FiSun className="mt-[5px]" />}
+            unCheckedChildren={<FaMoon className="mt-[0px]" />}
             checked={globalTheme}
           />
         </Header>
