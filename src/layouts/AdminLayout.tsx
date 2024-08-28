@@ -1,16 +1,28 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import { useEffect, useState } from "react";
-import { Breadcrumb, Layout, Menu, Switch, theme } from "antd";
+import {
+  Avatar,
+  Breadcrumb,
+  Button,
+  Layout,
+  Menu,
+  Popover,
+  Switch,
+  theme,
+} from "antd";
 import { sidebarItems } from "../constants/sidebarItems";
-import { getUserInfo } from "../services/auth.service";
+import { getUserInfo, removeUserInfo } from "../services/auth.service";
 import { getFromLocalStorage, setToLocalStorage } from "../utils/local-storage";
 import { FiSun } from "react-icons/fi";
-import { FaMoon } from "react-icons/fa";
+import { FaMoon, FaRegUserCircle } from "react-icons/fa";
+import { authKey } from "../constants/storageKey";
+import { useNavigate } from "react-router-dom";
 
 const { Header, Content, Sider } = Layout;
 
 export const AdminLayout = () => {
   const [collapsed, setCollapsed] = useState(false);
+  const navigate = useNavigate();
 
   const {
     token: { colorBgContainer, borderRadiusLG },
@@ -24,7 +36,12 @@ export const AdminLayout = () => {
     setToLocalStorage("theme", globalTheme ? "light" : "dark");
   }, [globalTheme]);
 
-  // console.log(themeMood);
+  const db_url = import.meta.env.VITE_REDIRECT_URL;
+
+  const signout = () => {
+    removeUserInfo(authKey);
+    navigate(`/${db_url}_signin`, { replace: true });
+  };
 
   // @ts-ignore
   const { role } = getUserInfo();
@@ -46,7 +63,7 @@ export const AdminLayout = () => {
       </Sider>
       <Layout>
         <Header
-          className="flex justify-end items-center"
+          className="flex justify-end items-center gap-4"
           style={{ padding: 0, background: colorBgContainer }}
         >
           <Switch
@@ -56,6 +73,25 @@ export const AdminLayout = () => {
             unCheckedChildren={<FaMoon className="mt-[0px]" />}
             checked={globalTheme}
           />
+          <Popover
+            placement="bottomRight"
+            title={"User Profile"}
+            content={
+              <Button
+                onClick={signout}
+                className="bg-primary hover:!bg-primary text-mirage !bg-opacity-[.8] duration-300 transition-all"
+                size="large"
+                htmlType="submit"
+                type="primary"
+                block
+              >
+                Sign In
+              </Button>
+            }
+            // arrow={mergedArrow}
+          >
+            <Avatar size={40} icon={<FaRegUserCircle />} />
+          </Popover>
         </Header>
         <Content style={{ margin: "0 16px" }}>
           <Breadcrumb
