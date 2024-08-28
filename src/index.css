@@ -38,6 +38,28 @@
 .max_width {
   max-width: 1600px !important;
   margin: 0 auto !important;
+  /* border: 1px solid var(--primary); */
+}
+
+/* theme based */
+.ant-layout-sider,
+.ant-layout-sider-children,
+.ant-menu-root,
+.ant-menu-submenu,
+.ant-menu-sub,
+.ant-layout-sider-trigger {
+  background-color: var(--white) !important;
+  transition: all 0.3s !important;
+}
+
+.dark .ant-layout-sider,
+.dark .ant-layout-sider-children,
+.dark .ant-menu-root,
+.dark .ant-menu-submenu,
+.dark .ant-menu-sub,
+.dark .ant-layout-sider-trigger {
+  background-color: var(--bg_dark) !important;
+  transition: all 0.3s !important;
 }
 
 .rye {

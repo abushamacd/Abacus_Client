@@ -33,6 +33,9 @@ export const AdminLayout = () => {
 
   useEffect(() => {
     document.documentElement.classList.toggle("dark", !globalTheme);
+    document.documentElement.style.backgroundColor = `${
+      globalTheme ? "#ffffff" : "#051114"
+    }`;
     setToLocalStorage("theme", globalTheme ? "light" : "dark");
   }, [globalTheme]);
 
@@ -49,12 +52,14 @@ export const AdminLayout = () => {
   return (
     <Layout hasSider style={{ minHeight: "100vh" }}>
       <Sider
+        // className="!bg-white dark:!bg-bg_dark"
         collapsible
         collapsed={collapsed}
         onCollapse={(value) => setCollapsed(value)}
       >
         <div className="demo-logo-vertical" />
         <Menu
+          // className="!bg-white dark:!bg-bg_dark"
           theme="dark"
           defaultSelectedKeys={["1"]}
           mode="inline"
@@ -74,6 +79,7 @@ export const AdminLayout = () => {
             checked={globalTheme}
           />
           <Popover
+            className="mr-2"
             placement="bottomRight"
             title={"User Profile"}
             content={
@@ -85,7 +91,7 @@ export const AdminLayout = () => {
                 type="primary"
                 block
               >
-                Sign In
+                Sign Out
               </Button>
             }
             // arrow={mergedArrow}
