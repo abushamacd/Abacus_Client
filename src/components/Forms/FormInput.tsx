@@ -5,7 +5,7 @@ import { getErrorMessageByPropertyName } from "../../utils/schema-validator";
 interface IInput {
   name: string;
   type?: string;
-  size?: "large" | "small";
+  size?: "large" | "small" | "middle";
   value?: string | string[] | undefined;
   id?: string;
   placeholder?: string;
@@ -56,6 +56,7 @@ const FormInput = ({
         render={({ field }) =>
           type === "password" ? (
             <Input.Password
+              className="bg-bg text-mirage dark:bg-black dark:text-white focus-within:!border-primary hover:!border-primary"
               type={type}
               size={size}
               placeholder={placeholder}
@@ -64,6 +65,7 @@ const FormInput = ({
             />
           ) : (
             <Input
+              className="bg-bg text-mirage dark:bg-black dark:text-white focus-within:!border-primary hover:!border-primary"
               disabled={disabled}
               type={type}
               size={size}

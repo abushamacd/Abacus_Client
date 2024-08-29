@@ -15,11 +15,11 @@ export const sidebarItems = (role: string) => {
       icon: <ImProfile />,
       children: [
         {
-          label: <Link to={`/${db_url}/profile`}>My Profile</Link>,
+          label: <Link to={`/${db_url}`}>My Profile</Link>,
           key: `/profile`,
         },
         {
-          label: <Link to={`/${db_url}/change-password`}>Change Password</Link>,
+          label: <Link to={`/${db_url}_signin`}>Sign In</Link>,
           key: `/change-password`,
         },
       ],

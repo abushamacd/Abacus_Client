@@ -15,6 +15,7 @@ export default {
       bg: "#eef2f6",
       bg_dark: "#051114",
       white: "#ffffff",
+      black: "#000000",
       mirage: "#121926",
       track_bg: "#3fb0ac",
     },

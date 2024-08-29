@@ -59,8 +59,8 @@ export const Profile = () => {
           </div>
         </div>
       </section>
-      <div className="flex my-4">
-        <div className="profile_update">
+      <div className="flex lg:flex-row flex-col my-4 gap-6">
+        <div className="profile_update lg:w-1/2">
           <Card
             title="Personal Information"
             className="dark:bg-bg_dark bg-white text-mirage dark:text-white !border-secondary border-2"
@@ -68,9 +68,22 @@ export const Profile = () => {
             <Form submitHandler={onSubmit} resolver={yupResolver(signInSchema)}>
               <div>
                 <FormInput
+                  name="name"
+                  type="text"
+                  size="middle"
+                  label="Name"
+                  required
+                />
+              </div>
+              <div
+                style={{
+                  margin: "15px 0px",
+                }}
+              >
+                <FormInput
                   name="phone"
                   type="phone"
-                  size="large"
+                  size="middle"
                   label="Phone"
                   required
                 />
@@ -81,29 +94,83 @@ export const Profile = () => {
                 }}
               >
                 <FormInput
-                  name="password"
-                  type="password"
-                  size="large"
-                  label="Password"
+                  name="email"
+                  type="email"
+                  size="middle"
+                  label="Email"
                   required
                 />
               </div>
-
-              <Row justify="center" align="middle">
+              <div
+                style={{
+                  margin: "15px 0px",
+                }}
+              >
+                <FormInput
+                  name="address"
+                  type="text"
+                  size="middle"
+                  label="Address"
+                  required
+                />
+              </div>
+              <Row justify="start" align="middle">
                 <Button
                   className="bg-primary hover:!bg-primary text-mirage !bg-opacity-[.8] duration-300 transition-all"
                   size="large"
                   htmlType="submit"
                   type="primary"
-                  block
+                  // block
                 >
-                  Sign In
+                  Update Profile
                 </Button>
               </Row>
             </Form>
           </Card>
         </div>
-        <div className="password"></div>
+        <div className="password lg:w-1/2">
+          <Card
+            title="Change Password"
+            className="dark:bg-bg_dark bg-white text-mirage dark:text-white !border-secondary border-2"
+          >
+            <Form submitHandler={onSubmit} resolver={yupResolver(signInSchema)}>
+              <div>
+                <FormInput
+                  name="oldPassword"
+                  type="password"
+                  size="middle"
+                  label="Old Password"
+                  required
+                />
+              </div>
+              <div
+                style={{
+                  margin: "15px 0px",
+                }}
+              >
+                <FormInput
+                  name="newPassword"
+                  type="password"
+                  size="middle"
+                  label="New Password"
+                  required
+                />
+              </div>
+
+              <Row justify="start" align="middle">
+                <Button
+                  className="bg-primary hover:!bg-primary text-mirage !bg-opacity-[.8] duration-300 transition-all"
+                  size="large"
+                  htmlType="submit"
+                  type="primary"
+                  // block
+                >
+                  Change Password
+                </Button>
+              </Row>
+            </Form>
+          </Card>
+        </div>
       </div>
     </div>
   );
