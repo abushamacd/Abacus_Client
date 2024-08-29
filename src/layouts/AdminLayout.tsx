@@ -75,7 +75,7 @@ export const AdminLayout = () => {
         <Menu
           className="!text-mirage"
           theme="dark"
-          defaultSelectedKeys={["1"]}
+          defaultSelectedKeys={["/dashboard"]}
           mode="inline"
           items={sidebarItems(role)}
         />
