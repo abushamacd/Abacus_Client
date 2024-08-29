@@ -1,32 +1,22 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import { useEffect, useState } from "react";
-import {
-  Avatar,
-  Breadcrumb,
-  Button,
-  Layout,
-  Menu,
-  Popover,
-  Switch,
-  theme,
-} from "antd";
+import { Avatar, Button, Layout, Menu, Popover, Switch } from "antd";
 import { sidebarItems } from "../constants/sidebarItems";
 import { getUserInfo, removeUserInfo } from "../services/auth.service";
 import { getFromLocalStorage, setToLocalStorage } from "../utils/local-storage";
 import { FiSun } from "react-icons/fi";
 import { FaMoon, FaRegUserCircle } from "react-icons/fa";
 import { authKey } from "../constants/storageKey";
-import { useNavigate } from "react-router-dom";
+import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
+import { DBBreadCrumb } from "../components/ui/DBBreadCrumb";
+import icon_logo from "../assets/icon_logo.png";
+import text_logo from "../assets/text_logo.png";
 
 const { Header, Content, Sider } = Layout;
 
 export const AdminLayout = () => {
   const [collapsed, setCollapsed] = useState(false);
   const navigate = useNavigate();
-
-  const {
-    token: { colorBgContainer, borderRadiusLG },
-  } = theme.useToken();
 
   const initialTheme = getFromLocalStorage("theme") !== "dark";
   const [globalTheme, setGlobalTheme] = useState(initialTheme);
@@ -49,17 +39,41 @@ export const AdminLayout = () => {
   // @ts-ignore
   const { role } = getUserInfo();
 
+  const { pathname } = useLocation();
+
+  const result = pathname.split("/");
+
   return (
     <Layout hasSider style={{ minHeight: "100vh" }}>
       <Sider
-        // className="!bg-white dark:!bg-bg_dark"
         collapsible
         collapsed={collapsed}
         onCollapse={(value) => setCollapsed(value)}
+        collapsedWidth={60}
       >
-        <div className="demo-logo-vertical" />
+        <div className="demo-logo-vertical">
+          <Link to="/">
+            {collapsed ? (
+              <img
+                src={icon_logo}
+                width={100}
+                height={100}
+                className="w-auto p-2"
+                alt="logo"
+              />
+            ) : (
+              <img
+                src={text_logo}
+                width={100}
+                height={100}
+                className="w-auto p-4"
+                alt="logo"
+              />
+            )}
+          </Link>
+        </div>
         <Menu
-          // className="!bg-white dark:!bg-bg_dark"
+          className="!text-mirage"
           theme="dark"
           defaultSelectedKeys={["1"]}
           mode="inline"
@@ -68,54 +82,59 @@ export const AdminLayout = () => {
       </Sider>
       <Layout>
         <Header
-          className="flex justify-end items-center gap-4"
-          style={{ padding: 0, background: colorBgContainer }}
+          className="flex justify-between items-center"
+          style={{ padding: 0 }}
         >
-          <Switch
-            className="!bg-primary dark:!bg-bg_dark"
-            onChange={(checked) => setGlobalTheme(checked)}
-            checkedChildren={<FiSun className="mt-[5px]" />}
-            unCheckedChildren={<FaMoon className="mt-[0px]" />}
-            checked={globalTheme}
+          <DBBreadCrumb
+            items={[
+              {
+                label: `Dashboard`,
+                link: `/${result[1]}`,
+              },
+              {
+                label: `${result[2] !== undefined ? result[2] : ""}`,
+                link: `${result[2] !== undefined ? result[2] : ""}`,
+              },
+            ]}
           />
-          <Popover
-            className="mr-2"
-            placement="bottomRight"
-            title={"User Profile"}
-            content={
-              <Button
-                onClick={signout}
-                className="bg-primary hover:!bg-primary text-mirage !bg-opacity-[.8] duration-300 transition-all"
-                size="large"
-                htmlType="submit"
-                type="primary"
-                block
-              >
-                Sign Out
-              </Button>
-            }
-            // arrow={mergedArrow}
-          >
-            <Avatar size={40} icon={<FaRegUserCircle />} />
-          </Popover>
+          <span className="flex justify-end items-center gap-4">
+            <Switch
+              className="dark:!bg-primary !bg-bg_dark"
+              onChange={(checked) => setGlobalTheme(checked)}
+              checkedChildren={<FiSun className="mt-[5px]" />}
+              unCheckedChildren={<FaMoon className="mt-[0px]" />}
+              checked={globalTheme}
+            />
+            <Popover
+              className="mr-2 border-[3px] dark:border-primary border-bg_dark"
+              placement="bottomRight"
+              title={"User Profile"}
+              content={
+                <Button
+                  onClick={signout}
+                  className="bg-primary hover:!bg-primary text-mirage !bg-opacity-[.8] duration-300 transition-all"
+                  size="large"
+                  htmlType="submit"
+                  type="primary"
+                  block
+                >
+                  Sign Out
+                </Button>
+              }
+              // arrow={mergedArrow}
+            >
+              <Avatar size={40} icon={<FaRegUserCircle />} />
+            </Popover>
+          </span>
         </Header>
-        <Content style={{ margin: "0 16px" }}>
-          <Breadcrumb
-            className="text-primary dark:text-mirage"
-            style={{ margin: "16px 0" }}
-          >
-            <Breadcrumb.Item>User</Breadcrumb.Item>
-            <Breadcrumb.Item>Bill</Breadcrumb.Item>
-          </Breadcrumb>
+        <Content style={{ padding: "0px", margin: "0 20px 0 0" }}>
           <div
             style={{
               padding: 24,
-              minHeight: "calc(100vh - 136px)",
-              background: colorBgContainer,
-              borderRadius: borderRadiusLG,
+              minHeight: "calc(100vh - 96px)",
             }}
           >
-            Bill is a cat.
+            <Outlet />
           </div>
         </Content>
       </Layout>

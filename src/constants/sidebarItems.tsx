@@ -15,6 +15,11 @@ export const sidebarItems = (role: string) => {
       icon: <AiOutlineControl />,
     },
     {
+      label: <Link to={`/${db_url}`}>Dashboards</Link>,
+      key: `/dashboards`,
+      icon: <AiOutlineControl />,
+    },
+    {
       label: "Profile",
       key: "profile",
       icon: <ImProfile />,
