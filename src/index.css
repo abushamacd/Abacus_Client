@@ -9,6 +9,7 @@
   margin: 0;
   padding: 0;
   letter-spacing: "0.3px";
+  font-weight: 400 !important;
 }
 
 :root {
@@ -32,7 +33,7 @@
 
 .ao {
   font-family: "Autour One", sans-serif !important;
-  font-weight: 600;
+  font-weight: 500 !important;
 }
 
 .max_width {
@@ -118,6 +119,18 @@
 
 .dark .ant-breadcrumb-separator {
   color: var(--primary) !important;
+}
+
+.ant-card-head-title {
+  color: var(--mirage) !important;
+}
+
+.dark .ant-card-head-title {
+  color: var(--white) !important;
+}
+
+.ant-card-head {
+  border-bottom: 2px solid var(--secondary) !important;
 }
 
 .rye {

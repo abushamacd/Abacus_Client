@@ -75,7 +75,7 @@ export const AdminLayout = () => {
         <Menu
           className="!text-mirage"
           theme="dark"
-          defaultSelectedKeys={["/dashboard"]}
+          defaultSelectedKeys={["/profile"]}
           mode="inline"
           items={sidebarItems(role)}
         />
@@ -131,7 +131,8 @@ export const AdminLayout = () => {
           <div
             style={{
               padding: 24,
-              minHeight: "calc(100vh - 96px)",
+              maxHeight: "calc(100vh - 96px)",
+              overflowY: "auto",
             }}
           >
             <Outlet />

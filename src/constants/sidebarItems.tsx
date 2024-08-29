@@ -1,7 +1,7 @@
 import type { MenuProps } from "antd";
 import { MdHomeRepairService } from "react-icons/md";
 import { ImProfile } from "react-icons/im";
-import { AiOutlineControl } from "react-icons/ai";
+// import { AiOutlineControl } from "react-icons/ai";
 import { USER_ROLE } from "./role";
 import { Link } from "react-router-dom";
 
@@ -9,16 +9,6 @@ const db_url = import.meta.env.VITE_REDIRECT_URL;
 
 export const sidebarItems = (role: string) => {
   const defaultSidebarItems: MenuProps["items"] = [
-    {
-      label: <Link to={`/${db_url}`}>Dashboard</Link>,
-      key: `/dashboard`,
-      icon: <AiOutlineControl />,
-    },
-    {
-      label: <Link to={`/${db_url}`}>Dashboards</Link>,
-      key: `/dashboards`,
-      icon: <AiOutlineControl />,
-    },
     {
       label: "Profile",
       key: "profile",

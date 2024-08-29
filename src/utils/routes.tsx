@@ -5,7 +5,7 @@ import { NotFound } from "../pages/NotFound";
 import SignIn from "../pages/Auth/SignIn";
 import ProtectedRoute from "./ProtectedRoute";
 import { AdminLayout } from "../layouts/AdminLayout";
-import { Dashboard } from "../pages/Dashboard/Dashboard";
+import { Profile } from "../pages/Dashboard/Profile";
 
 const db_url = import.meta.env.VITE_REDIRECT_URL;
 
@@ -34,7 +34,7 @@ const routes = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <Dashboard />,
+        element: <Profile />,
       },
     ],
   },
