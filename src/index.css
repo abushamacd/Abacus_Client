@@ -51,6 +51,7 @@
 .ant-layout-sider-trigger,
 .ant-layout-header {
   background-color: var(--white) !important;
+  transition: color 0.3s !important;
 }
 
 .dark .ant-layout,
@@ -62,6 +63,7 @@
 .dark .ant-layout-sider-trigger,
 .dark .ant-layout-header {
   background-color: var(--bg_dark) !important;
+  transition: color 0.3s !important;
 }
 
 .ant-layout-content {
@@ -85,6 +87,7 @@
 .ant-menu-submenu-title,
 .ant-menu-title-content {
   color: var(--mirage) !important;
+  transition: color 0.3s !important;
 }
 
 .ant-menu-item:hover,
@@ -106,6 +109,7 @@
 .dark .ant-menu-submenu-title,
 .dark .ant-menu-title-content {
   color: var(--white) !important;
+  transition: color 0.3s !important;
 }
 
 .ant-breadcrumb-separator {
