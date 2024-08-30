@@ -3,26 +3,60 @@ import { Button, Card, Row } from "antd";
 import text_logo from "../../assets/text_logo.png";
 import FormInput from "../../components/Forms/FormInput";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { signInSchema } from "../../schemas/auth";
+import { passwordSchema } from "../../schemas/auth";
 import { SubmitHandler } from "react-hook-form";
 import Form from "../../components/Forms/Forms";
+import {
+  useGetUserProfileQuery,
+  useUpdateUserProfileMutation,
+} from "../../redux/api/userApi";
+import Loading from "../../components/ui/Loading";
+import { toast } from "react-toastify";
+import { useChangePasswordMutation } from "../../redux/api/authApi";
 
 type FormValues = {
+  name: string;
   phone: string;
-  password: string;
+  email: string | null;
+  address: string;
 };
+
 export const Profile = () => {
-  const onSubmit: SubmitHandler<FormValues> = async (data: any) => {
-    console.log(data);
-    // try {
-    //   const res = await signIn(data).unwrap();
-    //   storeUserInfo({ accessToken: res?.accessToken });
-    //   navigate(`/${path}`, { replace: true });
-    //   toast("Sign in successfully!");
-    // } catch (err: any) {
-    //   toast.error(`${err.data?.message}`);
-    // }
+  const { data, isLoading: userLoading } = useGetUserProfileQuery({});
+  const [updateUserProfile] = useUpdateUserProfileMutation();
+  const [changePassword] = useChangePasswordMutation();
+
+  const res: any = data;
+
+  const defaultValues = {
+    name: res?.response?.name || "",
+    phone: res?.response?.phone || "",
+    email: res?.response?.email || null,
+    address: res?.response?.address || "",
   };
+
+  const updateProfile: SubmitHandler<FormValues> = async (data: any) => {
+    try {
+      await updateUserProfile(data).unwrap();
+      toast("Update user successfully!");
+    } catch (err: any) {
+      toast.error(`${err.data?.message}`);
+    }
+  };
+
+  const updatePassword: SubmitHandler<FormValues> = async (data: any) => {
+    console.log(data);
+    try {
+      await changePassword(data).unwrap();
+      toast("Password changed successfully!");
+    } catch (err: any) {
+      toast.error(`${err.data?.message}`);
+    }
+  };
+
+  if (userLoading) {
+    return <Loading />;
+  }
   return (
     <div>
       <section className="w-full overflow-hidden dark:bg-bg_dark bg-white p-4 pb-0 rounded-md">
@@ -42,18 +76,10 @@ export const Profile = () => {
 
             <div className="">
               <h1 className="w-full md:px-4 md:pt-3  px-2  text-gray-800 dark:text-white lg:text-4xl md:text-3xl ao">
-                Samuel Abera
+                {res?.response?.name}
               </h1>
-              <div className="flex items-center">
-                <p className="md:px-4 md:pt-3  px-2  text-gray-800 dark:text-white lg:text-base md:text-xl text-xs">
-                  Simultola,
-                </p>
-                <p className="md:px-4 md:pt-3  px-2  text-gray-800 dark:text-white lg:text-base md:text-xl text-xs">
-                  Retailer
-                </p>
-              </div>
               <p className="w-full md:px-4 md:pt-3  px-2  text-gray-800 dark:text-white lg:text-base md:text-xl text-xs">
-                Chudanga
+                {res?.response?.role}
               </p>
             </div>
           </div>
@@ -65,15 +91,9 @@ export const Profile = () => {
             title="Personal Information"
             className="dark:bg-bg_dark bg-white text-mirage dark:text-white !border-secondary border-2"
           >
-            <Form submitHandler={onSubmit} resolver={yupResolver(signInSchema)}>
+            <Form submitHandler={updateProfile} defaultValues={defaultValues}>
               <div>
-                <FormInput
-                  name="name"
-                  type="text"
-                  size="middle"
-                  label="Name"
-                  required
-                />
+                <FormInput name="name" type="text" size="middle" label="Name" />
               </div>
               <div
                 style={{
@@ -85,7 +105,6 @@ export const Profile = () => {
                   type="phone"
                   size="middle"
                   label="Phone"
-                  required
                 />
               </div>
               <div
@@ -98,7 +117,6 @@ export const Profile = () => {
                   type="email"
                   size="middle"
                   label="Email"
-                  required
                 />
               </div>
               <div
@@ -111,7 +129,6 @@ export const Profile = () => {
                   type="text"
                   size="middle"
                   label="Address"
-                  required
                 />
               </div>
               <Row justify="start" align="middle">
@@ -133,7 +150,10 @@ export const Profile = () => {
             title="Change Password"
             className="dark:bg-bg_dark bg-white text-mirage dark:text-white !border-secondary border-2"
           >
-            <Form submitHandler={onSubmit} resolver={yupResolver(signInSchema)}>
+            <Form
+              submitHandler={updatePassword}
+              resolver={yupResolver(passwordSchema)}
+            >
               <div>
                 <FormInput
                   name="oldPassword"

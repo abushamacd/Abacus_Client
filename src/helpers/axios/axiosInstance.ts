@@ -45,13 +45,6 @@ instance.interceptors.response.use(
     if (error?.response?.status === 403 && !config?.sent) {
       // @ts-ignore
       config.sent = true;
-      // const responseObject: IGenericErrorResponse = {
-      //   statusCode: error?.response?.data?.statusCode || 403,
-      //   message: error?.response?.data?.message || "Something went wrong",
-      //   errorMessages: error?.response?.data?.message,
-      // };
-      // // return responseObject;
-      // return Promise.reject(error);
 
       const response = await getNewAccessToken();
       const accessToken = response?.data?.accessToken;
