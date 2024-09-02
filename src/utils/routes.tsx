@@ -6,6 +6,7 @@ import SignIn from "../pages/Auth/SignIn";
 import ProtectedRoute from "./ProtectedRoute";
 import { AdminLayout } from "../layouts/AdminLayout";
 import { Profile } from "../pages/Dashboard/Profile";
+import { User } from "../pages/Dashboard/User";
 
 const db_url = import.meta.env.VITE_REDIRECT_URL;
 
@@ -35,6 +36,10 @@ const routes = createBrowserRouter([
       {
         index: true,
         element: <Profile />,
+      },
+      {
+        path: `/${db_url}/users`,
+        element: <User />,
       },
     ],
   },

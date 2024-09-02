@@ -29,13 +29,13 @@ export const sidebarItems = (role: string) => {
   const adminSidebarItems: MenuProps["items"] = [
     ...defaultSidebarItems,
     {
-      label: "For Owner",
-      key: "owner",
+      label: "Users",
+      key: "users",
       icon: <MdHomeRepairService />,
       children: [
         {
-          label: <Link to={`/${db_url}/expriences`}>Expriences</Link>,
-          key: `/${db_url}/expriences`,
+          label: <Link to={`/${db_url}/users`}>All Users</Link>,
+          key: `/${db_url}/users`,
         },
       ],
     },

@@ -59,7 +59,7 @@ export const Profile = () => {
   }
   return (
     <div>
-      <section className="w-full overflow-hidden dark:bg-bg_dark bg-white p-4 pb-0 rounded-md">
+      <section className="dark:bg-bg_dark bg-white p-4 pb-0 rounded-md">
         <div className="flex flex-col">
           <img
             src={text_logo}
