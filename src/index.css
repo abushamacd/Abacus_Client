@@ -50,7 +50,8 @@
 .ant-menu-submenu,
 .ant-menu-sub,
 .ant-layout-sider-trigger,
-.ant-layout-header {
+.ant-layout-header,
+.ant-table-container {
   background-color: var(--white) !important;
   transition: color 0.3s !important;
 }
@@ -62,7 +63,8 @@
 .dark .ant-menu-submenu,
 .dark .ant-menu-sub,
 .dark .ant-layout-sider-trigger,
-.dark .ant-layout-header {
+.dark .ant-layout-header,
+.dark .ant-table-container {
   background-color: var(--bg_dark) !important;
   transition: color 0.3s !important;
 }
@@ -76,7 +78,19 @@
   background-color: #030708 !important;
 }
 
-.ant-layout-sider-trigger .anticon {
+.dark .ant-table-thead {
+  /* background-color: #030708 !important; */
+}
+
+.ant-table-cell-row-hover,
+.dark .ant-table-cell-row-hover {
+  background-color: var(--secondary) !important;
+  color: var(--primary) !important;
+  transition: all 0.3s !important;
+}
+
+.ant-layout-sider-trigger .anticon,
+.ant-table-container {
   color: var(--bg_dark);
 }
 
@@ -108,7 +122,8 @@
 
 .dark .ant-menu-item,
 .dark .ant-menu-submenu-title,
-.dark .ant-menu-title-content {
+.dark .ant-menu-title-content,
+.dark .ant-table-container {
   color: var(--white) !important;
   transition: color 0.3s !important;
 }

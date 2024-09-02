@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { ResponseSuccessType } from "../../types";
+import { IMeta, ResponseSuccessType } from "../../types";
+import { IUser } from "../../types/user";
 import { tagTypes } from "../tag-types";
 import { baseApi } from "./baseApi";
 
@@ -30,7 +31,28 @@ export const userApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: [tagTypes.profile],
     }),
+    // get all users
+    getUsers: build.query({
+      query: (arg: Record<string, any>) => {
+        return {
+          url: "/user",
+          method: "GET",
+          params: arg,
+        };
+      },
+      transformResponse: (response: IUser[], meta: IMeta) => {
+        return {
+          users: response,
+          meta,
+        };
+      },
+      providesTags: [tagTypes.user],
+    }),
   }),
 });
 
-export const { useGetUserProfileQuery, useUpdateUserProfileMutation } = userApi;
+export const {
+  useGetUserProfileQuery,
+  useUpdateUserProfileMutation,
+  useGetUsersQuery,
+} = userApi;

@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { tagTypes } from "../tag-types";
 import { baseApi } from "./baseApi";
 const AUTH_URL = "/auth";
 
@@ -17,6 +18,7 @@ export const authApi = baseApi.injectEndpoints({
         method: "POST",
         data: userData,
       }),
+      invalidatesTags: [tagTypes.user],
     }),
     changePassword: build.mutation({
       query: (userData: any) => ({

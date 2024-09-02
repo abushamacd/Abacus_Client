@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable no-extra-boolean-cast */
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import Card from "antd/es/card/Card";
 import Form from "../../components/Forms/Forms";
@@ -8,6 +11,16 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { addUserSchema } from "../../schemas/user";
 import { useSignUpMutation } from "../../redux/api/authApi";
 import { toast } from "react-toastify";
+import Title from "antd/es/typography/Title";
+import Input from "antd/es/input/Input";
+import DataTable from "../../components/ui/DataTable";
+import { useGetUsersQuery } from "../../redux/api/userApi";
+import { FaRegEye } from "react-icons/fa";
+import { FiEdit } from "react-icons/fi";
+import { MdDeleteForever } from "react-icons/md";
+import { ReloadOutlined } from "@ant-design/icons";
+import { useDebounced } from "../../redux/hooks";
+import { useState } from "react";
 
 type UserFormValues = {
   name: string;
@@ -16,7 +29,102 @@ type UserFormValues = {
 };
 
 export const User = () => {
+  // const dispatch = useAppDispatch();
   const [signUp] = useSignUpMutation();
+
+  const query: Record<string, any> = {};
+  const [page, setPage] = useState<number>(1);
+  const [size, setSize] = useState<number>(10);
+  const [sortBy, setSortBy] = useState<string>("");
+  const [sortOrder, setSortOrder] = useState<string>("");
+  const [searchTerm, setSearchTerm] = useState<string>("");
+
+  query["limit"] = size;
+  query["page"] = page;
+  query["sortBy"] = sortBy;
+  query["sortOrder"] = sortOrder;
+
+  const debouncedTerm = useDebounced({
+    searchQuery: searchTerm,
+    delay: 600,
+  });
+
+  if (!!debouncedTerm) {
+    query["searchTerm"] = debouncedTerm;
+  }
+
+  const { data, isLoading } = useGetUsersQuery({ ...query });
+
+  // @ts-ignore
+  const users: any = data?.users;
+  // @ts-ignore
+  const meta = data?.meta;
+
+  console.log(data);
+
+  const columns = [
+    {
+      title: "Name",
+      dataIndex: "name",
+      sorter: true,
+    },
+    {
+      title: "Role",
+      dataIndex: "role",
+      sorter: true,
+    },
+    {
+      title: "Phone",
+      dataIndex: "phone",
+      sorter: true,
+    },
+    {
+      title: "Address",
+      dataIndex: "address",
+      sorter: true,
+    },
+    {
+      title: "Action",
+      render: function (user: any) {
+        return (
+          <div className="flex gap-2">
+            <FaRegEye
+              style={{ color: "#F37017" }}
+              // onClick={() => openView(user)}
+              size={22}
+            />
+            <FiEdit
+              // onClick={() => openEdit(user)}
+              size={22}
+              style={{ color: "#159246" }}
+            />
+            <MdDeleteForever
+              // onClick={() => deleteHandler(user?.id)}
+              size={22}
+              style={{ color: "#D92728" }}
+            />
+          </div>
+        );
+      },
+    },
+  ];
+
+  const onPaginationChange = (page: number, pageSize: number) => {
+    setPage(page);
+    setSize(pageSize);
+  };
+  // @ts-ignore
+  const onTableChange = (pagination: any, filter: any, sorter: any) => {
+    const { order, field } = sorter;
+    setSortBy(field as string);
+    setSortOrder(order === "ascend" ? "asc" : "desc");
+  };
+
+  const resetFilters = () => {
+    setSortBy("");
+    setSortOrder("");
+    setSearchTerm("");
+  };
 
   const addUser: SubmitHandler<UserFormValues> = async (data: {
     name: string;
@@ -32,6 +140,7 @@ export const User = () => {
   };
   return (
     <div className="">
+      {/* add user */}
       <div className="dark:bg-bg_dark bg-white p-4 rounded-md">
         <Card
           title="Add New User"
@@ -80,6 +189,58 @@ export const User = () => {
             </Row>
           </Form>
         </Card>
+      </div>
+
+      {/* all users */}
+      <div className="dark:bg-bg_dark bg-white p-4 rounded-md mt-5">
+        <div className="">
+          <div className="w-full dark:bg-bg_dark bg-white p-5 rounded-md md:mb-0 mb-5">
+            <Title
+              className="text-mirage dark:text-white !font-medium"
+              level={5}
+            >
+              All Users
+            </Title>
+            <div className="mb-5 flex gap-5 items-center">
+              <Input
+                type="text"
+                size="large"
+                className="bg-bg text-mirage dark:bg-black dark:text-white focus-within:!border-primary hover:!border-primary"
+                placeholder="Search..."
+                style={{
+                  width: "50%",
+                }}
+                // onChange={(e) => {
+                //   setSearchTerm(e.target.value);
+                // }}
+              />
+              <div>
+                {(!!sortBy || !!sortOrder || !!searchTerm) && (
+                  <button
+                    onClick={resetFilters}
+                    style={{
+                      boxShadow: "0 0 5px #4a88da, inset 0 0 5px #4a88da",
+                    }}
+                    className="btn text-[#f9fafb] bg-[#1f4e8d] border-2 border-[#0b2952] hover:bg-[#f9fafb] hover:text-[#1f4e8d] "
+                  >
+                    <ReloadOutlined />
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+          <DataTable
+            loading={isLoading}
+            columns={columns}
+            dataSource={users}
+            pageSize={size}
+            totalPages={meta?.total}
+            showSizeChanger={true}
+            onPaginationChange={onPaginationChange}
+            onTableChange={onTableChange}
+            showPagination={true}
+          />
+        </div>
       </div>
     </div>
   );
