@@ -26,7 +26,7 @@ export const sidebarItems = (role: string) => {
     },
   ];
 
-  const adminSidebarItems: MenuProps["items"] = [
+  const managerSidebarItems: MenuProps["items"] = [
     ...defaultSidebarItems,
     {
       label: "Users",
@@ -41,7 +41,7 @@ export const sidebarItems = (role: string) => {
     },
   ];
 
-  if (role === USER_ROLE.OWNER) return adminSidebarItems;
+  if (role === USER_ROLE.MANAGER) return managerSidebarItems;
   else {
     return defaultSidebarItems;
   }

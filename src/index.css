@@ -78,12 +78,21 @@
   background-color: #030708 !important;
 }
 
-.dark .ant-table-thead {
-  /* background-color: #030708 !important; */
+.ant-table-cell,
+.dark .ant-table-cell::before {
+  background-color: var(--bg) !important;
+  color: var(--mirage) !important;
+}
+
+.dark .ant-table-cell,
+.ant-table-cell::before {
+  background-color: var(--bg_dark) !important;
+  color: var(--white) !important;
 }
 
 .ant-table-cell-row-hover,
-.dark .ant-table-cell-row-hover {
+.dark .ant-table-cell-row-hover,
+.ant-table-cell:hover {
   background-color: var(--secondary) !important;
   color: var(--primary) !important;
   transition: all 0.3s !important;
@@ -94,8 +103,24 @@
   color: var(--bg_dark);
 }
 
-.dark .ant-layout-sider-trigger .anticon {
-  color: var(--primary);
+.ant-table-content {
+  border: 2px solid var(--secondary);
+  border-radius: 8px;
+}
+
+.ant-table-cell,
+.dark.ant-table-cell {
+  border-bottom: 2px solid var(--secondary) !important;
+}
+
+.dark .ant-layout-sider-trigger .anticon,
+.ant-table-column-sorter {
+  color: var(--primary) !important;
+}
+
+.ant-table-column-sorter-up.active,
+.ant-table-column-sorter-down.active {
+  color: var(--secondary) !important;
 }
 
 .ant-menu-item,
@@ -146,6 +171,21 @@
 
 .ant-card-head {
   border-bottom: 2px solid var(--secondary) !important;
+}
+
+.dark .ant-pagination-item {
+  background-color: var(--bg_dark);
+}
+.dark .ant-pagination-item a,
+.dark .ant-pagination-item-link {
+  color: var(--primary) !important;
+}
+
+.dark .ant-pagination-disabled > button > span {
+  color: var(--secondary) !important;
+}
+.dark .ant-pagination-item-active {
+  border-color: var(--primary);
 }
 
 .rye {

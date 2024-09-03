@@ -194,37 +194,35 @@ export const User = () => {
       {/* all users */}
       <div className="dark:bg-bg_dark bg-white p-4 rounded-md mt-5">
         <div className="">
-          <div className="w-full dark:bg-bg_dark bg-white p-5 rounded-md md:mb-0 mb-5">
+          <div className="w-full dark:bg-bg_dark bg-white py-5 rounded-md md:mb-0 mb-5 flex md:flex-row flex-col justify-between md:items-center items-start">
             <Title
               className="text-mirage dark:text-white !font-medium"
               level={5}
             >
               All Users
             </Title>
-            <div className="mb-5 flex gap-5 items-center">
+            <div className="mb-5 flex items-center">
               <Input
                 type="text"
-                size="large"
-                className="bg-bg text-mirage dark:bg-black dark:text-white focus-within:!border-primary hover:!border-primary"
+                size="middle"
+                className="bg-bg text-mirage placeholder:text-mirage dark:placeholder:text-white dark:bg-black dark:text-white focus-within:!border-primary hover:!border-primary"
                 placeholder="Search..."
-                style={{
-                  width: "50%",
-                }}
                 // onChange={(e) => {
                 //   setSearchTerm(e.target.value);
                 // }}
               />
               <div>
                 {(!!sortBy || !!sortOrder || !!searchTerm) && (
-                  <button
+                  <Button
                     onClick={resetFilters}
-                    style={{
-                      boxShadow: "0 0 5px #4a88da, inset 0 0 5px #4a88da",
-                    }}
-                    className="btn text-[#f9fafb] bg-[#1f4e8d] border-2 border-[#0b2952] hover:bg-[#f9fafb] hover:text-[#1f4e8d] "
+                    className="bg-primary hover:!bg-primary text-mirage !bg-opacity-[.8] duration-300 transition-all ml-4"
+                    size="middle"
+                    htmlType="submit"
+                    type="primary"
+                    // block
                   >
                     <ReloadOutlined />
-                  </button>
+                  </Button>
                 )}
               </div>
             </div>
