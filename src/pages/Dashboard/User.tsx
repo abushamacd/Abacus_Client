@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable no-extra-boolean-cast */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -14,7 +13,10 @@ import { toast } from "react-toastify";
 import Title from "antd/es/typography/Title";
 import Input from "antd/es/input/Input";
 import DataTable from "../../components/ui/DataTable";
-import { useGetUsersQuery } from "../../redux/api/userApi";
+import {
+  useDeleteUserMutation,
+  useGetUsersQuery,
+} from "../../redux/api/userApi";
 import { FaRegEye } from "react-icons/fa";
 import { FiEdit } from "react-icons/fi";
 import { MdDeleteForever } from "react-icons/md";
@@ -36,6 +38,7 @@ type UserFormValues = {
 export const User = () => {
   const dispatch = useAppDispatch();
   const [signUp] = useSignUpMutation();
+  const [deleteUser] = useDeleteUserMutation();
 
   const query: Record<string, any> = {};
   const [page, setPage] = useState<number>(1);
@@ -66,8 +69,6 @@ export const User = () => {
   const users: any = data?.users;
   // @ts-ignore
   const meta = data?.meta;
-
-  console.log(data);
 
   const columns = [
     {
@@ -106,7 +107,7 @@ export const User = () => {
               style={{ color: "#159246" }}
             />
             <MdDeleteForever
-              // onClick={() => deleteHandler(user?.id)}
+              onClick={() => deleteHandler(user?.id)}
               size={22}
               style={{ color: "#D92728" }}
             />
@@ -149,6 +150,15 @@ export const User = () => {
     try {
       await signUp(data).unwrap();
       toast.success("Add user successfully");
+    } catch (err: any) {
+      toast.error(`${err.data?.message}`);
+    }
+  };
+
+  const deleteHandler = async (id: string) => {
+    try {
+      await deleteUser(id);
+      toast("User deleted successfully");
     } catch (err: any) {
       toast.error(`${err.data?.message}`);
     }
