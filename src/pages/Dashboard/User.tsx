@@ -5,7 +5,7 @@
 import Card from "antd/es/card/Card";
 import Form from "../../components/Forms/Forms";
 import FormInput from "../../components/Forms/FormInput";
-import { Button, Row } from "antd";
+import { Button, Modal, Row } from "antd";
 import { SubmitHandler } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { addUserSchema } from "../../schemas/user";
@@ -19,8 +19,13 @@ import { FaRegEye } from "react-icons/fa";
 import { FiEdit } from "react-icons/fi";
 import { MdDeleteForever } from "react-icons/md";
 import { ReloadOutlined } from "@ant-design/icons";
-import { useDebounced } from "../../redux/hooks";
+import {
+  useAppDispatch,
+  useAppSelector,
+  useDebounced,
+} from "../../redux/hooks";
 import { useState } from "react";
+import { setView } from "../../redux/features/siteSlice";
 
 type UserFormValues = {
   name: string;
@@ -29,7 +34,7 @@ type UserFormValues = {
 };
 
 export const User = () => {
-  // const dispatch = useAppDispatch();
+  const dispatch = useAppDispatch();
   const [signUp] = useSignUpMutation();
 
   const query: Record<string, any> = {};
@@ -54,6 +59,8 @@ export const User = () => {
   }
 
   const { data, isLoading } = useGetUsersQuery({ ...query });
+  const { view } = useAppSelector((state) => state.site);
+  const user: any = view?.data;
 
   // @ts-ignore
   const users: any = data?.users;
@@ -90,7 +97,7 @@ export const User = () => {
           <div className="flex gap-2">
             <FaRegEye
               style={{ color: "#F37017" }}
-              // onClick={() => openView(user)}
+              onClick={() => openView(user)}
               size={22}
             />
             <FiEdit
@@ -126,6 +133,14 @@ export const User = () => {
     setSearchTerm("");
   };
 
+  const openView = (user: any) => {
+    dispatch(setView({ data: user, state: true }));
+  };
+
+  const closeView = () => {
+    dispatch(setView({ data: null, state: false }));
+  };
+
   const addUser: SubmitHandler<UserFormValues> = async (data: {
     name: string;
     phone: string;
@@ -138,6 +153,7 @@ export const User = () => {
       toast.error(`${err.data?.message}`);
     }
   };
+
   return (
     <div className="">
       {/* add user */}
@@ -207,9 +223,9 @@ export const User = () => {
                 size="middle"
                 className="bg-bg text-mirage placeholder:text-mirage dark:placeholder:text-white dark:bg-black dark:text-white focus-within:!border-primary hover:!border-primary"
                 placeholder="Search..."
-                // onChange={(e) => {
-                //   setSearchTerm(e.target.value);
-                // }}
+                onChange={(e) => {
+                  setSearchTerm(e.target.value);
+                }}
               />
               <div>
                 {(!!sortBy || !!sortOrder || !!searchTerm) && (
@@ -240,6 +256,28 @@ export const User = () => {
           />
         </div>
       </div>
+
+      {/* view modal */}
+      <Modal
+        title={`User ID: ${user?.id}`}
+        open={view.viewState}
+        centered
+        footer={null}
+        onCancel={closeView}
+      >
+        <div className="w-full">
+          <div className=" mb-4 md:mx-4">
+            <div className="flex justify-between items-center">
+              <h3 className="text-2xl text-primary font-bold">{user?.name}</h3>
+            </div>
+            <hr style={{ color: "#ddd" }} />
+            <ul className="list-disc  md:px-4">
+              <li>{user?.position}</li>
+              <li>{user?.serviceTime}</li>
+            </ul>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 };
