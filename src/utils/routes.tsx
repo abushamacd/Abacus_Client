@@ -3,7 +3,7 @@ import SiteLayout from "../layouts/SiteLayout";
 import { AuthLayout } from "../layouts/AuthLayout";
 import { NotFound } from "../pages/NotFound";
 import SignIn from "../pages/Auth/SignIn";
-import ProtectedRoute from "./ProtectedRoute";
+// import ProtectedRoute from "./ProtectedRoute";
 import { AdminLayout } from "../layouts/AdminLayout";
 import { Profile } from "../pages/Dashboard/Profile";
 import { User } from "../pages/Dashboard/User";
@@ -28,9 +28,9 @@ const routes = createBrowserRouter([
   {
     path: `/${db_url}`,
     element: (
-      <ProtectedRoute>
-        <AdminLayout />
-      </ProtectedRoute>
+      // <ProtectedRoute>
+      <AdminLayout />
+      // </ProtectedRoute>
     ),
     children: [
       {

@@ -32,6 +32,7 @@ const DataTable = ({
         pageSizeOptions: [2, 5, 10, 25, 50, 100],
         showSizeChanger: showSizeChanger,
         onChange: onPaginationChange,
+        hideOnSinglePage: true,
       }
     : false;
 
