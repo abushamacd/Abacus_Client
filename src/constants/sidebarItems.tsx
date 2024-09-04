@@ -41,7 +41,23 @@ export const sidebarItems = (role: string) => {
     },
   ];
 
+  const adminSidebarItems: MenuProps["items"] = [
+    ...managerSidebarItems,
+    // {
+    //   label: "Users",
+    //   key: "users",
+    //   icon: <MdHomeRepairService />,
+    //   children: [
+    //     {
+    //       label: <Link to={`/${db_url}/users`}>All Users</Link>,
+    //       key: `/${db_url}/users`,
+    //     },
+    //   ],
+    // },
+  ];
+
   if (role === USER_ROLE.MANAGER) return managerSidebarItems;
+  if (role === USER_ROLE.OWNER) return adminSidebarItems;
   else {
     return defaultSidebarItems;
   }

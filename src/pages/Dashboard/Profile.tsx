@@ -13,6 +13,7 @@ import {
 import Loading from "../../components/ui/Loading";
 import { toast } from "react-toastify";
 import { useChangePasswordMutation } from "../../redux/api/authApi";
+import Dropzone from "react-dropzone";
 
 type FormValues = {
   name: string;
@@ -57,6 +58,14 @@ export const Profile = () => {
   if (userLoading) {
     return <Loading />;
   }
+
+  const handleImgUpload = (image: any) => {
+    const formData = new FormData();
+    formData.append("images", image[0] as Blob);
+    console.log(formData);
+    // uploadProjectImage(formData);
+  };
+
   return (
     <div>
       <section className="dark:bg-bg_dark bg-white p-4 pb-0 rounded-md">
@@ -68,11 +77,27 @@ export const Profile = () => {
           />
 
           <div className="sm:w-[80%] xs:w-[90%] mx-auto flex ">
-            <img
-              src="https://images.unsplash.com/photo-1501196354995-cbb51c65aaea?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w0NzEyNjZ8MHwxfHNlYXJjaHw3fHxwZW9wbGV8ZW58MHwwfHx8MTcxMTExMTM4N3ww&ixlib=rb-4.0.3"
-              alt="User Profile"
-              className="lg:w-[12rem] lg:h-[12rem] md:w-[10rem] md:h-[10rem] w-[4rem] h-[4rem] outline outline-2 outline-offset-2 outline-primary relative lg:bottom-[3rem] md:bottom-[2rem] bottom-[.5rem] rounded-md "
-            />
+            <div className="">
+              <Dropzone
+                onDrop={(acceptedFiles) => handleImgUpload(acceptedFiles)}
+              >
+                {({ getRootProps, getInputProps }) => (
+                  <section>
+                    <div {...getRootProps()}>
+                      <input {...getInputProps()} />
+                      {/* <p className="text-gray-800 dark:text-white">
+                        Upload Image
+                      </p> */}
+                      <img
+                        src="https://images.unsplash.com/photo-1501196354995-cbb51c65aaea?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w0NzEyNjZ8MHwxfHNlYXJjaHw3fHxwZW9wbGV8ZW58MHwwfHx8MTcxMTExMTM4N3ww&ixlib=rb-4.0.3"
+                        alt="User Profile"
+                        className="lg:w-[12rem] lg:h-[12rem] md:w-[10rem] md:h-[10rem] w-[4rem] h-[4rem] outline outline-2 outline-offset-2 outline-primary relative lg:bottom-[3rem] md:bottom-[2rem] bottom-[.5rem] rounded-md "
+                      />
+                    </div>
+                  </section>
+                )}
+              </Dropzone>
+            </div>
 
             <div className="">
               <h1 className="w-full md:px-4 md:pt-3  px-2  text-gray-800 dark:text-white lg:text-4xl md:text-3xl ao">
