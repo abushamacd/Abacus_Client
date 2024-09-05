@@ -7,6 +7,7 @@ import SignIn from "../pages/Auth/SignIn";
 import { AdminLayout } from "../layouts/AdminLayout";
 import { Profile } from "../pages/Dashboard/Profile";
 import { User } from "../pages/Dashboard/User";
+import { UserDetails } from "../pages/Dashboard/UserDetails";
 
 const db_url = import.meta.env.VITE_REDIRECT_URL;
 
@@ -40,6 +41,10 @@ const routes = createBrowserRouter([
       {
         path: `/${db_url}/users`,
         element: <User />,
+      },
+      {
+        path: `/${db_url}/users/:id`,
+        element: <UserDetails />,
       },
     ],
   },

@@ -28,6 +28,7 @@ import {
 } from "../../redux/hooks";
 import { useState } from "react";
 import { setView } from "../../redux/features/siteSlice";
+import { useNavigate } from "react-router-dom";
 
 type UserFormValues = {
   name: string;
@@ -37,6 +38,7 @@ type UserFormValues = {
 
 export const User = () => {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const [signUp] = useSignUpMutation();
   const [deleteUser] = useDeleteUserMutation();
 
@@ -135,7 +137,7 @@ export const User = () => {
   };
 
   const openView = (user: any) => {
-    dispatch(setView({ data: user, state: true }));
+    navigate(`${user.id}`, { replace: true });
   };
 
   const closeView = () => {

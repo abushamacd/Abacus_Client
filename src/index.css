@@ -90,6 +90,26 @@
   color: var(--white) !important;
 }
 
+.ant-modal-content {
+  background-color: var(--white) !important;
+  border: 1px solid var(--primary) !important;
+}
+
+.dark .ant-modal-content {
+  background-color: var(--bg_dark) !important;
+  border: 1px solid var(--primary) !important;
+}
+
+.ant-modal-title {
+  background-color: var(--white) !important;
+  color: var(--mirage) !important;
+}
+
+.dark .ant-modal-title {
+  background-color: var(--bg_dark) !important;
+  color: var(--white) !important;
+}
+
 .ant-table-cell-row-hover,
 .dark .ant-table-cell-row-hover,
 .ant-table-cell:hover {
@@ -114,7 +134,8 @@
 }
 
 .dark .ant-layout-sider-trigger .anticon,
-.ant-table-column-sorter {
+.ant-table-column-sorter,
+.ant-modal-close {
   color: var(--primary) !important;
 }
 

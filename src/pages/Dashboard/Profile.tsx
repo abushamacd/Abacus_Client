@@ -41,8 +41,6 @@ export const Profile = () => {
   // @ts-ignore
   const photoUrl: string = imageUploadData?.url;
 
-  console.log(imageUploadData);
-
   const defaultValues = {
     name: res?.response?.name || "",
     phone: res?.response?.phone || "",
@@ -117,7 +115,7 @@ export const Profile = () => {
             </div>
 
             <div className="">
-              <h1 className="w-full md:px-4 md:pt-3  px-2  text-gray-800 dark:text-white lg:text-4xl md:text-3xl ao">
+              <h1 className="w-full md:px-4 md:pt-3  px-2  text-gray-800 dark:text-white lg:text-4xl md:text-3xl ao capitalize">
                 {res?.response?.name}
               </h1>
               <p className="w-full md:px-4 md:pt-3  px-2  text-gray-800 dark:text-white lg:text-base md:text-xl text-xs">

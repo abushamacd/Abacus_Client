@@ -66,6 +66,13 @@ export const userApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: [tagTypes.user],
     }),
+    // get user
+    getUser: build.query({
+      query: (id: string | string[] | undefined) => ({
+        url: `/user/${id}`,
+        method: "GET",
+      }),
+    }),
   }),
 });
 
@@ -75,4 +82,5 @@ export const {
   useGetUsersQuery,
   useDeleteUserMutation,
   useUploadPhotoMutation,
+  useGetUserQuery,
 } = userApi;
