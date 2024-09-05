@@ -56,6 +56,16 @@ export const userApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: [tagTypes.user],
     }),
+    // upload photo
+    uploadPhoto: build.mutation({
+      query: (data: any) => ({
+        url: `/user/photo`,
+        method: "POST",
+        data: data,
+        contentType: "multipart/form-data",
+      }),
+      invalidatesTags: [tagTypes.user],
+    }),
   }),
 });
 
@@ -64,4 +74,5 @@ export const {
   useUpdateUserProfileMutation,
   useGetUsersQuery,
   useDeleteUserMutation,
+  useUploadPhotoMutation,
 } = userApi;

@@ -188,7 +188,8 @@
 .ant-pagination-item-link,
 .ant-select-selector,
 .ant-select-item,
-.ant-select-arrow {
+.ant-select-arrow,
+.ant-spin-dot-holder {
   color: var(--primary) !important;
 }
 
