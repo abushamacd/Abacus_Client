@@ -6,8 +6,8 @@ import SignIn from "../pages/Auth/SignIn";
 // import ProtectedRoute from "./ProtectedRoute";
 import { AdminLayout } from "../layouts/AdminLayout";
 import { Profile } from "../pages/Dashboard/Profile";
-import { User } from "../pages/Dashboard/User";
-import { UserDetails } from "../pages/Dashboard/UserDetails";
+import { UserDetails } from "../pages/Dashboard/user/UserDetails";
+import { User } from "../pages/Dashboard/user/User";
 
 const db_url = import.meta.env.VITE_REDIRECT_URL;
 

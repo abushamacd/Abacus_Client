@@ -2,32 +2,27 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import Card from "antd/es/card/Card";
-import Form from "../../components/Forms/Forms";
-import FormInput from "../../components/Forms/FormInput";
-import { Button, Modal, Row } from "antd";
+import Form from "../../../components/Forms/Forms";
+import FormInput from "../../../components/Forms/FormInput";
+import { Button, Row } from "antd";
 import { SubmitHandler } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { addUserSchema } from "../../schemas/user";
-import { useSignUpMutation } from "../../redux/api/authApi";
+import { addUserSchema } from "../../../schemas/user";
+import { useSignUpMutation } from "../../../redux/api/authApi";
 import { toast } from "react-toastify";
 import Title from "antd/es/typography/Title";
 import Input from "antd/es/input/Input";
-import DataTable from "../../components/ui/DataTable";
+import DataTable from "../../../components/ui/DataTable";
 import {
   useDeleteUserMutation,
   useGetUsersQuery,
-} from "../../redux/api/userApi";
+} from "../../../redux/api/userApi";
 import { FaRegEye } from "react-icons/fa";
 import { FiEdit } from "react-icons/fi";
 import { MdDeleteForever } from "react-icons/md";
 import { ReloadOutlined } from "@ant-design/icons";
-import {
-  useAppDispatch,
-  useAppSelector,
-  useDebounced,
-} from "../../redux/hooks";
+import { useDebounced } from "../../../redux/hooks";
 import { useState } from "react";
-import { setView } from "../../redux/features/siteSlice";
 import { useNavigate } from "react-router-dom";
 
 type UserFormValues = {
@@ -37,7 +32,6 @@ type UserFormValues = {
 };
 
 export const User = () => {
-  const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const [signUp] = useSignUpMutation();
   const [deleteUser] = useDeleteUserMutation();
@@ -64,8 +58,6 @@ export const User = () => {
   }
 
   const { data, isLoading } = useGetUsersQuery({ ...query });
-  const { view } = useAppSelector((state) => state.site);
-  const user: any = view?.data;
 
   // @ts-ignore
   const users: any = data?.users;
@@ -138,10 +130,6 @@ export const User = () => {
 
   const openView = (user: any) => {
     navigate(`${user.id}`, { replace: true });
-  };
-
-  const closeView = () => {
-    dispatch(setView({ data: null, state: false }));
   };
 
   const addUser: SubmitHandler<UserFormValues> = async (data: {
@@ -268,28 +256,6 @@ export const User = () => {
           />
         </div>
       </div>
-
-      {/* view modal */}
-      <Modal
-        title={`User ID: ${user?.id}`}
-        open={view.viewState}
-        centered
-        footer={null}
-        onCancel={closeView}
-      >
-        <div className="w-full">
-          <div className=" mb-4 md:mx-4">
-            <div className="flex justify-between items-center">
-              <h3 className="text-2xl text-primary font-bold">{user?.name}</h3>
-            </div>
-            <hr style={{ color: "#ddd" }} />
-            <ul className="list-disc  md:px-4">
-              <li>{user?.position}</li>
-              <li>{user?.serviceTime}</li>
-            </ul>
-          </div>
-        </div>
-      </Modal>
     </div>
   );
 };
