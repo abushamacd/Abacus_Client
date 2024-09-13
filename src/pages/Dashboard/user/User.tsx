@@ -4,7 +4,7 @@
 import Card from "antd/es/card/Card";
 import Form from "../../../components/Forms/Forms";
 import FormInput from "../../../components/Forms/FormInput";
-import { Button, Row } from "antd";
+import { Button, Row, Select } from "antd";
 import { SubmitHandler } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { addUserSchema } from "../../../schemas/user";
@@ -16,9 +16,9 @@ import DataTable from "../../../components/ui/DataTable";
 import {
   useDeleteUserMutation,
   useGetUsersQuery,
+  useUpdateRoleMutation,
 } from "../../../redux/api/userApi";
 import { FaRegEye } from "react-icons/fa";
-import { FiEdit } from "react-icons/fi";
 import { MdDeleteForever } from "react-icons/md";
 import { ReloadOutlined } from "@ant-design/icons";
 import { useDebounced } from "../../../redux/hooks";
@@ -35,6 +35,7 @@ export const User = () => {
   const navigate = useNavigate();
   const [signUp] = useSignUpMutation();
   const [deleteUser] = useDeleteUserMutation();
+  const [updateRole] = useUpdateRoleMutation();
 
   const query: Record<string, any> = {};
   const [page, setPage] = useState<number>(1);
@@ -64,6 +65,15 @@ export const User = () => {
   // @ts-ignore
   const meta = data?.meta;
 
+  const handleUpdate = async (_value: any, options: any) => {
+    try {
+      await updateRole({ id: options?.id, role: options?.value }).unwrap();
+      toast.success("Update Role");
+    } catch (err: any) {
+      toast.error(`${err.data?.message}`);
+    }
+  };
+
   const columns = [
     {
       title: "Name",
@@ -72,8 +82,24 @@ export const User = () => {
     },
     {
       title: "Role",
-      dataIndex: "role",
-      sorter: true,
+      // dataIndex: "role",
+      // sorter: true,
+      render: function (user: any) {
+        return (
+          <Select
+            defaultValue={user?.role}
+            style={{ width: "100%" }}
+            onChange={handleUpdate}
+            options={[
+              { id: user?.id, value: "Consumer", label: "Consumer" },
+              { id: user?.id, value: "Retailer", label: "Retailer" },
+              { id: user?.id, value: "Staff", label: "Staff" },
+              { id: user?.id, value: "Manager", label: "Manager" },
+              { id: user?.id, value: "Owner", label: "Owner" },
+            ]}
+          />
+        );
+      },
     },
     {
       title: "Phone",
@@ -94,11 +120,6 @@ export const User = () => {
               style={{ color: "#F37017" }}
               onClick={() => openView(user)}
               size={22}
-            />
-            <FiEdit
-              // onClick={() => openEdit(user)}
-              size={22}
-              style={{ color: "#159246" }}
             />
             <MdDeleteForever
               onClick={() => deleteHandler(user?.id)}
