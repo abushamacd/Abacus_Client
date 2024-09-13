@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable no-extra-boolean-cast */
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -12,15 +11,22 @@ import { addRouteSchema } from "../../../schemas/vehicle";
 import {
   useCreateVehicleRouteMutation,
   useGetVehicleRoutesQuery,
+  useUpdateVehicleRouteMutation,
 } from "../../../redux/api/vehicleRoute";
 import { toast } from "react-toastify";
 import Title from "antd/es/typography/Title";
 import { useState } from "react";
-import { useDebounced } from "../../../redux/hooks";
+import {
+  useAppDispatch,
+  useAppSelector,
+  useDebounced,
+} from "../../../redux/hooks";
 import { ReloadOutlined } from "@ant-design/icons";
 import DataTable from "../../../components/ui/DataTable";
 import { MdDeleteForever } from "react-icons/md";
 import { FiEdit } from "react-icons/fi";
+import { setEdit } from "../../../redux/features/siteSlice";
+import Modal from "antd/es/modal/Modal";
 
 type UserFormValues = {
   name: string;
@@ -29,7 +35,8 @@ type UserFormValues = {
 };
 
 export const VehicleRoutes = () => {
-  // const dispatch = useAppDispatch();
+  const dispatch = useAppDispatch();
+  const { edit } = useAppSelector((state) => state.site);
 
   const query: Record<string, any> = {};
   const [page, setPage] = useState<number>(1);
@@ -54,11 +61,17 @@ export const VehicleRoutes = () => {
 
   const { data, isLoading } = useGetVehicleRoutesQuery({ ...query });
   const [createVehicleRoute] = useCreateVehicleRouteMutation();
+  const [updateVehicleRoute] = useUpdateVehicleRouteMutation();
 
   // @ts-ignore
   const vehicleRoutes: any = data?.vehicleRoutes;
   // @ts-ignore
   const meta = data?.meta;
+  const editVehicleRoute: any = edit?.data;
+
+  const defaultValues = {
+    name: editVehicleRoute?.name || "",
+  };
 
   const columns = [
     {
@@ -73,7 +86,7 @@ export const VehicleRoutes = () => {
           <div className="flex gap-2">
             <FiEdit
               style={{ color: "#008A3F" }}
-              //   onClick={() => openEdit(user)}
+              onClick={() => openEdit(vehicleRoute)}
               size={22}
             />
             <MdDeleteForever
@@ -104,12 +117,32 @@ export const VehicleRoutes = () => {
     setSearchTerm("");
   };
 
-  const addVehicleRoute: SubmitHandler<UserFormValues> = async (data: {
+  const openEdit = (vehicleRoute: any) => {
+    dispatch(setEdit({ data: vehicleRoute, state: true }));
+  };
+
+  const closeEdit = () => {
+    dispatch(setEdit({ data: null, state: false }));
+  };
+
+  const createHandler: SubmitHandler<UserFormValues> = async (data: {
     name: string;
   }) => {
     try {
       await createVehicleRoute(data).unwrap();
       toast.success("Add Route successfully");
+    } catch (err: any) {
+      toast.error(`${err.data?.message}`);
+    }
+  };
+
+  const updateHandler: SubmitHandler<UserFormValues> = async (data: any) => {
+    try {
+      await updateVehicleRoute({
+        id: editVehicleRoute.id,
+        body: data,
+      }).unwrap();
+      toast("Route name updated successfully");
     } catch (err: any) {
       toast.error(`${err.data?.message}`);
     }
@@ -173,7 +206,7 @@ export const VehicleRoutes = () => {
           className="dark:bg-bg_dark bg-white text-mirage dark:text-white !border-secondary border-2"
         >
           <Form
-            submitHandler={addVehicleRoute}
+            submitHandler={createHandler}
             resolver={yupResolver(addRouteSchema)}
           >
             <div className="w-full flex md:flex-row flex-col items-start justify-between gap-5">
@@ -201,6 +234,43 @@ export const VehicleRoutes = () => {
           </Form>
         </Card>
       </div>
+
+      {/* edit modal */}
+      <Modal
+        title={`Update Route Name`}
+        open={edit.editState}
+        centered
+        footer={null}
+        onCancel={closeEdit}
+      >
+        <Form submitHandler={updateHandler} defaultValues={defaultValues}>
+          <div
+            style={{
+              margin: "15px 0px",
+            }}
+          >
+            <FormInput
+              name="name"
+              type="text"
+              size="middle"
+              label="Route Name"
+              required
+            />
+          </div>
+
+          <Row justify="start" align="middle">
+            <Button
+              className="bg-primary hover:!bg-primary text-mirage !bg-opacity-[.8] duration-300 transition-all mt-4"
+              size="large"
+              htmlType="submit"
+              type="primary"
+              // block
+            >
+              Update
+            </Button>
+          </Row>
+        </Form>
+      </Modal>
     </div>
   );
 };

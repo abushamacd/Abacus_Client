@@ -32,8 +32,20 @@ export const vehicleRouteApi = baseApi.injectEndpoints({
       },
       providesTags: [tagTypes.vRoute],
     }),
+    // update
+    updateVehicleRoute: build.mutation({
+      query: (data: { id: any; body: any }) => ({
+        url: `/vehicleRoute/${data.id}`,
+        method: "PATCH",
+        data: data.body,
+      }),
+      invalidatesTags: [tagTypes.vRoute],
+    }),
   }),
 });
 
-export const { useCreateVehicleRouteMutation, useGetVehicleRoutesQuery } =
-  vehicleRouteApi;
+export const {
+  useCreateVehicleRouteMutation,
+  useGetVehicleRoutesQuery,
+  useUpdateVehicleRouteMutation,
+} = vehicleRouteApi;
