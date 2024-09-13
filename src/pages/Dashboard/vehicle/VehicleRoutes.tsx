@@ -10,6 +10,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { addRouteSchema } from "../../../schemas/vehicle";
 import {
   useCreateVehicleRouteMutation,
+  useDeleteVehicleRouteMutation,
   useGetVehicleRoutesQuery,
   useUpdateVehicleRouteMutation,
 } from "../../../redux/api/vehicleRoute";
@@ -62,6 +63,7 @@ export const VehicleRoutes = () => {
   const { data, isLoading } = useGetVehicleRoutesQuery({ ...query });
   const [createVehicleRoute] = useCreateVehicleRouteMutation();
   const [updateVehicleRoute] = useUpdateVehicleRouteMutation();
+  const [deleteVehicleRoute] = useDeleteVehicleRouteMutation();
 
   // @ts-ignore
   const vehicleRoutes: any = data?.vehicleRoutes;
@@ -90,7 +92,7 @@ export const VehicleRoutes = () => {
               size={22}
             />
             <MdDeleteForever
-              //   onClick={() => deleteHandler(user?.id)}
+              onClick={() => deleteHandler(vehicleRoute?.id)}
               size={22}
               style={{ color: "#D92728" }}
             />
@@ -143,6 +145,15 @@ export const VehicleRoutes = () => {
         body: data,
       }).unwrap();
       toast("Route name updated successfully");
+    } catch (err: any) {
+      toast.error(`${err.data?.message}`);
+    }
+  };
+
+  const deleteHandler = async (id: string) => {
+    try {
+      await deleteVehicleRoute(id).unwrap();
+      toast("Route name deleted successfully");
     } catch (err: any) {
       toast.error(`${err.data?.message}`);
     }

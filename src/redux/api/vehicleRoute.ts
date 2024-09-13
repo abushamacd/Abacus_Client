@@ -41,6 +41,14 @@ export const vehicleRouteApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: [tagTypes.vRoute],
     }),
+    // delete
+    deleteVehicleRoute: build.mutation({
+      query: (id: string) => ({
+        url: `/vehicleRoute/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: [tagTypes.vRoute],
+    }),
   }),
 });
 
@@ -48,4 +56,5 @@ export const {
   useCreateVehicleRouteMutation,
   useGetVehicleRoutesQuery,
   useUpdateVehicleRouteMutation,
+  useDeleteVehicleRouteMutation,
 } = vehicleRouteApi;
