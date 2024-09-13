@@ -72,6 +72,7 @@ export const userApi = baseApi.injectEndpoints({
         url: `/user/${id}`,
         method: "GET",
       }),
+      providesTags: [tagTypes.user],
     }),
     // update role
     updateRole: build.mutation({
@@ -79,6 +80,15 @@ export const userApi = baseApi.injectEndpoints({
         url: `/user/changeRole`,
         method: "PATCH",
         data: data,
+      }),
+      invalidatesTags: [tagTypes.user],
+    }),
+    // update user
+    updateUser: build.mutation({
+      query: (data: { id: any; body: any }) => ({
+        url: `/user/${data.id}`,
+        method: "PATCH",
+        data: data.body,
       }),
       invalidatesTags: [tagTypes.user],
     }),
@@ -93,4 +103,5 @@ export const {
   useUploadPhotoMutation,
   useGetUserQuery,
   useUpdateRoleMutation,
+  useUpdateUserMutation,
 } = userApi;

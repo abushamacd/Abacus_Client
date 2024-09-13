@@ -1,7 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useParams } from "react-router-dom";
 import Loading from "../../../components/ui/Loading";
-import { useGetUserQuery } from "../../../redux/api/userApi";
+import {
+  useGetUserQuery,
+  useUpdateUserMutation,
+} from "../../../redux/api/userApi";
 import text_logo from "../../../assets/text_logo.png";
 import { Button, Card, Col, Row } from "antd";
 import Form from "../../../components/Forms/Forms";
@@ -10,6 +13,7 @@ import { SubmitHandler } from "react-hook-form";
 import { FaEdit } from "react-icons/fa";
 import { useState } from "react";
 import { MdOutlineCancel } from "react-icons/md";
+import { toast } from "react-toastify";
 
 type FormValues = {
   name: string;
@@ -19,8 +23,9 @@ type FormValues = {
 };
 
 export const UserDetails = () => {
-  const [isEdit, setIsEdit] = useState(true);
   const params = useParams();
+  const [isEdit, setIsEdit] = useState(true);
+  const [updateUser] = useUpdateUserMutation();
 
   const { data: userData, isLoading: loading } = useGetUserQuery(params?.id);
 
@@ -36,13 +41,14 @@ export const UserDetails = () => {
   console.log(user);
 
   const updateProfile: SubmitHandler<FormValues> = async (data: any) => {
-    console.log(data);
-    // try {
-    //   await updateUserProfile(data).unwrap();
-    //   toast("Update user successfully!");
-    // } catch (err: any) {
-    //   toast.error(`${err.data?.message}`);
-    // }
+    console.log({ id: params?.id, body: data });
+    try {
+      await updateUser({ id: params?.id, body: data }).unwrap();
+      toast("Update user successfully!");
+    } catch (err: any) {
+      console.log(err);
+      toast.error(`${err.data?.message}`);
+    }
   };
 
   if (loading) {
