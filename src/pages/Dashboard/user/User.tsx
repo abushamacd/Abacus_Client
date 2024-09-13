@@ -83,7 +83,7 @@ export const User = () => {
     {
       title: "Role",
       // dataIndex: "role",
-      // sorter: true,
+      sorter: true,
       render: function (user: any) {
         return (
           <Select
