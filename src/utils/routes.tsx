@@ -8,6 +8,8 @@ import { AdminLayout } from "../layouts/AdminLayout";
 import { Profile } from "../pages/Dashboard/Profile";
 import { UserDetails } from "../pages/Dashboard/user/UserDetails";
 import { User } from "../pages/Dashboard/user/User";
+import { VehiclesOverview } from "../pages/Dashboard/vehicle/Overview";
+import { Vehicle } from "../pages/Dashboard/vehicle/vehicle";
 
 const db_url = import.meta.env.VITE_REDIRECT_URL;
 
@@ -45,6 +47,14 @@ const routes = createBrowserRouter([
       {
         path: `/${db_url}/users/:id`,
         element: <UserDetails />,
+      },
+      {
+        path: `/${db_url}/vehicle/`,
+        element: <VehiclesOverview />,
+      },
+      {
+        path: `/${db_url}/vehicles/`,
+        element: <Vehicle />,
       },
     ],
   },

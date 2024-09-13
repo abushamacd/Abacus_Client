@@ -38,10 +38,7 @@ export const UserDetails = () => {
     address: user?.address || "",
   };
 
-  console.log(user);
-
   const updateProfile: SubmitHandler<FormValues> = async (data: any) => {
-    console.log({ id: params?.id, body: data });
     try {
       await updateUser({ id: params?.id, body: data }).unwrap();
       toast("Update user successfully!");

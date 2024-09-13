@@ -43,17 +43,21 @@ export const sidebarItems = (role: string) => {
 
   const adminSidebarItems: MenuProps["items"] = [
     ...managerSidebarItems,
-    // {
-    //   label: "Users",
-    //   key: "users",
-    //   icon: <MdHomeRepairService />,
-    //   children: [
-    //     {
-    //       label: <Link to={`/${db_url}/users`}>All Users</Link>,
-    //       key: `/${db_url}/users`,
-    //     },
-    //   ],
-    // },
+    {
+      label: "Vehicles",
+      key: "vehicles",
+      icon: <MdHomeRepairService />,
+      children: [
+        {
+          label: <Link to={`/${db_url}/vehicle`}>Overview</Link>,
+          key: `/${db_url}/vehicle`,
+        },
+        {
+          label: <Link to={`/${db_url}/vehicles`}>All Vehicles</Link>,
+          key: `/${db_url}/vehicles`,
+        },
+      ],
+    },
   ];
 
   if (role === USER_ROLE.MANAGER) return managerSidebarItems;

@@ -39,7 +39,7 @@ export const User = () => {
 
   const query: Record<string, any> = {};
   const [page, setPage] = useState<number>(1);
-  const [size, setSize] = useState<number>(5);
+  const [size, setSize] = useState<number>(10);
   const [sortBy, setSortBy] = useState<string>("");
   const [sortOrder, setSortOrder] = useState<string>("");
   const [searchTerm, setSearchTerm] = useState<string>("");
@@ -117,7 +117,7 @@ export const User = () => {
         return (
           <div className="flex gap-2">
             <FaRegEye
-              style={{ color: "#F37017" }}
+              style={{ color: "#008A3F" }}
               onClick={() => openView(user)}
               size={22}
             />
