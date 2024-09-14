@@ -15,7 +15,7 @@ export const vehicleApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: [tagTypes.vehicle],
     }),
-    // get all users
+    // get all vehicles
     getVehicles: build.query({
       query: (arg: Record<string, any>) => {
         return {
@@ -32,7 +32,19 @@ export const vehicleApi = baseApi.injectEndpoints({
       },
       providesTags: [tagTypes.vehicle],
     }),
+    // delete vehicle
+    deleteVehicle: build.mutation({
+      query: (id: string) => ({
+        url: `/vehicle/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: [tagTypes.vehicle],
+    }),
   }),
 });
 
-export const { useCreateVehicleMutation, useGetVehiclesQuery } = vehicleApi;
+export const {
+  useCreateVehicleMutation,
+  useGetVehiclesQuery,
+  useDeleteVehicleMutation,
+} = vehicleApi;

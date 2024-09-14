@@ -14,6 +14,7 @@ import Loading from "../../../components/ui/Loading";
 import { useGetUsersQuery } from "../../../redux/api/userApi";
 import {
   useCreateVehicleMutation,
+  useDeleteVehicleMutation,
   useGetVehiclesQuery,
 } from "../../../redux/api/vehicle";
 import { toast } from "react-toastify";
@@ -43,6 +44,7 @@ export const Vehicle = () => {
     role: "Staff",
   });
   const [createVehicle] = useCreateVehicleMutation();
+  const [deleteVehicle] = useDeleteVehicleMutation();
 
   // @ts-ignore
   const vehicleRoutes: any = vRoutes?.vehicleRoutes;
@@ -110,11 +112,11 @@ export const Vehicle = () => {
           <div className="flex gap-2">
             <FaRegEye
               style={{ color: "#008A3F" }}
-              // onClick={() => openView(user)}
+              // onClick={() => openView(vehicle)}
               size={22}
             />
             <MdDeleteForever
-              // onClick={() => deleteHandler(user?.id)}
+              onClick={() => deleteHandler(vehicle?.id)}
               size={22}
               style={{ color: "#D92728" }}
             />
@@ -149,6 +151,15 @@ export const Vehicle = () => {
     try {
       await createVehicle(details).unwrap();
       toast.success("Add vehicle successfully");
+    } catch (err: any) {
+      toast.error(`${err.data?.message}`);
+    }
+  };
+
+  const deleteHandler = async (id: string) => {
+    try {
+      await deleteVehicle(id);
+      toast("Vehicle deleted successfully");
     } catch (err: any) {
       toast.error(`${err.data?.message}`);
     }
