@@ -39,7 +39,7 @@ export const User = () => {
 
   const query: Record<string, any> = {};
   const [page, setPage] = useState<number>(1);
-  const [size, setSize] = useState<number>(10);
+  const [size, setSize] = useState<number>(5);
   const [sortBy, setSortBy] = useState<string>("");
   const [sortOrder, setSortOrder] = useState<string>("");
   const [searchTerm, setSearchTerm] = useState<string>("");
@@ -242,7 +242,7 @@ export const User = () => {
               <Input
                 type="text"
                 size="middle"
-                className="bg-bg text-mirage placeholder:text-mirage dark:placeholder:text-white dark:bg-black dark:text-white focus-within:!border-primary hover:!border-primary"
+                className="bg-white text-mirage placeholder:text-mirage dark:placeholder:text-white dark:bg-black dark:text-white focus-within:!border-primary hover:!border-primary"
                 placeholder="Search..."
                 onChange={(e) => {
                   setSearchTerm(e.target.value);

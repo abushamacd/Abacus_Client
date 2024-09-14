@@ -20,3 +20,8 @@ export type IGenericErrorMessage = {
   path: string | number;
   message: string;
 };
+
+export type SelectOptions = {
+  label: string;
+  value: string | boolean;
+};

@@ -56,7 +56,7 @@ const FormInput = ({
         render={({ field }) =>
           type === "password" ? (
             <Input.Password
-              className="bg-bg text-mirage dark:bg-black dark:text-white focus-within:!border-primary hover:!border-primary disabled:text-mirage dark:disabled:text-white"
+              className="bg-white text-mirage dark:bg-black dark:text-white focus-within:!border-primary hover:!border-primary disabled:text-mirage dark:disabled:text-white"
               type={type}
               size={size}
               placeholder={placeholder}
@@ -65,7 +65,7 @@ const FormInput = ({
             />
           ) : (
             <Input
-              className="bg-bg text-mirage dark:bg-black dark:text-white focus-within:!border-primary hover:!border-primary disabled:text-mirage dark:disabled:text-white"
+              className="bg-white text-mirage dark:bg-black dark:text-white focus-within:!border-primary hover:!border-primary disabled:text-mirage dark:disabled:text-white"
               disabled={disabled}
               type={type}
               size={size}

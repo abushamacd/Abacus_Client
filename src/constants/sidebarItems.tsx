@@ -4,6 +4,7 @@ import { ImProfile } from "react-icons/im";
 // import { AiOutlineControl } from "react-icons/ai";
 import { USER_ROLE } from "./role";
 import { Link } from "react-router-dom";
+import { FaBus } from "react-icons/fa";
 
 const db_url = import.meta.env.VITE_REDIRECT_URL;
 
@@ -46,7 +47,7 @@ export const sidebarItems = (role: string) => {
     {
       label: "Vehicles",
       key: "vehicles",
-      icon: <MdHomeRepairService />,
+      icon: <FaBus />,
       children: [
         {
           label: <Link to={`/${db_url}/vehicle`}>Overview</Link>,
