@@ -3,6 +3,7 @@ export enum tagTypes {
   profile = "profile",
   vRoute = "vRoute",
   vehicle = "vehicle",
+  vStatement = "vStatement",
 }
 
 export const tagTypesList = [
@@ -10,4 +11,5 @@ export const tagTypesList = [
   tagTypes.profile,
   tagTypes.vRoute,
   tagTypes.vehicle,
+  tagTypes.vStatement,
 ];

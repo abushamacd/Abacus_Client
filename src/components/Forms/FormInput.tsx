@@ -68,6 +68,7 @@ const FormInput = ({
               className="bg-white text-mirage dark:bg-bg_dark dark:text-white focus-within:!border-primary hover:!border-primary disabled:text-mirage dark:disabled:text-white"
               disabled={disabled}
               type={type}
+              min={0}
               size={size}
               placeholder={placeholder}
               {...field}

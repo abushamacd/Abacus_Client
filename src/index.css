@@ -216,7 +216,8 @@
 .ant-spin-dot-holder,
 .ant-picker-header > button,
 .ant-picker-footer a:hover,
-.ant-picker-header-view > button:hover {
+.ant-picker-header-view > button:hover,
+.ant-select-selection-item-remove {
   color: var(--primary) !important;
 }
 
@@ -228,7 +229,8 @@
 .ant-picker-header,
 .ant-picker-footer,
 .ant-picker-cell-in-view,
-.ant-picker-content th {
+.ant-picker-content th,
+.ant-input-suffix > span {
   color: var(--mirage) !important;
 }
 
@@ -240,7 +242,8 @@
 .dark .ant-picker-header,
 .dark .ant-picker-footer,
 .dark .ant-picker-cell-in-view,
-.dark .ant-picker-content th {
+.dark .ant-picker-content th,
+.dark .ant-input-suffix > span {
   color: var(--white) !important;
 }
 

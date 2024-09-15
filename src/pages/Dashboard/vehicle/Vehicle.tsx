@@ -26,12 +26,11 @@ import Title from "antd/es/typography/Title";
 import { ReloadOutlined } from "@ant-design/icons";
 import DataTable from "../../../components/ui/DataTable";
 
-type UserFormValues = {
+type VehicleFormValues = {
   vNumber: string;
-  startRoute: string;
-  endRoute: string;
-  driverId: string;
+  routes: string;
   route?: string;
+  driverId: string;
   supervisorId: string;
 };
 
@@ -142,11 +141,11 @@ export const Vehicle = () => {
     setSearchTerm("");
   };
 
-  const createHandler: SubmitHandler<UserFormValues> = async (
-    data: UserFormValues
+  const createHandler: SubmitHandler<VehicleFormValues> = async (
+    data: VehicleFormValues
   ) => {
-    const { startRoute, endRoute, ...details } = data;
-    details.route = `${startRoute} - ${endRoute}`;
+    const { routes, ...details } = data;
+    details.route = routes[0];
     try {
       await createVehicle(details).unwrap();
       toast.success("Add vehicle successfully");
@@ -182,7 +181,7 @@ export const Vehicle = () => {
               <Col
                 className="gutter-row"
                 sm={24}
-                md={8}
+                md={12}
                 style={{
                   marginBottom: "15px",
                   paddingLeft: "0px",
@@ -200,7 +199,7 @@ export const Vehicle = () => {
               <Col
                 className="gutter-row"
                 sm={24}
-                md={8}
+                md={12}
                 style={{
                   marginBottom: "15px",
                   paddingLeft: "0px",
@@ -208,27 +207,9 @@ export const Vehicle = () => {
                 }}
               >
                 <FormSelectField
-                  name="startRoute"
-                  label="Start Route"
-                  options={routes as SelectOptions[]}
-                  size="middle"
-                  placeholder="Select"
-                  required
-                />
-              </Col>
-              <Col
-                className="gutter-row"
-                sm={24}
-                md={8}
-                style={{
-                  marginBottom: "15px",
-                  paddingLeft: "0px",
-                  width: "100%",
-                }}
-              >
-                <FormSelectField
-                  name="endRoute"
-                  label="End Route"
+                  name="routes"
+                  label="Route"
+                  mode="tags"
                   options={routes as SelectOptions[]}
                   size="middle"
                   placeholder="Select"

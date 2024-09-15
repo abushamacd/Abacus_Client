@@ -8,6 +8,7 @@ type SelectFieldProps = {
   options: SelectOptions[];
   name: string;
   required?: boolean;
+  mode?: "multiple" | "tags" | undefined;
   size?: "large" | "small" | "middle";
   value?: string | string[] | undefined;
   placeholder?: string;
@@ -25,6 +26,7 @@ const FormSelectField = ({
   label,
   defaultValue,
   required,
+  mode = undefined,
 }: SelectFieldProps) => {
   const {
     control,
@@ -53,13 +55,12 @@ const FormSelectField = ({
         name={name}
         render={({ field }) => (
           <Select
+            mode={mode}
             className="bg-bg text-mirage dark:bg-black dark:text-white focus-within:!border-primary hover:!border-primary disabled:text-mirage dark:disabled:text-white"
             options={options}
             size={size}
             placeholder={placeholder}
-            defaultValue={
-              defaultValue ? defaultValue : { label: "Select", value: "Select" }
-            }
+            defaultValue={defaultValue}
             style={{ width: "100%" }}
             {...field}
           />

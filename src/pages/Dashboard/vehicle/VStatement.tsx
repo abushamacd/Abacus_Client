@@ -2,7 +2,6 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import { Button, Card, Col, Row } from "antd";
 import Form from "../../../components/Forms/Forms";
-import FormInput from "../../../components/Forms/FormInput";
 import FormSelectField from "../../../components/Forms/FormSelectField";
 import { SubmitHandler } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -11,14 +10,22 @@ import { useGetVehicleRoutesQuery } from "../../../redux/api/vehicleRoute";
 import Loading from "../../../components/ui/Loading";
 import { SelectOptions } from "../../../types";
 import FormDatePicker from "../../../components/Forms/FormDatePicker";
+import { useGetVehiclesQuery } from "../../../redux/api/vehicle";
+import FormInput from "../../../components/Forms/FormInput";
+import FormTextArea from "../../../components/Forms/FormTextArea";
+import { useCreateVehicleStatementMutation } from "../../../redux/api/vehicleStatement";
+import { toast } from "react-toastify";
 
-type UserFormValues = {
-  vNumber: string;
-  startRoute: string;
-  endRoute: string;
-  driverId: string;
+type VStatementFormValues = {
+  vehicleId: string;
+  routes: string;
   route?: string;
-  supervisorId: string;
+  oil: number;
+  income: number;
+  expense: number;
+  welfare: number;
+  servicing: number;
+  comment: string;
 };
 
 export const VStatement = () => {
@@ -33,21 +40,31 @@ export const VStatement = () => {
     routes?.push({ label: route?.name, value: route?.name });
   });
 
-  const createHandler: SubmitHandler<UserFormValues> = async (
-    data: UserFormValues
+  const { data: vData, isLoading: vLoading } = useGetVehiclesQuery({});
+  // @ts-ignore
+  const allVehicles: any = vData?.vehicles;
+
+  const vehicles: any[] = [];
+  allVehicles?.forEach((vehicle: any) => {
+    vehicles?.push({ label: vehicle?.vNumber, value: vehicle?.id });
+  });
+
+  const [createVehicleStatement] = useCreateVehicleStatementMutation();
+
+  const createHandler: SubmitHandler<VStatementFormValues> = async (
+    data: VStatementFormValues
   ) => {
-    console.log(data);
-    // const { startRoute, endRoute, ...details } = data;
-    // details.route = `${startRoute} - ${endRoute}`;
-    // try {
-    //   await createVehicle(details).unwrap();
-    //   toast.success("Add vehicle successfully");
-    // } catch (err: any) {
-    //   toast.error(`${err.data?.message}`);
-    // }
+    const { routes, ...details } = data;
+    details.route = routes[0];
+    try {
+      await createVehicleStatement(details).unwrap();
+      toast.success("Add statement successfully");
+    } catch (err: any) {
+      toast.error(`${err.data?.message}`);
+    }
   };
 
-  if (vRoutesLoading) return <Loading />;
+  if (vRoutesLoading || vLoading) return <Loading />;
 
   return (
     <div>
@@ -70,47 +87,10 @@ export const VStatement = () => {
                   paddingLeft: "0px",
                 }}
               >
-                <FormInput
-                  name="vNumber"
-                  type="text"
-                  size="middle"
+                <FormSelectField
+                  name="vehicleId"
                   label="Vehicle No."
-                  required
-                />
-              </Col>
-              <Col
-                className="gutter-row"
-                sm={24}
-                md={8}
-                style={{
-                  marginBottom: "15px",
-                  paddingLeft: "0px",
-                  width: "100%",
-                }}
-              >
-                <FormSelectField
-                  name="startRoute"
-                  label="Start Route"
-                  options={routes as SelectOptions[]}
-                  size="middle"
-                  placeholder="Select"
-                  required
-                />
-              </Col>
-              <Col
-                className="gutter-row"
-                sm={24}
-                md={8}
-                style={{
-                  marginBottom: "15px",
-                  paddingLeft: "0px",
-                  width: "100%",
-                }}
-              >
-                <FormSelectField
-                  name="endRoute"
-                  label="End Route"
-                  options={routes as SelectOptions[]}
+                  options={vehicles as SelectOptions[]}
                   size="middle"
                   placeholder="Select"
                   required
@@ -131,6 +111,126 @@ export const VStatement = () => {
                   label="Trip Date"
                   size="middle"
                   required
+                />
+              </Col>
+              <Col
+                className="gutter-row"
+                sm={24}
+                md={8}
+                style={{
+                  marginBottom: "15px",
+                  paddingLeft: "0px",
+                  width: "100%",
+                }}
+              >
+                <FormSelectField
+                  name="routes"
+                  label="Route"
+                  mode="tags"
+                  options={routes as SelectOptions[]}
+                  size="middle"
+                  placeholder="Select"
+                  required
+                />
+              </Col>
+              <Col
+                className="gutter-row"
+                sm={24}
+                md={8}
+                style={{
+                  marginBottom: "15px",
+                  paddingLeft: "0px",
+                }}
+              >
+                <FormInput
+                  name="oil"
+                  type="number"
+                  size="middle"
+                  label="Oil (Litter)"
+                  required
+                />
+              </Col>
+              <Col
+                className="gutter-row"
+                sm={24}
+                md={8}
+                style={{
+                  marginBottom: "15px",
+                  paddingLeft: "0px",
+                }}
+              >
+                <FormInput
+                  name="income"
+                  type="number"
+                  size="middle"
+                  label="Income"
+                  required
+                />
+              </Col>
+              <Col
+                className="gutter-row"
+                sm={24}
+                md={8}
+                style={{
+                  marginBottom: "15px",
+                  paddingLeft: "0px",
+                }}
+              >
+                <FormInput
+                  name="expense"
+                  type="number"
+                  size="middle"
+                  label="Expense"
+                  required
+                />
+              </Col>
+              <Col
+                className="gutter-row"
+                sm={24}
+                md={12}
+                style={{
+                  marginBottom: "15px",
+                  paddingLeft: "0px",
+                }}
+              >
+                <FormInput
+                  name="welfare"
+                  type="number"
+                  size="middle"
+                  label="Welfare Cost"
+                  required
+                />
+              </Col>
+              <Col
+                className="gutter-row"
+                sm={24}
+                md={12}
+                style={{
+                  marginBottom: "15px",
+                  paddingLeft: "0px",
+                }}
+              >
+                <FormInput
+                  name="servicing"
+                  type="number"
+                  size="middle"
+                  label="Servicing Cost"
+                  required
+                />
+              </Col>
+              <Col
+                className="gutter-row"
+                sm={24}
+                md={24}
+                style={{
+                  marginBottom: "15px",
+                  paddingLeft: "0px",
+                }}
+              >
+                <FormTextArea
+                  name="comment"
+                  label="Details"
+                  placeholder="Note"
                 />
               </Col>
             </Row>
