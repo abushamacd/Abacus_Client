@@ -32,6 +32,14 @@ export const vehicleApi = baseApi.injectEndpoints({
       },
       providesTags: [tagTypes.vehicle],
     }),
+    // get vehicle
+    getVehicle: build.query({
+      query: (id: string | string[] | undefined) => ({
+        url: `/vehicle/${id}`,
+        method: "GET",
+      }),
+      providesTags: [tagTypes.vehicle],
+    }),
     // delete vehicle
     deleteVehicle: build.mutation({
       query: (id: string) => ({
@@ -46,5 +54,6 @@ export const vehicleApi = baseApi.injectEndpoints({
 export const {
   useCreateVehicleMutation,
   useGetVehiclesQuery,
+  useGetVehicleQuery,
   useDeleteVehicleMutation,
 } = vehicleApi;

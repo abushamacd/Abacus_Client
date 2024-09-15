@@ -12,6 +12,7 @@ import { VehiclesOverview } from "../pages/Dashboard/vehicle/Overview";
 import { Vehicle } from "../pages/Dashboard/vehicle/Vehicle";
 import { VehicleRoutes } from "../pages/Dashboard/vehicle/VehicleRoutes";
 import { VStatement } from "../pages/Dashboard/vehicle/VStatement";
+import { VehicleDetails } from "../pages/Dashboard/vehicle/VehicleDetails";
 
 const db_url = import.meta.env.VITE_REDIRECT_URL;
 
@@ -57,6 +58,10 @@ const routes = createBrowserRouter([
       {
         path: `/${db_url}/vehicles/`,
         element: <Vehicle />,
+      },
+      {
+        path: `/${db_url}/vehicles/:id`,
+        element: <VehicleDetails />,
       },
       {
         path: `/${db_url}/vehicle-routes/`,

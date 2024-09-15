@@ -25,6 +25,7 @@ import { MdDeleteForever } from "react-icons/md";
 import Title from "antd/es/typography/Title";
 import { ReloadOutlined } from "@ant-design/icons";
 import DataTable from "../../../components/ui/DataTable";
+import { useNavigate } from "react-router-dom";
 
 type VehicleFormValues = {
   vNumber: string;
@@ -110,7 +111,7 @@ export const Vehicle = () => {
           <div className="flex gap-2">
             <FaRegEye
               style={{ color: "#008A3F" }}
-              // onClick={() => openView(vehicle)}
+              onClick={() => openView(vehicle)}
               size={22}
             />
             <MdDeleteForever
@@ -139,6 +140,12 @@ export const Vehicle = () => {
     setSortBy("");
     setSortOrder("");
     setSearchTerm("");
+  };
+
+  const navigate = useNavigate();
+
+  const openView = (vehicle: any) => {
+    navigate(`${vehicle.id}`, { replace: true });
   };
 
   const createHandler: SubmitHandler<VehicleFormValues> = async (
