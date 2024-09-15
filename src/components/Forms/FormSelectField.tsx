@@ -1,14 +1,8 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Select } from "antd";
 import { useFormContext, Controller } from "react-hook-form";
 import { getErrorMessageByPropertyName } from "../../utils/schema-validator";
-
-export type SelectOptions = {
-  label: string;
-  value: string | boolean;
-};
+import { SelectOptions } from "../../types";
 
 type SelectFieldProps = {
   options: SelectOptions[];

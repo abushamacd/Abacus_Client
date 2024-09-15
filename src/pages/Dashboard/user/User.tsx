@@ -216,7 +216,7 @@ export const User = () => {
             <Row justify="start" align="middle">
               <Button
                 className="bg-primary hover:!bg-primary text-mirage !bg-opacity-[.8] duration-300 transition-all mt-4"
-                size="large"
+                size="middle"
                 htmlType="submit"
                 type="primary"
                 // block

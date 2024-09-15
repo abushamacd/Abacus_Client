@@ -11,3 +11,10 @@ export const addVehicleSchema = yup.object().shape({
 export const addRouteSchema = yup.object().shape({
   name: yup.string().required("Route name is required"),
 });
+
+export const addVStatementSchema = yup.object().shape({
+  vNumber: yup.string().required("Vehicle number is required"),
+  startRoute: yup.string().required("Start route is required"),
+  endRoute: yup.string().required("End route is required"),
+  date: yup.string().required("Please re-select the data to confirm"),
+});

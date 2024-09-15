@@ -140,7 +140,8 @@
 }
 
 .ant-table-column-sorter-up.active,
-.ant-table-column-sorter-down.active {
+.ant-table-column-sorter-down.active,
+.ant-picker-cell {
   color: var(--secondary) !important;
 }
 
@@ -195,13 +196,15 @@
 }
 
 .ant-pagination-item,
-.ant-select-selector {
+.ant-select-selector,
+.ant-picker-panel-layout {
   background-color: var(--bg);
 }
 
 .dark .ant-pagination-item,
 .dark .ant-select-selector,
-.dark .ant-select-dropdown {
+.dark .ant-select-dropdown,
+.dark .ant-picker-panel-layout {
   background-color: var(--bg_dark) !important;
 }
 
@@ -210,17 +213,34 @@
 .ant-pagination-options .ant-select-selector,
 .ant-pagination-options .ant-select-item,
 .ant-pagination-options .ant-select-arrow,
-.ant-spin-dot-holder {
+.ant-spin-dot-holder,
+.ant-picker-header > button,
+.ant-picker-footer a:hover,
+.ant-picker-header-view > button:hover {
   color: var(--primary) !important;
 }
 
 .ant-select-selector,
-.ant-select-item {
+.ant-select-item,
+.ant-picker-suffix,
+.ant-select-arrow,
+.ant-picker-clear,
+.ant-picker-header,
+.ant-picker-footer,
+.ant-picker-cell-in-view,
+.ant-picker-content th {
   color: var(--mirage) !important;
 }
 
 .dark .ant-select-selector,
-.dark .ant-select-item {
+.dark .ant-select-item,
+.dark .ant-picker-suffix,
+.dark .ant-select-arrow,
+.dark .ant-picker-clear,
+.dark .ant-picker-header,
+.dark .ant-picker-footer,
+.dark .ant-picker-cell-in-view,
+.dark .ant-picker-content th {
   color: var(--white) !important;
 }
 
@@ -229,17 +249,31 @@
 }
 
 .ant-pagination-item-active,
-.ant-select-selector {
+.ant-select-selector,
+.ant-picker-cell-inner::before,
+.ant-picker-header,
+.ant-picker-footer {
   border-color: var(--primary) !important;
 }
 
 .ant-select-item-option-active,
-.ant-select-item-option-selected {
+.ant-select-item-option-selected,
+.ant-picker-cell-hover > .ant-picker-cell-inner:hover {
   background-color: var(--secondary) !important;
 }
 
-.ant-select-dropdown {
+.ant-select-dropdown,
+.ant-picker-panel-layout {
   border: 1px solid var(--primary);
+}
+
+.ant-picker-panel-layout {
+  border-radius: 8px !important;
+}
+
+.ant-picker-cell-selected > .ant-picker-cell-inner,
+.ant-picker-cell-selected > .ant-picker-cell-inner:hover {
+  background-color: var(--primary) !important;
 }
 
 .rye {

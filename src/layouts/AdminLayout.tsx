@@ -113,7 +113,7 @@ export const AdminLayout = () => {
                 <Button
                   onClick={signout}
                   className="bg-primary hover:!bg-primary text-mirage !bg-opacity-[.8] duration-300 transition-all"
-                  size="large"
+                  size="middle"
                   htmlType="submit"
                   type="primary"
                   block
