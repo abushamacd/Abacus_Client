@@ -1,28 +1,118 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable no-extra-boolean-cast */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useParams } from "react-router-dom";
 import { useGetVehicleQuery } from "../../../redux/api/vehicle";
 import Loading from "../../../components/ui/Loading";
-import { Card, Col, Row } from "antd";
+import { Button, Card, Col, Input, Row } from "antd";
 import { useState } from "react";
 import { FaEdit } from "react-icons/fa";
-import { MdOutlineCancel } from "react-icons/md";
+import { MdDeleteForever, MdOutlineCancel } from "react-icons/md";
+import { useGetVehicleStatementsQuery } from "../../../redux/api/vehicleStatement";
+import { useDebounced } from "../../../redux/hooks";
+import Title from "antd/es/typography/Title";
+import { ReloadOutlined } from "@ant-design/icons";
+import DataTable from "../../../components/ui/DataTable";
+import { FiEdit } from "react-icons/fi";
 
 export const VehicleDetails = () => {
   const params = useParams();
   const [isEdit, setIsEdit] = useState(true);
-  const { data: vehicleData, isLoading: loading } = useGetVehicleQuery(
+  const { data: vehicleData, isLoading: vehicleLoading } = useGetVehicleQuery(
     params?.id
   );
-
-  if (loading) return <Loading />;
-
   const vehicle: any = vehicleData;
+
+  const query: Record<string, any> = {};
+  const [page, setPage] = useState<number>(1);
+  const [size, setSize] = useState<number>(10);
+  const [sortBy, setSortBy] = useState<string>("");
+  const [sortOrder, setSortOrder] = useState<string>("");
+  const [searchTerm, setSearchTerm] = useState<string>("");
+
+  query["limit"] = size;
+  query["page"] = page;
+  query["sortBy"] = sortBy;
+  query["sortOrder"] = sortOrder;
+
+  const debouncedTerm = useDebounced({
+    searchQuery: searchTerm,
+    delay: 600,
+  });
+
+  if (!!debouncedTerm) {
+    query["searchTerm"] = debouncedTerm;
+  }
+
+  const { data: vehicleStatementData, isLoading: vehicleStatementLoading } =
+    useGetVehicleStatementsQuery({ ...query });
+
+  // @ts-ignore
+  const vehicleStatements: any = vehicleStatementData?.vehicleStatements;
+  // @ts-ignore
+  const meta = vehicleStatementData?.meta;
+
+  console.log(vehicleStatementData);
+
   console.log(vehicle);
+
+  const columns = [
+    {
+      title: "Date",
+      dataIndex: "date",
+      sorter: true,
+    },
+    {
+      title: "Route",
+      dataIndex: "route",
+      sorter: true,
+    },
+    {
+      title: "Action",
+      render: function (vehicleRoute: any) {
+        return (
+          <div className="flex gap-2">
+            <FiEdit
+              style={{ color: "#008A3F" }}
+              // onClick={() => openEdit(vehicleRoute)}
+              size={22}
+            />
+            <MdDeleteForever
+              // onClick={() => deleteHandler(vehicleRoute?.id)}
+              size={22}
+              style={{ color: "#D92728" }}
+            />
+          </div>
+        );
+      },
+    },
+  ];
+
+  const onPaginationChange = (page: number, pageSize: number) => {
+    setPage(page);
+    setSize(pageSize);
+  };
+  // @ts-ignore
+  const onTableChange = (pagination: any, filter: any, sorter: any) => {
+    const { order, field } = sorter;
+    setSortBy(field as string);
+    setSortOrder(order === "ascend" ? "asc" : "desc");
+  };
+
+  const resetFilters = () => {
+    setSortBy("");
+    setSortOrder("");
+    setSearchTerm("");
+  };
+
   const fullDate = new Date().toLocaleString("en-US", {
     year: "numeric",
     month: "short",
     day: "numeric",
   });
+
+  if (vehicleLoading || vehicleStatementLoading) return <Loading />;
 
   return (
     <div>
@@ -33,7 +123,7 @@ export const VehicleDetails = () => {
         </h1>
         <Card
           title={
-            <div className="flex gap-2 items-center">
+            <div className="flex gap-1 items-center">
               <span className="">Vehicle Details</span>
               <span onClick={() => setIsEdit(!isEdit)} className="">
                 {isEdit ? (
@@ -112,7 +202,7 @@ export const VehicleDetails = () => {
             </Col>
           </Row>
           <div className="income_statement mt-4">
-            <div className="border-t border-secondary text-center">
+            <div className="border-t border-secondary text-center py-4">
               <h1 className="mb-1 text-lg text-primary ">Income Statement</h1>
               <span className="">{fullDate} (Total) </span>
             </div>
@@ -120,74 +210,74 @@ export const VehicleDetails = () => {
               <table className="md:min-w-full w-[500px] table-auto border-separate">
                 <thead>
                   <tr className="bg-secondary">
-                    <th className="text-left p-3 w-[60%]">Particulers</th>
-                    <th className="text-right p-3 w-[20%]">Amount (BDT) </th>
-                    <th className="text-right p-3 w-[20%]">Amount (BDT) </th>
+                    <th className="text-left p-1 w-[60%]">Particulers</th>
+                    <th className="text-right p-1 w-[20%]">Amount (BDT) </th>
+                    <th className="text-right p-1 w-[20%]">Amount (BDT) </th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr className="hover:bg-secondary duration-300">
-                    <td className="p-3 underline">Income</td>
-                    <td className="p-3"></td>
-                    <td className="p-3"></td>
+                    <td className="p-1 underline">Income</td>
+                    <td className="p-1"></td>
+                    <td className="p-1"></td>
                   </tr>
                   <tr className="hover:bg-secondary duration-300">
-                    <td className="p-3 pl-6">Revenue</td>
-                    <td className="p-3 text-right">{vehicle?.income}</td>
-                    <td className="p-3 text-right"></td>
+                    <td className="p-1 pl-6">Revenue</td>
+                    <td className="p-1 text-right">{vehicle?.income}</td>
+                    <td className="p-1 text-right"></td>
                   </tr>
                   <tr className="hover:bg-secondary duration-300">
-                    <td className="p-3 pl-6">Welfare</td>
-                    <td className="p-3 text-right">{vehicle?.welfare}</td>
-                    <td className="p-3"></td>
+                    <td className="p-1 pl-6">Welfare</td>
+                    <td className="p-1 text-right">{vehicle?.welfare}</td>
+                    <td className="p-1"></td>
                   </tr>
                   <tr className="hover:bg-secondary duration-300 text-primary">
-                    <td className="p-3 text-right">Total Income = </td>
-                    <td className="p-3 text-right">-------------</td>
-                    <td className="p-3 text-right ">
+                    <td className="p-1 text-right">Total Income = </td>
+                    <td className="p-1 text-right">-------------</td>
+                    <td className="p-1 text-right ">
                       {vehicle?.income + vehicle?.welfare}
                     </td>
                   </tr>
                   <tr className="hover:bg-secondary duration-300">
-                    <td className="p-3 underline">Expense</td>
-                    <td className="p-3"></td>
-                    <td className="p-3"></td>
+                    <td className="p-1 underline">Expense</td>
+                    <td className="p-1"></td>
+                    <td className="p-1"></td>
                   </tr>
                   <tr className="hover:bg-secondary duration-300">
-                    <td className="p-3 pl-6">Oil and Staff Cost</td>
-                    <td className="p-3 text-right">{vehicle?.expense}</td>
-                    <td className="p-3 text-right"></td>
+                    <td className="p-1 pl-6">Oil and Staff Cost</td>
+                    <td className="p-1 text-right">{vehicle?.expense}</td>
+                    <td className="p-1 text-right"></td>
                   </tr>
                   <tr className="hover:bg-secondary duration-300">
-                    <td className="p-3 pl-6">Servicing</td>
-                    <td className="p-3 text-right">{vehicle?.servicing}</td>
-                    <td className="p-3"></td>
+                    <td className="p-1 pl-6">Servicing</td>
+                    <td className="p-1 text-right">{vehicle?.servicing}</td>
+                    <td className="p-1"></td>
                   </tr>
                   <tr className="hover:bg-secondary duration-300 text-primary">
-                    <td className="p-3 text-right">Total Expense = </td>
-                    <td className="p-3 text-right">-------------</td>
-                    <td className="p-3 text-right ">
+                    <td className="p-1 text-right">Total Expense = </td>
+                    <td className="p-1 text-right">-------------</td>
+                    <td className="p-1 text-right ">
                       {vehicle?.expense + vehicle?.servicing}
                     </td>
                   </tr>
                   <tr className="hover:bg-secondary duration-300 text-primary">
-                    <td className="p-3 text-right"></td>
-                    <td className="p-3 text-right"></td>
-                    <td className="p-3 text-right">-------------</td>
+                    <td className="p-1 text-right"></td>
+                    <td className="p-1 text-right"></td>
+                    <td className="p-1 text-right">-------------</td>
                   </tr>
                   <tr className="hover:bg-secondary duration-300 text-primary">
-                    <td className="p-3 text-right">Total Profit/Loss = </td>
-                    <td className="p-3 text-right">-------------</td>
-                    <td className="p-3 text-right">
+                    <td className="p-1 text-right">Net Profit/Loss = </td>
+                    <td className="p-1 text-right">-------------</td>
+                    <td className="p-1 text-right">
                       {vehicle?.income +
                         vehicle?.welfare -
                         (vehicle?.expense + vehicle?.servicing)}
                     </td>
                   </tr>
                   <tr className="hover:bg-secondary duration-300 text-primary">
-                    <td className="p-3 text-right"></td>
-                    <td className="p-3 text-right"></td>
-                    <td className="p-3 text-right">=============</td>
+                    <td className="p-1 text-right"></td>
+                    <td className="p-1 text-right"></td>
+                    <td className="p-1 text-right">=============</td>
                   </tr>
                 </tbody>
               </table>
@@ -195,6 +285,55 @@ export const VehicleDetails = () => {
           </div>
         </Card>
       </section>
+      {/* Statement */}
+      <div className="dark:bg-bg_dark bg-white p-4 rounded-md mt-5">
+        <div className="">
+          <div className="w-full dark:bg-bg_dark bg-white py-5 rounded-md md:mb-0 mb-5 flex md:flex-row flex-col justify-between md:items-center items-start">
+            <Title
+              className="text-mirage dark:text-white !font-medium"
+              level={4}
+            >
+              Statements
+            </Title>
+            <div className="mb-5 flex items-center">
+              <Input
+                type="text"
+                size="middle"
+                className="bg-white text-mirage placeholder:text-mirage dark:placeholder:text-white dark:bg-black dark:text-white focus-within:!border-primary hover:!border-primary"
+                placeholder="Search..."
+                onChange={(e) => {
+                  setSearchTerm(e.target.value);
+                }}
+              />
+              <div>
+                {(!!sortBy || !!sortOrder || !!searchTerm) && (
+                  <Button
+                    onClick={resetFilters}
+                    className="bg-primary hover:!bg-primary text-mirage !bg-opacity-[.8] duration-300 transition-all ml-4"
+                    size="middle"
+                    htmlType="submit"
+                    type="primary"
+                    // block
+                  >
+                    <ReloadOutlined />
+                  </Button>
+                )}
+              </div>
+            </div>
+          </div>
+          <DataTable
+            loading={vehicleStatementLoading}
+            columns={columns}
+            dataSource={vehicleStatements}
+            pageSize={size}
+            totalPages={meta?.total}
+            showSizeChanger={true}
+            onPaginationChange={onPaginationChange}
+            onTableChange={onTableChange}
+            showPagination={true}
+          />
+        </div>
+      </div>
     </div>
   );
 };

@@ -284,7 +284,7 @@ export const Vehicle = () => {
               className="text-mirage dark:text-white !font-medium"
               level={4}
             >
-              All Users
+              All Vehicles
             </Title>
             <div className="mb-5 flex items-center">
               <Input

@@ -1,4 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { IMeta } from "../../types";
+import { IVehicleStatement } from "../../types/vehicleStatement";
 import { tagTypes } from "../tag-types";
 import { baseApi } from "./baseApi";
 
@@ -13,7 +15,27 @@ export const vehicleStatementApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: [tagTypes.vStatement],
     }),
+    // get all
+    getVehicleStatements: build.query({
+      query: (arg: Record<string, any>) => {
+        return {
+          url: "/vehicleStatement",
+          method: "GET",
+          params: arg,
+        };
+      },
+      transformResponse: (response: IVehicleStatement[], meta: IMeta) => {
+        return {
+          vehicleStatements: response,
+          meta,
+        };
+      },
+      providesTags: [tagTypes.vStatement],
+    }),
   }),
 });
 
-export const { useCreateVehicleStatementMutation } = vehicleStatementApi;
+export const {
+  useCreateVehicleStatementMutation,
+  useGetVehicleStatementsQuery,
+} = vehicleStatementApi;
