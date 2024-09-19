@@ -32,10 +32,19 @@ export const vehicleStatementApi = baseApi.injectEndpoints({
       },
       providesTags: [tagTypes.vStatement],
     }),
+    // delete
+    deleteVehicleStatement: build.mutation({
+      query: (id: string) => ({
+        url: `/vehicleStatement/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: [tagTypes.vStatement],
+    }),
   }),
 });
 
 export const {
   useCreateVehicleStatementMutation,
   useGetVehicleStatementsQuery,
+  useDeleteVehicleStatementMutation,
 } = vehicleStatementApi;

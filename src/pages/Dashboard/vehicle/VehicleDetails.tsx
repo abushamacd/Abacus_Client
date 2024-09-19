@@ -9,12 +9,16 @@ import { Button, Card, Col, Input, Row } from "antd";
 import { useState } from "react";
 import { FaEdit } from "react-icons/fa";
 import { MdDeleteForever, MdOutlineCancel } from "react-icons/md";
-import { useGetVehicleStatementsQuery } from "../../../redux/api/vehicleStatement";
+import {
+  useDeleteVehicleStatementMutation,
+  useGetVehicleStatementsQuery,
+} from "../../../redux/api/vehicleStatement";
 import { useDebounced } from "../../../redux/hooks";
 import Title from "antd/es/typography/Title";
 import { ReloadOutlined } from "@ant-design/icons";
 import DataTable from "../../../components/ui/DataTable";
 import { FiEdit } from "react-icons/fi";
+import { toast } from "react-toastify";
 
 export const VehicleDetails = () => {
   const params = useParams();
@@ -54,14 +58,12 @@ export const VehicleDetails = () => {
   const { data: vehicleStatementData, isLoading: vehicleStatementLoading } =
     useGetVehicleStatementsQuery({ ...query });
 
+  const [deleteVehicleStatement] = useDeleteVehicleStatementMutation();
+
   // @ts-ignore
   const vehicleStatements: any = vehicleStatementData?.vehicleStatements;
   // @ts-ignore
   const meta = vehicleStatementData?.meta;
-
-  console.log(vehicleStatements?.[0]);
-
-  // console.log(vehicle);
 
   const queryIncome = vehicleStatements?.reduce(
     (sum: any, record: { income: any }) => sum + record.income,
@@ -83,10 +85,14 @@ export const VehicleDetails = () => {
   const queryNetProfitLoss =
     queryIncome + queryWelfare - (queryExpense + queryServicing);
 
-  console.log("Total Income:", queryIncome);
-  console.log("Total Expense:", queryExpense);
-  console.log("Total Welfare:", queryWelfare);
-  console.log("Total Servicing:", queryServicing);
+  const deleteHandler = async (id: string) => {
+    try {
+      await deleteVehicleStatement(id).unwrap();
+      toast("Statement deleted successfully");
+    } catch (err: any) {
+      toast.error(`${err.data?.message}`);
+    }
+  };
 
   const columns = [
     {
@@ -128,16 +134,16 @@ export const VehicleDetails = () => {
     },
     {
       title: "Action",
-      render: function (vehicleRoute: any) {
+      render: function (VehicleStatement: any) {
         return (
           <div className="flex gap-2">
             <FiEdit
               style={{ color: "#008A3F" }}
-              // onClick={() => openEdit(vehicleRoute)}
+              // onClick={() => openEdit(VehicleStatement)}
               size={22}
             />
             <MdDeleteForever
-              // onClick={() => deleteHandler(vehicleRoute?.id)}
+              onClick={() => deleteHandler(VehicleStatement?.id)}
               size={22}
               style={{ color: "#D92728" }}
             />
