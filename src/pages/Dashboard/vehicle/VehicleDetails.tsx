@@ -1,9 +1,13 @@
+/* eslint-disable no-constant-binary-expression */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable no-extra-boolean-cast */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useParams } from "react-router-dom";
-import { useGetVehicleQuery } from "../../../redux/api/vehicle";
+import {
+  useGetVehicleQuery,
+  useUpdateVehicleMutation,
+} from "../../../redux/api/vehicle";
 import Loading from "../../../components/ui/Loading";
 import { Button, Card, Col, Input, Row } from "antd";
 import { useState } from "react";
@@ -19,6 +23,23 @@ import { ReloadOutlined } from "@ant-design/icons";
 import DataTable from "../../../components/ui/DataTable";
 import { FiEdit } from "react-icons/fi";
 import { toast } from "react-toastify";
+import Form from "../../../components/Forms/Forms";
+import { SubmitHandler } from "react-hook-form";
+import FormInput from "../../../components/Forms/FormInput";
+import { SelectOptions } from "../../../types";
+import FormSelectField from "../../../components/Forms/FormSelectField";
+import { useGetVehicleRoutesQuery } from "../../../redux/api/vehicleRoute";
+import { useGetUsersQuery } from "../../../redux/api/userApi";
+import FormTextArea from "../../../components/Forms/FormTextArea";
+
+type VehicleFormValues = {
+  vNumber: string;
+  routes: string;
+  route?: string;
+  driverId: string;
+  supervisorId: string;
+  comment: string;
+};
 
 export const VehicleDetails = () => {
   const params = useParams();
@@ -28,6 +49,38 @@ export const VehicleDetails = () => {
   );
   const vehicle: any = vehicleData;
 
+  const { data: vRoutes, isLoading: vRoutesLoading } = useGetVehicleRoutesQuery(
+    {}
+  );
+
+  const { data: users, isLoading: staffsLoading } = useGetUsersQuery({
+    role: "Staff",
+  });
+
+  // @ts-ignore
+  const vehicleRoutes: any = vRoutes?.vehicleRoutes;
+  // @ts-ignore
+  const allStaff: any = users?.users;
+
+  const routes: any[] = [];
+  vehicleRoutes?.forEach((route: any) => {
+    routes?.push({ label: route?.name, value: route?.name });
+  });
+
+  const staffs: any[] = [];
+  allStaff?.forEach((staff: any) => {
+    staffs?.push({ label: staff?.name, value: staff?.id });
+  });
+
+  const defaultValues = {
+    vNumber: vehicle?.vNumber || "",
+    route: vehicle?.route || "",
+    runningRoute: vehicle?.runningRoute || "",
+    driverId: vehicle?.driverId || "",
+    supervisorId: vehicle?.supervisorId || "",
+    comment: vehicle?.comment || "",
+  };
+
   // total calculation
   const totalIncome = vehicle?.income + vehicle?.welfare;
   const totalExpense = vehicle?.expense + vehicle?.servicing;
@@ -35,7 +88,7 @@ export const VehicleDetails = () => {
 
   const query: Record<string, any> = {};
   const [page, setPage] = useState<number>(1);
-  const [size, setSize] = useState<number>(10);
+  const [size, setSize] = useState<number>(50);
   const [sortBy, setSortBy] = useState<string>("");
   const [sortOrder, setSortOrder] = useState<string>("");
   const [searchTerm, setSearchTerm] = useState<string>("");
@@ -60,10 +113,14 @@ export const VehicleDetails = () => {
 
   const [deleteVehicleStatement] = useDeleteVehicleStatementMutation();
 
+  const [updateVehicle] = useUpdateVehicleMutation();
+
   // @ts-ignore
   const vehicleStatements: any = vehicleStatementData?.vehicleStatements;
   // @ts-ignore
   const meta = vehicleStatementData?.meta;
+
+  console.log(vehicleStatements);
 
   const queryIncome = vehicleStatements?.reduce(
     (sum: any, record: { income: any }) => sum + record.income,
@@ -81,6 +138,10 @@ export const VehicleDetails = () => {
     (sum: any, record: { servicing: any }) => sum + record.servicing,
     0
   );
+  const queryOil = vehicleStatements?.reduce(
+    (sum: any, record: { oil: any }) => sum + record.oil,
+    0
+  );
 
   const queryNetProfitLoss =
     queryIncome + queryWelfare - (queryExpense + queryServicing);
@@ -89,6 +150,20 @@ export const VehicleDetails = () => {
     try {
       await deleteVehicleStatement(id).unwrap();
       toast("Statement deleted successfully");
+    } catch (err: any) {
+      toast.error(`${err.data?.message}`);
+    }
+  };
+
+  const updateHandler: SubmitHandler<VehicleFormValues> = async (
+    data: VehicleFormValues
+  ) => {
+    try {
+      await updateVehicle({
+        id: params?.id,
+        body: data,
+      }).unwrap();
+      toast("Vehicle updated successfully");
     } catch (err: any) {
       toast.error(`${err.data?.message}`);
     }
@@ -112,7 +187,7 @@ export const VehicleDetails = () => {
       sorter: true,
     },
     {
-      title: "Oil (Litre) ",
+      title: `Oil (${queryOil} Litre) `,
       dataIndex: "oil",
       sorter: true,
     },
@@ -170,7 +245,7 @@ export const VehicleDetails = () => {
     setSearchTerm("");
   };
 
-  const fullDate = new Date().toLocaleString("en-US", {
+  const fullDate = new Date().toLocaleString("en-UK", {
     year: "numeric",
     month: "short",
     day: "numeric",
@@ -264,7 +339,152 @@ export const VehicleDetails = () => {
                 <span className="italic">{vehicle?.supervisor?.phone}</span>
               </span>
             </Col>
+            {vehicle?.comment && (
+              <Col
+                className="gutter-row"
+                sm={24}
+                md={24}
+                style={{
+                  marginBottom: "15px",
+                  paddingLeft: "0px",
+                }}
+              >
+                <h1 className="mb-1 text-lg text-primary border-b border-secondary">
+                  Details
+                </h1>
+                <span className="tracking-wide block">
+                  <span className="italic">{vehicle?.comment}</span>
+                </span>
+              </Col>
+            )}
           </Row>
+
+          {!isEdit && (
+            <div className="edit_details border-t border-secondary mt-4 pt-4">
+              <Form submitHandler={updateHandler} defaultValues={defaultValues}>
+                <Row
+                  className="!mx-0"
+                  gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}
+                >
+                  <Col
+                    className="gutter-row"
+                    sm={24}
+                    md={8}
+                    style={{
+                      marginBottom: "15px",
+                      paddingLeft: "0px",
+                    }}
+                  >
+                    <FormInput
+                      name="vNumber"
+                      type="text"
+                      size="middle"
+                      label="Vehicle No."
+                      placeholder="2131"
+                    />
+                  </Col>
+                  <Col
+                    className="gutter-row"
+                    sm={24}
+                    md={8}
+                    style={{
+                      marginBottom: "15px",
+                      paddingLeft: "0px",
+                      width: "100%",
+                    }}
+                  >
+                    <FormSelectField
+                      name="route"
+                      label="Route"
+                      options={routes as SelectOptions[]}
+                      size="middle"
+                      placeholder="Select"
+                    />
+                  </Col>
+                  <Col
+                    className="gutter-row"
+                    sm={24}
+                    md={8}
+                    style={{
+                      marginBottom: "15px",
+                      paddingLeft: "0px",
+                      width: "100%",
+                    }}
+                  >
+                    <FormSelectField
+                      name="runningRoute"
+                      label="Running Route"
+                      options={routes as SelectOptions[]}
+                      size="middle"
+                      placeholder="Select"
+                    />
+                  </Col>
+                  <Col
+                    className="gutter-row"
+                    sm={24}
+                    md={12}
+                    style={{
+                      marginBottom: "15px",
+                      paddingLeft: "0px",
+                      width: "100%",
+                    }}
+                  >
+                    <FormSelectField
+                      name="driverId"
+                      label="Driver"
+                      options={staffs as SelectOptions[]}
+                      size="middle"
+                      placeholder="Select"
+                    />
+                  </Col>
+                  <Col
+                    className="gutter-row"
+                    sm={24}
+                    md={12}
+                    style={{
+                      marginBottom: "15px",
+                      paddingLeft: "0px",
+                      width: "100%",
+                    }}
+                  >
+                    <FormSelectField
+                      name="supervisorId"
+                      label="Supervisor"
+                      options={staffs as SelectOptions[]}
+                      size="middle"
+                      placeholder="Select"
+                    />
+                  </Col>
+                  <Col
+                    className="gutter-row"
+                    sm={24}
+                    md={24}
+                    style={{
+                      marginBottom: "15px",
+                      paddingLeft: "0px",
+                      width: "100%",
+                    }}
+                  >
+                    <FormTextArea
+                      name="comment"
+                      label="Details"
+                      placeholder="Note"
+                    />
+                  </Col>
+                </Row>
+                <Row justify="start" align="middle">
+                  <Button
+                    className="bg-primary hover:!bg-primary text-mirage !bg-opacity-[.8] duration-300 transition-all mt-4"
+                    size="middle"
+                    htmlType="submit"
+                    type="primary"
+                  >
+                    Update
+                  </Button>
+                </Row>
+              </Form>
+            </div>
+          )}
         </Card>
       </section>
       {/* Total income statement */}
