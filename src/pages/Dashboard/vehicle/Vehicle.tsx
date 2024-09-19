@@ -286,7 +286,7 @@ export const Vehicle = () => {
             >
               All Vehicles
             </Title>
-            <div className="mb-5 flex items-center">
+            <div className="flex items-center">
               <Input
                 type="text"
                 size="middle"

@@ -238,7 +238,7 @@ export const User = () => {
             >
               All Users
             </Title>
-            <div className="mb-5 flex items-center">
+            <div className="flex items-center">
               <Input
                 type="text"
                 size="middle"
