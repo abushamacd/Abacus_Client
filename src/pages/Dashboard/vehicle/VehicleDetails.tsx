@@ -24,6 +24,11 @@ export const VehicleDetails = () => {
   );
   const vehicle: any = vehicleData;
 
+  // total calculation
+  const totalIncome = vehicle?.income + vehicle?.welfare;
+  const totalExpense = vehicle?.expense + vehicle?.servicing;
+  const netProfitLoss = totalIncome - totalExpense;
+
   const query: Record<string, any> = {};
   const [page, setPage] = useState<number>(1);
   const [size, setSize] = useState<number>(10);
@@ -31,6 +36,7 @@ export const VehicleDetails = () => {
   const [sortOrder, setSortOrder] = useState<string>("");
   const [searchTerm, setSearchTerm] = useState<string>("");
 
+  query["vehicleId"] = params?.id;
   query["limit"] = size;
   query["page"] = page;
   query["sortBy"] = sortBy;
@@ -53,20 +59,69 @@ export const VehicleDetails = () => {
   // @ts-ignore
   const meta = vehicleStatementData?.meta;
 
-  console.log(vehicleStatementData);
+  console.log(vehicleStatements?.[0]);
 
-  console.log(vehicle);
+  // console.log(vehicle);
+
+  const queryIncome = vehicleStatements?.reduce(
+    (sum: any, record: { income: any }) => sum + record.income,
+    0
+  );
+  const queryExpense = vehicleStatements?.reduce(
+    (sum: any, record: { expense: any }) => sum + record.expense,
+    0
+  );
+  const queryWelfare = vehicleStatements?.reduce(
+    (sum: any, record: { welfare: any }) => sum + record.welfare,
+    0
+  );
+  const queryServicing = vehicleStatements?.reduce(
+    (sum: any, record: { servicing: any }) => sum + record.servicing,
+    0
+  );
+
+  console.log("Total Income:", queryIncome);
+  console.log("Total Expense:", queryExpense);
+  console.log("Total Welfare:", queryWelfare);
+  console.log("Total Servicing:", queryServicing);
 
   const columns = [
     {
       title: "Date",
       dataIndex: "date",
       sorter: true,
+      render: function (statement: string) {
+        const dateArray = statement.split(" ");
+        return (
+          <span className="">{`${dateArray[1]} ${dateArray[2]} ${dateArray[3]}`}</span>
+        );
+      },
     },
     {
       title: "Route",
       dataIndex: "route",
       sorter: true,
+    },
+    {
+      title: "Oil (Liter) ",
+      dataIndex: "oil",
+      sorter: true,
+    },
+    {
+      title: "Profit/Loss",
+      render: function (statement: any) {
+        const profitLoss =
+          statement?.income +
+          statement?.welfare -
+          (statement?.expense + statement?.servicing);
+        return (
+          <span
+            className={`${profitLoss > 0 ? "text-primary" : "text-[#D31818]"}`}
+          >
+            {profitLoss}
+          </span>
+        );
+      },
     },
     {
       title: "Action",
@@ -201,8 +256,13 @@ export const VehicleDetails = () => {
               </span>
             </Col>
           </Row>
-          <div className="income_statement mt-4">
-            <div className="border-t border-secondary text-center py-4">
+        </Card>
+      </section>
+      {/* Total income statement */}
+      <div className="dark:bg-bg_dark bg-white p-4 mt-5">
+        <div className=" p-4 rounded-md  text-mirage dark:text-white !border-secondary border-2">
+          <div className="income_statement">
+            <div className="text-center py-4">
               <h1 className="mb-1 text-lg text-primary ">Income Statement</h1>
               <span className="">{fullDate} (Total) </span>
             </div>
@@ -234,9 +294,7 @@ export const VehicleDetails = () => {
                   <tr className="hover:bg-secondary duration-300 text-primary">
                     <td className="p-1 text-right">Total Income = </td>
                     <td className="p-1 text-right">-------------</td>
-                    <td className="p-1 text-right ">
-                      {vehicle?.income + vehicle?.welfare}
-                    </td>
+                    <td className="p-1 text-right ">{totalIncome}</td>
                   </tr>
                   <tr className="hover:bg-secondary duration-300">
                     <td className="p-1 underline">Expense</td>
@@ -256,25 +314,27 @@ export const VehicleDetails = () => {
                   <tr className="hover:bg-secondary duration-300 text-primary">
                     <td className="p-1 text-right">Total Expense = </td>
                     <td className="p-1 text-right">-------------</td>
-                    <td className="p-1 text-right ">
-                      {vehicle?.expense + vehicle?.servicing}
-                    </td>
+                    <td className="p-1 text-right ">{totalExpense}</td>
                   </tr>
                   <tr className="hover:bg-secondary duration-300 text-primary">
                     <td className="p-1 text-right"></td>
                     <td className="p-1 text-right"></td>
                     <td className="p-1 text-right">-------------</td>
                   </tr>
-                  <tr className="hover:bg-secondary duration-300 text-primary">
+                  <tr
+                    className={`hover:bg-secondary duration-300 ${
+                      netProfitLoss > 0 ? "text-primary" : "text-[#D31818]"
+                    }`}
+                  >
                     <td className="p-1 text-right">Net Profit/Loss = </td>
                     <td className="p-1 text-right">-------------</td>
-                    <td className="p-1 text-right">
-                      {vehicle?.income +
-                        vehicle?.welfare -
-                        (vehicle?.expense + vehicle?.servicing)}
-                    </td>
+                    <td className="p-1 text-right">{netProfitLoss}</td>
                   </tr>
-                  <tr className="hover:bg-secondary duration-300 text-primary">
+                  <tr
+                    className={`hover:bg-secondary duration-300 ${
+                      netProfitLoss > 0 ? "text-primary" : "text-[#D31818]"
+                    }`}
+                  >
                     <td className="p-1 text-right"></td>
                     <td className="p-1 text-right"></td>
                     <td className="p-1 text-right">=============</td>
@@ -283,8 +343,96 @@ export const VehicleDetails = () => {
               </table>
             </div>
           </div>
-        </Card>
-      </section>
+        </div>
+      </div>
+      {/* Query income statement */}
+      <div className="dark:bg-bg_dark bg-white p-4 mt-5">
+        <div className=" p-4 rounded-md  text-mirage dark:text-white !border-secondary border-2">
+          <div className="income_statement">
+            <div className="text-center py-4">
+              <h1 className="mb-1 text-lg text-primary ">Income Statement</h1>
+              <span className="">{fullDate} (Query) </span>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="md:min-w-full w-[500px] table-auto border-separate">
+                <thead>
+                  <tr className="bg-secondary">
+                    <th className="text-left p-1 w-[60%]">Particulers</th>
+                    <th className="text-right p-1 w-[20%]">Amount (BDT) </th>
+                    <th className="text-right p-1 w-[20%]">Amount (BDT) </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr className="hover:bg-secondary duration-300">
+                    <td className="p-1 underline">Income</td>
+                    <td className="p-1"></td>
+                    <td className="p-1"></td>
+                  </tr>
+                  <tr className="hover:bg-secondary duration-300">
+                    <td className="p-1 pl-6">Revenue</td>
+                    <td className="p-1 text-right">{vehicle?.income}</td>
+                    <td className="p-1 text-right"></td>
+                  </tr>
+                  <tr className="hover:bg-secondary duration-300">
+                    <td className="p-1 pl-6">Welfare</td>
+                    <td className="p-1 text-right">{vehicle?.welfare}</td>
+                    <td className="p-1"></td>
+                  </tr>
+                  <tr className="hover:bg-secondary duration-300 text-primary">
+                    <td className="p-1 text-right">Total Income = </td>
+                    <td className="p-1 text-right">-------------</td>
+                    <td className="p-1 text-right ">{totalIncome}</td>
+                  </tr>
+                  <tr className="hover:bg-secondary duration-300">
+                    <td className="p-1 underline">Expense</td>
+                    <td className="p-1"></td>
+                    <td className="p-1"></td>
+                  </tr>
+                  <tr className="hover:bg-secondary duration-300">
+                    <td className="p-1 pl-6">Oil and Staff Cost</td>
+                    <td className="p-1 text-right">{vehicle?.expense}</td>
+                    <td className="p-1 text-right"></td>
+                  </tr>
+                  <tr className="hover:bg-secondary duration-300">
+                    <td className="p-1 pl-6">Servicing</td>
+                    <td className="p-1 text-right">{vehicle?.servicing}</td>
+                    <td className="p-1"></td>
+                  </tr>
+                  <tr className="hover:bg-secondary duration-300 text-primary">
+                    <td className="p-1 text-right">Total Expense = </td>
+                    <td className="p-1 text-right">-------------</td>
+                    <td className="p-1 text-right ">{totalExpense}</td>
+                  </tr>
+                  <tr className="hover:bg-secondary duration-300 text-primary">
+                    <td className="p-1 text-right"></td>
+                    <td className="p-1 text-right"></td>
+                    <td className="p-1 text-right">-------------</td>
+                  </tr>
+                  <tr
+                    className={`hover:bg-secondary duration-300 ${
+                      netProfitLoss > 0 ? "text-primary" : "text-[#D31818]"
+                    }`}
+                  >
+                    <td className="p-1 text-right">Net Profit/Loss = </td>
+                    <td className="p-1 text-right">-------------</td>
+                    <td className="p-1 text-right">{netProfitLoss}</td>
+                  </tr>
+                  <tr
+                    className={`hover:bg-secondary duration-300 ${
+                      netProfitLoss > 0 ? "text-primary" : "text-[#D31818]"
+                    }`}
+                  >
+                    <td className="p-1 text-right"></td>
+                    <td className="p-1 text-right"></td>
+                    <td className="p-1 text-right">=============</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Statement */}
       <div className="dark:bg-bg_dark bg-white p-4 rounded-md mt-5">
         <div className="">
