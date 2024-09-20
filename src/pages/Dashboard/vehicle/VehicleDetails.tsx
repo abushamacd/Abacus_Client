@@ -1,6 +1,4 @@
-/* eslint-disable no-constant-binary-expression */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable no-extra-boolean-cast */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useParams } from "react-router-dom";
@@ -9,15 +7,20 @@ import {
   useUpdateVehicleMutation,
 } from "../../../redux/api/vehicle";
 import Loading from "../../../components/ui/Loading";
-import { Button, Card, Col, Input, Row } from "antd";
+import { Button, Card, Col, Input, Modal, Row } from "antd";
 import { useState } from "react";
 import { FaEdit } from "react-icons/fa";
 import { MdDeleteForever, MdOutlineCancel } from "react-icons/md";
 import {
   useDeleteVehicleStatementMutation,
   useGetVehicleStatementsQuery,
+  useUpdateVehicleStatementMutation,
 } from "../../../redux/api/vehicleStatement";
-import { useDebounced } from "../../../redux/hooks";
+import {
+  useAppDispatch,
+  useAppSelector,
+  useDebounced,
+} from "../../../redux/hooks";
 import Title from "antd/es/typography/Title";
 import { ReloadOutlined } from "@ant-design/icons";
 import DataTable from "../../../components/ui/DataTable";
@@ -31,6 +34,8 @@ import FormSelectField from "../../../components/Forms/FormSelectField";
 import { useGetVehicleRoutesQuery } from "../../../redux/api/vehicleRoute";
 import { useGetUsersQuery } from "../../../redux/api/userApi";
 import FormTextArea from "../../../components/Forms/FormTextArea";
+import { setEdit } from "../../../redux/features/siteSlice";
+import FormDatePicker from "../../../components/Forms/FormDatePicker";
 
 type VehicleFormValues = {
   vNumber: string;
@@ -41,19 +46,29 @@ type VehicleFormValues = {
   comment: string;
 };
 
+type VStatementFormValues = {
+  route: string;
+  oil: number;
+  income: number;
+  expense: number;
+  welfare: number;
+  servicing: number;
+  comment: string;
+};
+
 export const VehicleDetails = () => {
   const params = useParams();
   const [isEdit, setIsEdit] = useState(true);
+  const dispatch = useAppDispatch();
+  const { edit } = useAppSelector((state) => state.site);
   const { data: vehicleData, isLoading: vehicleLoading } = useGetVehicleQuery(
     params?.id
   );
   const vehicle: any = vehicleData;
 
-  const { data: vRoutes, isLoading: vRoutesLoading } = useGetVehicleRoutesQuery(
-    {}
-  );
+  const { data: vRoutes } = useGetVehicleRoutesQuery({});
 
-  const { data: users, isLoading: staffsLoading } = useGetUsersQuery({
+  const { data: users } = useGetUsersQuery({
     role: "Staff",
   });
 
@@ -114,13 +129,12 @@ export const VehicleDetails = () => {
   const [deleteVehicleStatement] = useDeleteVehicleStatementMutation();
 
   const [updateVehicle] = useUpdateVehicleMutation();
+  const [updateVehicleStatement] = useUpdateVehicleStatementMutation();
 
   // @ts-ignore
   const vehicleStatements: any = vehicleStatementData?.vehicleStatements;
   // @ts-ignore
   const meta = vehicleStatementData?.meta;
-
-  console.log(vehicleStatements);
 
   const queryIncome = vehicleStatements?.reduce(
     (sum: any, record: { income: any }) => sum + record.income,
@@ -146,6 +160,27 @@ export const VehicleDetails = () => {
   const queryNetProfitLoss =
     queryIncome + queryWelfare - (queryExpense + queryServicing);
 
+  const openEdit = (vehicleRoute: any) => {
+    dispatch(setEdit({ data: vehicleRoute, state: true }));
+  };
+
+  const closeEdit = () => {
+    dispatch(setEdit({ data: null, state: false }));
+  };
+
+  const editVehicleStatement: any = edit?.data;
+
+  const statementDefaultValues = {
+    date: editVehicleStatement?.date || "",
+    route: editVehicleStatement?.route || "",
+    comment: editVehicleStatement?.comment || "",
+    oil: editVehicleStatement?.oil,
+    income: editVehicleStatement?.income || 0,
+    expense: editVehicleStatement?.expense || 0,
+    servicing: editVehicleStatement?.servicing || 0,
+    welfare: editVehicleStatement?.welfare || 0,
+  };
+
   const deleteHandler = async (id: string) => {
     try {
       await deleteVehicleStatement(id).unwrap();
@@ -169,17 +204,45 @@ export const VehicleDetails = () => {
     }
   };
 
+  const statementUpdateHandler: SubmitHandler<VStatementFormValues> = async (
+    formData: VStatementFormValues
+  ) => {
+    const { comment, ...others } = formData;
+    const data: { [key: string]: string | number } = {};
+
+    for (const [key, value] of Object.entries(others)) {
+      data[key] = isNaN(Number(value)) ? value : Number(value);
+    }
+
+    data.comment = comment;
+
+    const newDate = new Date(data?.date);
+
+    // Format the date to Bangladesh Standard Time (BST)
+    const formattedDate = newDate.toLocaleString("en-GB", {
+      timeZone: "Asia/Dhaka",
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    });
+    data.date = formattedDate;
+
+    try {
+      await updateVehicleStatement({
+        id: editVehicleStatement?.id,
+        body: data,
+      }).unwrap();
+      toast("Statement updated successfully");
+    } catch (err: any) {
+      toast.error(`${err.data?.message}`);
+    }
+  };
+
   const columns = [
     {
       title: "Date",
       dataIndex: "date",
       sorter: true,
-      render: function (statement: string) {
-        const dateArray = statement.split(" ");
-        return (
-          <span className="">{`${dateArray[1]} ${dateArray[2]} ${dateArray[3]}`}</span>
-        );
-      },
     },
     {
       title: "Route",
@@ -214,7 +277,7 @@ export const VehicleDetails = () => {
           <div className="flex gap-2">
             <FiEdit
               style={{ color: "#008A3F" }}
-              // onClick={() => openEdit(VehicleStatement)}
+              onClick={() => openEdit(VehicleStatement)}
               size={22}
             />
             <MdDeleteForever
@@ -665,7 +728,6 @@ export const VehicleDetails = () => {
           </div>
         </div>
       </div>
-
       {/* Statement */}
       <div className="dark:bg-bg_dark bg-white p-4 rounded-md mt-5">
         <div className="">
@@ -715,6 +777,167 @@ export const VehicleDetails = () => {
           />
         </div>
       </div>
+      {/* edit modal */}
+      <Modal
+        title={`Update Statement (${editVehicleStatement?.date})`}
+        open={edit.editState}
+        centered
+        footer={null}
+        onCancel={closeEdit}
+      >
+        <Form
+          submitHandler={statementUpdateHandler}
+          defaultValues={statementDefaultValues}
+        >
+          <Row className="!mx-0" gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
+            <Col
+              className="gutter-row"
+              sm={24}
+              md={12}
+              style={{
+                marginBottom: "15px",
+                paddingLeft: "0px",
+                width: "100%",
+              }}
+            >
+              <FormDatePicker
+                name="date"
+                label="Trip Date"
+                size="middle"
+                required
+              />
+            </Col>
+            <Col
+              className="gutter-row"
+              sm={24}
+              md={12}
+              style={{
+                marginBottom: "15px",
+                paddingLeft: "0px",
+                width: "100%",
+              }}
+            >
+              <FormSelectField
+                name="route"
+                label="Route"
+                options={routes as SelectOptions[]}
+                size="middle"
+                placeholder="Select"
+              />
+            </Col>
+            <Col
+              className="gutter-row"
+              sm={24}
+              md={12}
+              style={{
+                marginBottom: "15px",
+                paddingLeft: "0px",
+                width: "100%",
+              }}
+            >
+              <FormInput
+                name="oil"
+                type="number"
+                size="middle"
+                label="Oil (Litter)"
+                required
+              />
+            </Col>
+            <Col
+              className="gutter-row"
+              sm={24}
+              md={12}
+              style={{
+                marginBottom: "15px",
+                paddingLeft: "0px",
+                width: "100%",
+              }}
+            >
+              <FormInput
+                name="income"
+                type="number"
+                size="middle"
+                label="Income"
+              />
+            </Col>
+            <Col
+              className="gutter-row"
+              sm={24}
+              md={8}
+              style={{
+                marginBottom: "15px",
+                paddingLeft: "0px",
+                width: "100%",
+              }}
+            >
+              <FormInput
+                name="expense"
+                type="number"
+                size="middle"
+                label="Expense"
+              />
+            </Col>
+            <Col
+              className="gutter-row"
+              sm={24}
+              md={8}
+              style={{
+                marginBottom: "15px",
+                paddingLeft: "0px",
+                width: "100%",
+              }}
+            >
+              <FormInput
+                name="welfare"
+                type="number"
+                size="middle"
+                label="Welfare Cost"
+              />
+            </Col>
+            <Col
+              className="gutter-row"
+              sm={24}
+              md={8}
+              style={{
+                marginBottom: "15px",
+                paddingLeft: "0px",
+                width: "100%",
+              }}
+            >
+              <FormInput
+                name="servicing"
+                type="number"
+                size="middle"
+                label="Servicing Cost"
+              />
+            </Col>
+            <Col
+              className="gutter-row"
+              sm={24}
+              md={24}
+              style={{
+                marginBottom: "15px",
+                paddingLeft: "0px",
+                width: "100%",
+              }}
+            >
+              <FormTextArea name="comment" label="Details" placeholder="Note" />
+            </Col>
+          </Row>
+
+          <Row justify="start" align="middle">
+            <Button
+              className="bg-primary hover:!bg-primary text-mirage !bg-opacity-[.8] duration-300 transition-all mt-4"
+              size="middle"
+              htmlType="submit"
+              type="primary"
+              // block
+            >
+              Update
+            </Button>
+          </Row>
+        </Form>
+      </Modal>
     </div>
   );
 };

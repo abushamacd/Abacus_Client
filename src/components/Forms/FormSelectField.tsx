@@ -37,9 +37,11 @@ const FormSelectField = ({
 
   return (
     <>
-      <h1 className="mb-1 text-light_text dark:text-dark_text font-medium text-sm">
-        {label ? label : null}
-        {required && label ? (
+      <div className="mb-1">
+        <span className="text-mirage dark:text-white">
+          {label ? label : null}
+        </span>
+        {required ? (
           <span
             style={{
               color: "red",
@@ -49,7 +51,7 @@ const FormSelectField = ({
             *
           </span>
         ) : null}
-      </h1>
+      </div>
       <Controller
         control={control}
         name={name}

@@ -18,6 +18,7 @@ import { toast } from "react-toastify";
 
 type VStatementFormValues = {
   vehicleId: string;
+  date: string;
   routes: string;
   route?: string;
   oil: number;
@@ -56,6 +57,16 @@ export const VStatement = () => {
   ) => {
     const { routes, ...details } = data;
     details.route = routes[0];
+    const newDate = new Date(details?.date);
+
+    // Format the date to Bangladesh Standard Time (BST)
+    const formattedDate = newDate.toLocaleString("en-GB", {
+      timeZone: "Asia/Dhaka",
+      day: "2-digit", // 19
+      month: "short", // Sep
+      year: "numeric", // 2024
+    });
+    details.date = formattedDate;
     try {
       await createVehicleStatement(details).unwrap();
       toast.success("Add statement successfully");
@@ -85,6 +96,7 @@ export const VStatement = () => {
                 style={{
                   marginBottom: "15px",
                   paddingLeft: "0px",
+                  width: "100%",
                 }}
               >
                 <FormSelectField

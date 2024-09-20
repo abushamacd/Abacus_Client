@@ -32,6 +32,15 @@ export const vehicleStatementApi = baseApi.injectEndpoints({
       },
       providesTags: [tagTypes.vStatement],
     }),
+    // update
+    updateVehicleStatement: build.mutation({
+      query: (data: { id: any; body: any }) => ({
+        url: `/vehicleStatement/${data.id}`,
+        method: "PATCH",
+        data: data.body,
+      }),
+      invalidatesTags: [tagTypes.vStatement, tagTypes.vehicle],
+    }),
     // delete
     deleteVehicleStatement: build.mutation({
       query: (id: string) => ({
@@ -46,5 +55,6 @@ export const vehicleStatementApi = baseApi.injectEndpoints({
 export const {
   useCreateVehicleStatementMutation,
   useGetVehicleStatementsQuery,
+  useUpdateVehicleStatementMutation,
   useDeleteVehicleStatementMutation,
 } = vehicleStatementApi;
