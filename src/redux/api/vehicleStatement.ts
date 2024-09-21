@@ -13,7 +13,7 @@ export const vehicleStatementApi = baseApi.injectEndpoints({
         method: "POST",
         data: data,
       }),
-      invalidatesTags: [tagTypes.vStatement],
+      invalidatesTags: [tagTypes.vStatement, tagTypes.vehicle],
     }),
     // get all
     getVehicleStatements: build.query({
@@ -47,7 +47,7 @@ export const vehicleStatementApi = baseApi.injectEndpoints({
         url: `/vehicleStatement/${id}`,
         method: "DELETE",
       }),
-      invalidatesTags: [tagTypes.vStatement],
+      invalidatesTags: [tagTypes.vStatement, tagTypes.vehicle],
     }),
   }),
 });

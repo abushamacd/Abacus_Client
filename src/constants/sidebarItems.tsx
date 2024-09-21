@@ -4,7 +4,7 @@ import { ImProfile } from "react-icons/im";
 // import { AiOutlineControl } from "react-icons/ai";
 import { USER_ROLE } from "./role";
 import { Link } from "react-router-dom";
-import { FaBus } from "react-icons/fa";
+import { FaBus, FaStore } from "react-icons/fa";
 
 const db_url = import.meta.env.VITE_REDIRECT_URL;
 
@@ -37,6 +37,17 @@ export const sidebarItems = (role: string) => {
         {
           label: <Link to={`/${db_url}/users`}>All Users</Link>,
           key: `/${db_url}/users`,
+        },
+      ],
+    },
+    {
+      label: "Store",
+      key: "store",
+      icon: <FaStore />,
+      children: [
+        {
+          label: <Link to={`/${db_url}/products`}>Products</Link>,
+          key: `/${db_url}/products`,
         },
       ],
     },

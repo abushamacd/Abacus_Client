@@ -13,6 +13,7 @@ import { Vehicle } from "../pages/Dashboard/vehicle/Vehicle";
 import { VehicleRoutes } from "../pages/Dashboard/vehicle/VehicleRoutes";
 import { VStatement } from "../pages/Dashboard/vehicle/VStatement";
 import { VehicleDetails } from "../pages/Dashboard/vehicle/VehicleDetails";
+import { Product } from "../pages/Dashboard/product/Product";
 
 const db_url = import.meta.env.VITE_REDIRECT_URL;
 
@@ -50,6 +51,10 @@ const routes = createBrowserRouter([
       {
         path: `/${db_url}/users/:id`,
         element: <UserDetails />,
+      },
+      {
+        path: `/${db_url}/products`,
+        element: <Product />,
       },
       {
         path: `/${db_url}/vehicle/`,

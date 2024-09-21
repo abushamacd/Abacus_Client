@@ -308,10 +308,11 @@ export const VehicleDetails = () => {
     setSearchTerm("");
   };
 
-  const fullDate = new Date().toLocaleString("en-UK", {
-    year: "numeric",
+  const fullDate = new Date().toLocaleString("en-GB", {
+    timeZone: "Asia/Dhaka",
+    day: "2-digit",
     month: "short",
-    day: "numeric",
+    year: "numeric",
   });
 
   if (vehicleLoading || vehicleStatementLoading) return <Loading />;
