@@ -21,11 +21,16 @@ export const DBBreadCrumb = ({
     ...items.map((item) => {
       return {
         title: item.link ? (
-          <Link className="dark:!text-primary !text-mirage" to={item.link}>
+          <Link
+            className="dark:!text-primary !text-mirage capitalize"
+            to={item.link}
+          >
             {item.label}
           </Link>
         ) : (
-          <span className="dark:!text-primary !text-mirage">{item.label}</span>
+          <span className="dark:!text-primary !text-mirage capitalize">
+            {item.label}
+          </span>
         ),
       };
     }),

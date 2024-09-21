@@ -3,7 +3,7 @@ import Form from "../../../components/Forms/Forms";
 import FormInput from "../../../components/Forms/FormInput";
 import { SubmitHandler } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { addProductSchema } from "../../../schemas/product";
+import { addProductSchema } from "../../../schemas/store";
 
 type ProductFormValues = {
   vNumber: string;
