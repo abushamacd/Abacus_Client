@@ -53,6 +53,10 @@ export const sidebarItems = (role: string) => {
           label: <Link to={`/${db_url}/suppliers`}>Suppliers</Link>,
           key: `/${db_url}/suppliers`,
         },
+        {
+          label: <Link to={`/${db_url}/units`}>Units</Link>,
+          key: `/${db_url}/units`,
+        },
       ],
     },
   ];

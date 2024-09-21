@@ -10,6 +10,10 @@ export const addSupplierSchema = yup.object().shape({
   comment: yup.string().optional(),
 });
 
+export const addUnitSchema = yup.object().shape({
+  name: yup.string().required("Unit is required"),
+});
+
 export const addProductSchema = yup.object().shape({
   vNumber: yup.string().required("Vehicle number is required"),
   routes: yup.array().required("Route is required"),
