@@ -6,6 +6,7 @@ export enum tagTypes {
   vStatement = "vStatement",
   supplier = "supplier",
   unit = "unit",
+  product = "product",
 }
 
 export const tagTypesList = [
@@ -16,4 +17,5 @@ export const tagTypesList = [
   tagTypes.vStatement,
   tagTypes.supplier,
   tagTypes.unit,
+  tagTypes.product,
 ];
