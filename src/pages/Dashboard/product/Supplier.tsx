@@ -21,6 +21,7 @@ import DataTable from "../../../components/ui/DataTable";
 import { FaRegEye } from "react-icons/fa";
 import { MdDeleteForever } from "react-icons/md";
 import { useDebounced } from "../../../redux/hooks";
+import { useNavigate } from "react-router-dom";
 
 type SupplierFormValues = {
   name: string;
@@ -33,6 +34,7 @@ type SupplierFormValues = {
 };
 
 export const Supplier = () => {
+  const navigate = useNavigate();
   const [createSupplier] = useCreateSupplierMutation();
   const query: Record<string, any> = {};
   const [page, setPage] = useState<number>(1);
@@ -86,12 +88,11 @@ export const Supplier = () => {
     {
       title: "Action",
       render: function (supplier: any) {
-        console.log(supplier);
         return (
           <div className="flex gap-2">
             <FaRegEye
               style={{ color: "#008A3F" }}
-              // onClick={() => openView(supplier)}
+              onClick={() => openView(supplier)}
               size={22}
             />
             <MdDeleteForever
@@ -120,6 +121,10 @@ export const Supplier = () => {
     setSortBy("");
     setSortOrder("");
     setSearchTerm("");
+  };
+
+  const openView = (supplier: any) => {
+    navigate(`${supplier.id}`, { replace: true });
   };
 
   if (isLoading) return <Loading />;
