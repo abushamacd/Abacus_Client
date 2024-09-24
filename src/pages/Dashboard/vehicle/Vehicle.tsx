@@ -289,7 +289,7 @@ export const Vehicle = () => {
               className="text-mirage dark:text-white !font-medium"
               level={4}
             >
-              All Vehicles
+              All Vehicles ({meta?.total})
             </Title>
             <div className="flex items-center">
               <Input

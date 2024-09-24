@@ -168,7 +168,7 @@ export const Units = () => {
               className="text-mirage dark:text-white !font-medium"
               level={4}
             >
-              All Units
+              All Units ({meta?.total})
             </Title>
             <div className="flex items-center">
               <Input

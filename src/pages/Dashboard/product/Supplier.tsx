@@ -293,7 +293,7 @@ export const Supplier = () => {
               className="text-mirage dark:text-white !font-medium"
               level={4}
             >
-              All Suppliers ({suppliers?.length})
+              All Suppliers ({meta?.total})
             </Title>
             <div className="flex items-center">
               <Input
