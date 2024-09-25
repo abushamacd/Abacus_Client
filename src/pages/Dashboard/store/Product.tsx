@@ -28,6 +28,7 @@ import { MdDeleteForever } from "react-icons/md";
 import Title from "antd/es/typography/Title";
 import { ReloadOutlined } from "@ant-design/icons";
 import DataTable from "../../../components/ui/DataTable";
+import { useNavigate } from "react-router-dom";
 
 type ProductFormValues = {
   name: string;
@@ -52,10 +53,11 @@ type SupplierFormValues = {
 };
 
 export const Product = () => {
+  const navigate = useNavigate();
   const [isAdd, setIsAdd] = useState(false);
   const query: Record<string, any> = {};
   const [page, setPage] = useState<number>(1);
-  const [size, setSize] = useState<number>(10);
+  const [size, setSize] = useState<number>(50);
   const [sortBy, setSortBy] = useState<string>("");
   const [sortOrder, setSortOrder] = useState<string>("");
   const [searchTerm, setSearchTerm] = useState<string>("");
@@ -100,6 +102,10 @@ export const Product = () => {
   allUnits?.forEach((unit: any) => {
     units?.push({ label: unit?.name, value: unit?.id });
   });
+
+  const openView = (porduct: any) => {
+    navigate(`${porduct.id}`, { replace: true });
+  };
 
   const createHandler: SubmitHandler<ProductFormValues> = async (
     data: ProductFormValues
@@ -161,13 +167,12 @@ export const Product = () => {
     },
     {
       title: "Action",
-      render: function (supplier: any) {
-        console.log(supplier);
+      render: function (porduct: any) {
         return (
           <div className="flex gap-2">
             <FaRegEye
               style={{ color: "#008A3F" }}
-              // onClick={() => openView(supplier)}
+              onClick={() => openView(porduct)}
               size={22}
             />
             <MdDeleteForever

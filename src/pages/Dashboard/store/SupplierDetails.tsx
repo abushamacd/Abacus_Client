@@ -343,7 +343,6 @@ export const SupplierDetails = () => {
         </Card>
       </section>
       {/* supplier's product */}
-
       {supplier?.products?.length > 0 && (
         <div className="dark:bg-bg_dark bg-white p-4 rounded-md mt-5">
           <div className="">

@@ -13,10 +13,11 @@ import { Vehicle } from "../pages/Dashboard/vehicle/Vehicle";
 import { VehicleRoutes } from "../pages/Dashboard/vehicle/VehicleRoutes";
 import { VStatement } from "../pages/Dashboard/vehicle/VStatement";
 import { VehicleDetails } from "../pages/Dashboard/vehicle/VehicleDetails";
-import { Product } from "../pages/Dashboard/product/Product";
-import { Supplier } from "../pages/Dashboard/product/Supplier";
-import { Units } from "../pages/Dashboard/product/Unit";
-import { SupplierDetails } from "../pages/Dashboard/product/SupplierDetails";
+import { Product } from "../pages/Dashboard/store/Product";
+import { Supplier } from "../pages/Dashboard/store/Supplier";
+import { Units } from "../pages/Dashboard/store/Unit";
+import { SupplierDetails } from "../pages/Dashboard/store/SupplierDetails";
+import { ProductDetails } from "../pages/Dashboard/store/ProductDetails";
 
 const db_url = import.meta.env.VITE_REDIRECT_URL;
 
@@ -58,6 +59,10 @@ const routes = createBrowserRouter([
       {
         path: `/${db_url}/products`,
         element: <Product />,
+      },
+      {
+        path: `/${db_url}/products/:id`,
+        element: <ProductDetails />,
       },
       {
         path: `/${db_url}/suppliers`,
