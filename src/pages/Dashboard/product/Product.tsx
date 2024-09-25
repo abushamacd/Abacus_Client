@@ -132,7 +132,6 @@ export const Product = () => {
     {
       title: "Quantity",
       render: function (product: any) {
-        console.log(product);
         return (
           <span
             className={`${

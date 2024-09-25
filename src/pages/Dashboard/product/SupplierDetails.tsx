@@ -1,6 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useParams } from "react-router-dom";
-import { useGetSupplierQuery } from "../../../redux/api/supplier";
+import {
+  useGetSupplierQuery,
+  useUpdateSupplierMutation,
+} from "../../../redux/api/supplier";
 import Loading from "../../../components/ui/Loading";
 import { Button, Card, Col, Row } from "antd";
 import { FaEdit } from "react-icons/fa";
@@ -10,6 +13,9 @@ import { SubmitHandler } from "react-hook-form";
 import FormInput from "../../../components/Forms/FormInput";
 import Form from "../../../components/Forms/Forms";
 import FormTextArea from "../../../components/Forms/FormTextArea";
+import { toast } from "react-toastify";
+import Title from "antd/es/typography/Title";
+import DataTable from "../../../components/ui/DataTable";
 
 type SupplierFormValues = {
   name: string;
@@ -27,9 +33,9 @@ export const SupplierDetails = () => {
 
   const { data: supplierData, isLoading: supplierLoading } =
     useGetSupplierQuery(params?.id);
+  const [updateSupplier] = useUpdateSupplierMutation();
 
   const supplier: any = supplierData;
-  console.log(supplier);
 
   const defaultValues = {
     name: supplier?.name || "",
@@ -41,19 +47,51 @@ export const SupplierDetails = () => {
     comment: supplier?.comment || "",
   };
 
+  const columns = [
+    {
+      title: "Name",
+      dataIndex: "name",
+      sorter: true,
+    },
+    {
+      title: "Quantity",
+      render: function (product: any) {
+        return (
+          <span
+            className={`${
+              product?.quantity < product?.minQuantity &&
+              "text-[#D31818] !font-bold"
+            }`}
+          >
+            {product?.quantity} ({product?.unit?.name})
+          </span>
+        );
+      },
+    },
+    {
+      title: "Purchase Price",
+      dataIndex: "purchase",
+      sorter: true,
+    },
+    {
+      title: "Sell Price",
+      dataIndex: "sell",
+      sorter: true,
+    },
+  ];
+
   const updateHandler: SubmitHandler<SupplierFormValues> = async (
     data: SupplierFormValues
   ) => {
-    console.log(data);
-    // try {
-    //   await updateVehicle({
-    //     id: params?.id,
-    //     body: data,
-    //   }).unwrap();
-    //   toast("Vehicle updated successfully");
-    // } catch (err: any) {
-    //   toast.error(`${err.data?.message}`);
-    // }
+    try {
+      await updateSupplier({
+        id: params?.id,
+        body: data,
+      }).unwrap();
+      toast("Supplier updated successfully");
+    } catch (err: any) {
+      toast.error(`${err.data?.message}`);
+    }
   };
 
   if (supplierLoading) {
@@ -62,6 +100,7 @@ export const SupplierDetails = () => {
 
   return (
     <div className="">
+      {/* supplier details */}
       <section className="dark:bg-bg_dark bg-white p-4 rounded-md">
         <Card
           title={
@@ -184,7 +223,6 @@ export const SupplierDetails = () => {
                       size="middle"
                       label="Supplier Name"
                       placeholder="Allardan Treders"
-                      required
                     />
                   </Col>
                   <Col
@@ -202,7 +240,6 @@ export const SupplierDetails = () => {
                       size="middle"
                       label="Address"
                       placeholder="Dhaka"
-                      required
                     />
                   </Col>
                   <Col
@@ -220,7 +257,6 @@ export const SupplierDetails = () => {
                       size="middle"
                       label="Owner Name"
                       placeholder="Md Abdullah"
-                      required
                     />
                   </Col>
                   <Col
@@ -238,7 +274,6 @@ export const SupplierDetails = () => {
                       size="middle"
                       label="Owner Phone"
                       placeholder="017XXXXXXXX"
-                      required
                     />
                   </Col>
                   <Col
@@ -256,7 +291,6 @@ export const SupplierDetails = () => {
                       size="middle"
                       label="SR. Name"
                       placeholder="Md Abdullah"
-                      required
                     />
                   </Col>
                   <Col
@@ -274,7 +308,6 @@ export const SupplierDetails = () => {
                       size="middle"
                       label="SR. Phone"
                       placeholder="017XXXXXXXX"
-                      required
                     />
                   </Col>
                   <Col
@@ -301,7 +334,7 @@ export const SupplierDetails = () => {
                     htmlType="submit"
                     type="primary"
                   >
-                    Add Suppliers
+                    Update
                   </Button>
                 </Row>
               </Form>
@@ -309,6 +342,29 @@ export const SupplierDetails = () => {
           )}
         </Card>
       </section>
+      {/* supplier's product */}
+
+      {supplier?.products?.length > 0 && (
+        <div className="dark:bg-bg_dark bg-white p-4 rounded-md mt-5">
+          <div className="">
+            <div className="w-full dark:bg-bg_dark bg-white py-5 rounded-md md:mb-0 mb-5 flex md:flex-row flex-col justify-between md:items-center items-start">
+              <Title
+                className="text-mirage dark:text-white !font-medium"
+                level={4}
+              >
+                Products ({supplier?.products?.length})
+              </Title>
+            </div>
+            <DataTable
+              loading={supplierLoading}
+              columns={columns}
+              dataSource={supplier?.products}
+              showSizeChanger={true}
+              showPagination={false}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };
