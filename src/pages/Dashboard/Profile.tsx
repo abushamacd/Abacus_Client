@@ -58,7 +58,6 @@ export const Profile = () => {
   };
 
   const updatePassword: SubmitHandler<FormValues> = async (data: any) => {
-    console.log(data);
     try {
       await changePassword(data).unwrap();
       toast("Password changed successfully!");

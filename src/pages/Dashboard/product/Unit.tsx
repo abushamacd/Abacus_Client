@@ -69,7 +69,6 @@ export const Units = () => {
   const meta = data?.meta;
   const editUnit: any = edit?.data;
 
-  console.log(units);
   const defaultValues = {
     name: editUnit?.name || "",
   };

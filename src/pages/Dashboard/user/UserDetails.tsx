@@ -43,7 +43,6 @@ export const UserDetails = () => {
       await updateUser({ id: params?.id, body: data }).unwrap();
       toast("Update user successfully!");
     } catch (err: any) {
-      console.log(err);
       toast.error(`${err.data?.message}`);
     }
   };
