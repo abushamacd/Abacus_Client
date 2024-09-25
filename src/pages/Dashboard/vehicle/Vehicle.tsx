@@ -168,7 +168,7 @@ export const Vehicle = () => {
 
   const deleteHandler = async (id: string) => {
     try {
-      await deleteVehicle(id);
+      await deleteVehicle(id).unwrap();
       toast("Vehicle deleted successfully");
     } catch (err: any) {
       toast.error(`${err.data?.message}`);

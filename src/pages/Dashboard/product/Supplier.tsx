@@ -10,6 +10,7 @@ import { addSupplierSchema } from "../../../schemas/store";
 import FormTextArea from "../../../components/Forms/FormTextArea";
 import {
   useCreateSupplierMutation,
+  useDeleteSupplierMutation,
   useGetSuppliersQuery,
 } from "../../../redux/api/supplier";
 import { toast } from "react-toastify";
@@ -36,6 +37,7 @@ type SupplierFormValues = {
 export const Supplier = () => {
   const navigate = useNavigate();
   const [createSupplier] = useCreateSupplierMutation();
+  const [deleteSupplier] = useDeleteSupplierMutation();
   const query: Record<string, any> = {};
   const [page, setPage] = useState<number>(1);
   const [size, setSize] = useState<number>(10);
@@ -96,7 +98,7 @@ export const Supplier = () => {
               size={22}
             />
             <MdDeleteForever
-              // onClick={() => deleteHandler(supplier?.id)}
+              onClick={() => deleteHandler(supplier?.id)}
               size={22}
               style={{ color: "#D92728" }}
             />
@@ -127,8 +129,6 @@ export const Supplier = () => {
     navigate(`${supplier.id}`, { replace: true });
   };
 
-  if (isLoading) return <Loading />;
-
   const createHandler: SubmitHandler<SupplierFormValues> = async (
     data: SupplierFormValues
   ) => {
@@ -139,6 +139,17 @@ export const Supplier = () => {
       toast.error(`${err.data?.message}`);
     }
   };
+
+  const deleteHandler = async (id: string) => {
+    try {
+      await deleteSupplier(id).unwrap();
+      toast("Supplier deleted successfully");
+    } catch (err: any) {
+      toast.error(`${err.data?.message}`);
+    }
+  };
+
+  if (isLoading) return <Loading />;
   return (
     <div>
       {/* add supplier */}
@@ -180,24 +191,6 @@ export const Supplier = () => {
                 }}
               >
                 <FormInput
-                  name="address"
-                  type="text"
-                  size="middle"
-                  label="Address"
-                  placeholder="Dhaka"
-                  required
-                />
-              </Col>
-              <Col
-                className="gutter-row"
-                sm={24}
-                md={8}
-                style={{
-                  marginBottom: "15px",
-                  paddingLeft: "0px",
-                }}
-              >
-                <FormInput
                   name="ownerName"
                   type="text"
                   size="middle"
@@ -216,11 +209,11 @@ export const Supplier = () => {
                 }}
               >
                 <FormInput
-                  name="ownerPhone"
+                  name="srName"
                   type="text"
                   size="middle"
-                  label="Owner Phone"
-                  placeholder="017XXXXXXXX"
+                  label="SR. Name"
+                  placeholder="Md Abdullah"
                   required
                 />
               </Col>
@@ -234,11 +227,29 @@ export const Supplier = () => {
                 }}
               >
                 <FormInput
-                  name="srName"
+                  name="address"
                   type="text"
                   size="middle"
-                  label="SR. Name"
-                  placeholder="Md Abdullah"
+                  label="Address"
+                  placeholder="Dhaka"
+                  required
+                />
+              </Col>
+              <Col
+                className="gutter-row"
+                sm={24}
+                md={8}
+                style={{
+                  marginBottom: "15px",
+                  paddingLeft: "0px",
+                }}
+              >
+                <FormInput
+                  name="ownerPhone"
+                  type="text"
+                  size="middle"
+                  label="Owner Phone"
+                  placeholder="017XXXXXXXX"
                   required
                 />
               </Col>

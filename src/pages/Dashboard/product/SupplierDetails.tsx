@@ -235,23 +235,6 @@ export const SupplierDetails = () => {
                     }}
                   >
                     <FormInput
-                      name="address"
-                      type="text"
-                      size="middle"
-                      label="Address"
-                      placeholder="Dhaka"
-                    />
-                  </Col>
-                  <Col
-                    className="gutter-row"
-                    sm={24}
-                    md={8}
-                    style={{
-                      marginBottom: "15px",
-                      paddingLeft: "0px",
-                    }}
-                  >
-                    <FormInput
                       name="ownerName"
                       type="text"
                       size="middle"
@@ -269,11 +252,11 @@ export const SupplierDetails = () => {
                     }}
                   >
                     <FormInput
-                      name="ownerPhone"
+                      name="srName"
                       type="text"
                       size="middle"
-                      label="Owner Phone"
-                      placeholder="017XXXXXXXX"
+                      label="SR. Name"
+                      placeholder="Md Abdullah"
                     />
                   </Col>
                   <Col
@@ -286,11 +269,28 @@ export const SupplierDetails = () => {
                     }}
                   >
                     <FormInput
-                      name="srName"
+                      name="address"
                       type="text"
                       size="middle"
-                      label="SR. Name"
-                      placeholder="Md Abdullah"
+                      label="Address"
+                      placeholder="Dhaka"
+                    />
+                  </Col>
+                  <Col
+                    className="gutter-row"
+                    sm={24}
+                    md={8}
+                    style={{
+                      marginBottom: "15px",
+                      paddingLeft: "0px",
+                    }}
+                  >
+                    <FormInput
+                      name="ownerPhone"
+                      type="text"
+                      size="middle"
+                      label="Owner Phone"
+                      placeholder="017XXXXXXXX"
                     />
                   </Col>
                   <Col

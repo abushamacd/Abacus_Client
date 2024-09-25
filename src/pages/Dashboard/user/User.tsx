@@ -168,7 +168,7 @@ export const User = () => {
 
   const deleteHandler = async (id: string) => {
     try {
-      await deleteUser(id);
+      await deleteUser(id).unwrap();
       toast("User deleted successfully");
     } catch (err: any) {
       toast.error(`${err.data?.message}`);
