@@ -20,6 +20,7 @@ import { useState } from "react";
 import { toast } from "react-toastify";
 import {
   useCreateProductMutation,
+  useDeleteProductMutation,
   useGetProductsQuery,
 } from "../../../redux/api/product";
 import { useDebounced } from "../../../redux/hooks";
@@ -81,6 +82,7 @@ export const Product = () => {
   const { data: unitsData, isLoading: unitLoading } = useGetUnitsQuery({});
   const [createSupplier] = useCreateSupplierMutation();
   const [createProduct] = useCreateProductMutation();
+  const [deleteProduct] = useDeleteProductMutation();
 
   const { data, isLoading } = useGetProductsQuery({ ...query });
   // @ts-ignore
@@ -124,6 +126,15 @@ export const Product = () => {
     try {
       await createSupplier(data).unwrap();
       toast.success("Add supplier successfully");
+    } catch (err: any) {
+      toast.error(`${err.data?.message}`);
+    }
+  };
+
+  const deleteHandler = async (id: string) => {
+    try {
+      await deleteProduct(id).unwrap();
+      toast("Porduct deleted successfully");
     } catch (err: any) {
       toast.error(`${err.data?.message}`);
     }
@@ -176,7 +187,7 @@ export const Product = () => {
               size={22}
             />
             <MdDeleteForever
-              // onClick={() => deleteHandler(supplier?.id)}
+              onClick={() => deleteHandler(porduct?.id)}
               size={22}
               style={{ color: "#D92728" }}
             />
