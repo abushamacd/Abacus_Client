@@ -46,7 +46,8 @@ export const ProductDetails = () => {
             <Col
               className="gutter-row"
               sm={24}
-              md={8}
+              md={12}
+              lg={6}
               style={{
                 marginBottom: "15px",
                 paddingLeft: "0px",
@@ -67,7 +68,8 @@ export const ProductDetails = () => {
             <Col
               className="gutter-row"
               sm={24}
-              md={8}
+              md={12}
+              lg={6}
               style={{
                 marginBottom: "15px",
                 paddingLeft: "0px",
@@ -76,34 +78,73 @@ export const ProductDetails = () => {
               <h1 className="mb-1 text-lg text-primary border-b border-secondary">
                 Quantity Info
               </h1>
-              <span className="tracking-wide block">
-                <span className="!font-bold">Available: </span>
-                <span className="italic">{product?.quantity}</span>
+              <span
+                className={`tracking-wide block ${
+                  product?.quantity < product?.minQuantity && "text-[#D31818]"
+                }`}
+              >
+                <span className={`!font-bold`}>Available: </span>
+                <span className="italic">
+                  {product?.quantity} {product?.unit?.name}
+                </span>
               </span>
               <span className="tracking-wide block">
-                <span className="!font-bold">Phone: </span>
-                <span className="italic">{product?.ownerPhone}</span>
+                <span className="!font-bold">Minimum: </span>
+                <span className="italic">
+                  {product?.minQuantity} {product?.unit?.name}
+                </span>
               </span>
             </Col>
             <Col
               className="gutter-row"
               sm={24}
-              md={8}
+              md={12}
+              lg={6}
               style={{
                 marginBottom: "15px",
                 paddingLeft: "0px",
               }}
             >
               <h1 className="mb-1 text-lg text-primary border-b border-secondary">
-                SR. Info
+                Price Info
               </h1>
               <span className="tracking-wide block">
-                <span className="!font-bold">Name: </span>
-                <span className="italic">{product?.srName}</span>
+                <span className="!font-bold">Purchase price: </span>
+                <span className="italic">{product?.purchase} ৳</span>
               </span>
               <span className="tracking-wide block">
-                <span className="!font-bold">Phone: </span>
-                <span className="italic">{product?.srPhone}</span>
+                <span className="!font-bold">Retail price: </span>
+                <span className="italic">{product?.retail} ৳</span>
+              </span>
+              <span className="tracking-wide block">
+                <span className="!font-bold">Sell price: </span>
+                <span className="italic">{product?.sell} ৳</span>
+              </span>
+            </Col>
+            <Col
+              className="gutter-row"
+              sm={24}
+              md={12}
+              lg={6}
+              style={{
+                marginBottom: "15px",
+                paddingLeft: "0px",
+              }}
+            >
+              <h1 className="mb-1 text-lg text-primary border-b border-secondary">
+                Supplier Info
+              </h1>
+              <span className="tracking-wide block">
+                <span className="!font-bold">Supplier: </span>
+                <span className="italic">{product?.supplier?.name}</span>
+              </span>
+              <span className="tracking-wide block">
+                <span className="!font-bold">SR. Name: </span>
+                <span className="italic">{product?.supplier?.srName}</span>
+              </span>
+              <span className="tracking-wide block">
+                <span className="!font-bold">SR. Phone: </span>
+                <span className="italic">{product?.supplier?.srPhone}</span>
               </span>
             </Col>
             {product?.comment && (
