@@ -593,7 +593,7 @@ export const Product = () => {
               htmlType="submit"
               type="primary"
             >
-              Add Suppliers
+              Add Supplier
             </Button>
           </Row>
         </Form>
