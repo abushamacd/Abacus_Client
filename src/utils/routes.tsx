@@ -18,6 +18,7 @@ import { Supplier } from "../pages/Dashboard/store/Supplier";
 import { Units } from "../pages/Dashboard/store/Unit";
 import { SupplierDetails } from "../pages/Dashboard/store/SupplierDetails";
 import { ProductDetails } from "../pages/Dashboard/store/ProductDetails";
+import { Invoice } from "../pages/Dashboard/store/Invoice";
 
 const db_url = import.meta.env.VITE_REDIRECT_URL;
 
@@ -63,6 +64,10 @@ const routes = createBrowserRouter([
       {
         path: `/${db_url}/products/:id`,
         element: <ProductDetails />,
+      },
+      {
+        path: `/${db_url}/invoice`,
+        element: <Invoice />,
       },
       {
         path: `/${db_url}/suppliers`,
