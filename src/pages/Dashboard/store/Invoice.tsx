@@ -10,8 +10,13 @@ import {
   useAppSelector,
   useDebounced,
 } from "../../../redux/hooks";
-import { Col, Row, Select } from "antd";
+import { Button, Col, Row, Select } from "antd";
 import { setView } from "../../../redux/features/siteSlice";
+import Form from "../../../components/Forms/Forms";
+import FormInput from "../../../components/Forms/FormInput";
+import FormDatePicker from "../../../components/Forms/FormDatePicker";
+import FormSelectField from "../../../components/Forms/FormSelectField";
+import { SelectOptions } from "../../../types";
 
 export const Invoice = () => {
   const dispatch = useAppDispatch();
@@ -64,13 +69,45 @@ export const Invoice = () => {
     );
   };
 
+  const role = [
+    {
+      label: "Owner",
+      value: "Owner",
+    },
+    {
+      label: "Manager",
+      value: "Manager",
+    },
+    {
+      label: "Staff",
+      value: "Staff",
+    },
+    {
+      label: "Retailer",
+      value: "Retailer",
+    },
+    {
+      label: "Consumer",
+      value: "Consumer",
+    },
+  ];
+
+  const createHandler = (data: any) => {
+    console.log(data);
+  };
+
   const onSearch = (value: string) => {
     setSearchTerm(value);
     dispatch(setView({ data: null, state: false }));
   };
 
   const selectdUser: any = view?.data;
+  console.log(selectdUser);
 
+  const defaultValues = {
+    name: selectdUser?.name || "",
+    role: selectdUser?.role || "",
+  };
   console.log(selectdUser?.name);
 
   if (staffsLoading) {
@@ -107,7 +144,7 @@ export const Invoice = () => {
             />
           </div>
           {/* user info */}
-          <div className="p-4">
+          <div className="py-4 border-t-2 border-secondary mt-4 mx-4">
             <Row className="!mx-0" gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
               <Col
                 className="gutter-row"
@@ -146,10 +183,13 @@ export const Invoice = () => {
                   paddingLeft: "0px",
                 }}
               >
-                <span className="tracking-wide block">
-                  <span className="!font-bold">Status: </span>
-                  <span className="italic">{selectdUser?.role}</span>
-                </span>
+                <div className="tracking-wide flex items-center gap-1">
+                  <div className="!font-bold">Status: </div>
+                  <div
+                    style={{ backgroundColor: `${selectdUser?.status}` }}
+                    className="italic h-4 w-4 rounded-full"
+                  ></div>
+                </div>
               </Col>
               <Col
                 className="gutter-row"
@@ -162,10 +202,97 @@ export const Invoice = () => {
               >
                 <span className="tracking-wide block">
                   <span className="!font-bold">Previous:</span>
-                  <span className="italic">{selectdUser?.previous} 0</span>
+                  <span
+                    className={`italic ${
+                      selectdUser?.previous > 0 && "text-[#D31818] !font-bold"
+                    }`}
+                  >
+                    {selectdUser?.previous}
+                  </span>
                 </span>
               </Col>
             </Row>
+          </div>
+
+          {/* products info */}
+          <div className="p-4">
+            <Form
+              submitHandler={createHandler}
+              // resolver={yupResolver(addProductSchema)}
+              defaultValues={defaultValues}
+            >
+              <Row
+                className="!mx-0 border-b-2 border-secondary mb-4"
+                gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}
+              >
+                <Col
+                  className="gutter-row"
+                  sm={24}
+                  md={6}
+                  style={{
+                    marginBottom: "15px",
+                    paddingLeft: "0px",
+                  }}
+                >
+                  <FormInput
+                    disabled
+                    name="name"
+                    type="number"
+                    size="middle"
+                    label="Invoice number"
+                    placeholder="Invoice number"
+                    required
+                  />
+                </Col>
+                <Col
+                  className="gutter-row"
+                  sm={24}
+                  md={6}
+                  style={{
+                    marginBottom: "15px",
+                    paddingLeft: "0px",
+                    width: "100%",
+                  }}
+                >
+                  <FormDatePicker
+                    name="date"
+                    label="Invoice Date"
+                    size="middle"
+                    required
+                  />
+                </Col>
+                <Col
+                  className="gutter-row"
+                  sm={24}
+                  md={6}
+                  style={{
+                    marginBottom: "15px",
+                    paddingLeft: "0px",
+                    width: "100%",
+                  }}
+                >
+                  <FormSelectField
+                    name="role"
+                    label="Customer type"
+                    options={role as SelectOptions[]}
+                    size="middle"
+                    placeholder="Select unit"
+                    required
+                  />
+                </Col>
+              </Row>
+              <Row justify="start" align="middle">
+                <Button
+                  className="bg-primary hover:!bg-primary text-mirage !bg-opacity-[.8] duration-300 transition-all mt-4"
+                  size="middle"
+                  htmlType="submit"
+                  type="primary"
+                  // block
+                >
+                  Create
+                </Button>
+              </Row>
+            </Form>
           </div>
         </div>
       </section>
