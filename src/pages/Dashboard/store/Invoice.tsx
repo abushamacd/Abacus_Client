@@ -10,7 +10,7 @@ import {
   useAppSelector,
   useDebounced,
 } from "../../../redux/hooks";
-import { Select } from "antd";
+import { Col, Row, Select } from "antd";
 import { setView } from "../../../redux/features/siteSlice";
 
 export const Invoice = () => {
@@ -55,11 +55,11 @@ export const Invoice = () => {
   });
 
   const onChange = (value: string) => {
-    const selecteduser = allUser.filter((user: any) => user.id === value);
+    const filteredUser = allUser.filter((user: any) => user.id === value);
     dispatch(
       setView({
-        data: selecteduser.length > 0 ? selecteduser : null,
-        state: selecteduser.length > 0 && true,
+        data: filteredUser.length > 0 ? filteredUser?.[0] : null,
+        state: filteredUser.length > 0 && true,
       })
     );
   };
@@ -69,9 +69,9 @@ export const Invoice = () => {
     dispatch(setView({ data: null, state: false }));
   };
 
-  const selectduser: any = view?.data;
+  const selectdUser: any = view?.data;
 
-  console.log(selectduser?.name);
+  console.log(selectdUser?.name);
 
   if (staffsLoading) {
     return <Loading />;
@@ -107,7 +107,66 @@ export const Invoice = () => {
             />
           </div>
           {/* user info */}
-          <div className="mt-5"></div>
+          <div className="p-4">
+            <Row className="!mx-0" gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
+              <Col
+                className="gutter-row"
+                sm={24}
+                md={6}
+                style={{
+                  marginBottom: "15px",
+                  paddingLeft: "0px",
+                }}
+              >
+                <span className="tracking-wide block">
+                  <span className="!font-bold">Customer Name: </span>
+                  <span className="italic">{selectdUser?.name}</span>
+                </span>
+              </Col>
+              <Col
+                className="gutter-row"
+                sm={24}
+                md={6}
+                style={{
+                  marginBottom: "15px",
+                  paddingLeft: "0px",
+                }}
+              >
+                <span className="tracking-wide block">
+                  <span className="!font-bold">Address: </span>
+                  <span className="italic">{selectdUser?.address}</span>
+                </span>
+              </Col>
+              <Col
+                className="gutter-row"
+                sm={24}
+                md={6}
+                style={{
+                  marginBottom: "15px",
+                  paddingLeft: "0px",
+                }}
+              >
+                <span className="tracking-wide block">
+                  <span className="!font-bold">Status: </span>
+                  <span className="italic">{selectdUser?.role}</span>
+                </span>
+              </Col>
+              <Col
+                className="gutter-row"
+                sm={24}
+                md={6}
+                style={{
+                  marginBottom: "15px",
+                  paddingLeft: "0px",
+                }}
+              >
+                <span className="tracking-wide block">
+                  <span className="!font-bold">Previous:</span>
+                  <span className="italic">{selectdUser?.previous} 0</span>
+                </span>
+              </Col>
+            </Row>
+          </div>
         </div>
       </section>
     </div>
