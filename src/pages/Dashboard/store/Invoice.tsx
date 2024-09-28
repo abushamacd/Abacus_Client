@@ -5,11 +5,18 @@ import { useEffect, useState } from "react";
 import text_logo from "../../../assets/text_logo.png";
 import Loading from "../../../components/ui/Loading";
 import { useGetUsersQuery } from "../../../redux/api/userApi";
-import { useDebounced } from "../../../redux/hooks";
-import { Button, Input } from "antd";
-import { ReloadOutlined } from "@ant-design/icons";
+import {
+  useAppDispatch,
+  useAppSelector,
+  useDebounced,
+} from "../../../redux/hooks";
+import { Select } from "antd";
+import { setView } from "../../../redux/features/siteSlice";
 
 export const Invoice = () => {
+  const dispatch = useAppDispatch();
+  const { view } = useAppSelector((state) => state.site);
+
   // Format the date to Bangladesh Standard Time (BST)
   const formattedDate = new Date().toLocaleString("en-GB", {
     timeZone: "Asia/Dhaka",
@@ -36,17 +43,35 @@ export const Invoice = () => {
     query["searchTerm"] = debouncedTerm;
   }
 
-  const resetFilters = () => {
-    setSearchTerm("Unknown");
-  };
-
-  const { data: users, isLoading: staffsLoading } = useGetUsersQuery({
+  const { data: usersData, isLoading: staffsLoading } = useGetUsersQuery({
     ...query,
   });
   // @ts-ignore
-  const user: any = users?.users;
+  const allUser: any = usersData?.users;
 
-  console.log(user);
+  const users: any[] = [];
+  allUser?.forEach((user: any) => {
+    users?.push({ label: `${user?.name}- ${user?.address} `, value: user?.id });
+  });
+
+  const onChange = (value: string) => {
+    const selecteduser = allUser.filter((user: any) => user.id === value);
+    dispatch(
+      setView({
+        data: selecteduser.length > 0 ? selecteduser : null,
+        state: selecteduser.length > 0 && true,
+      })
+    );
+  };
+
+  const onSearch = (value: string) => {
+    setSearchTerm(value);
+    dispatch(setView({ data: null, state: false }));
+  };
+
+  const selectduser: any = view?.data;
+
+  console.log(selectduser?.name);
 
   if (staffsLoading) {
     return <Loading />;
@@ -69,30 +94,17 @@ export const Invoice = () => {
               {formattedDate}
             </p>
           </div>
-          <div className="w-64 flex items-center justify-center mx-auto">
-            <Input
-              type="text"
-              size="middle"
-              className="bg-white text-mirage placeholder:text-mirage dark:placeholder:text-white dark:bg-black dark:text-white focus-within:!border-primary hover:!border-primary"
-              placeholder="Search..."
-              onChange={(e) => {
-                setSearchTerm(e.target.value);
-              }}
+          <div className="md:w-64 flex items-center justify-center mx-auto px-4">
+            <Select
+              allowClear
+              className="w-full"
+              showSearch
+              placeholder="Search customer"
+              optionFilterProp="label"
+              onChange={onChange}
+              onSearch={onSearch}
+              options={users}
             />
-            <div>
-              {!!searchTerm && (
-                <Button
-                  onClick={resetFilters}
-                  className="bg-primary hover:!bg-primary text-mirage !bg-opacity-[.8] duration-300 transition-all ml-4"
-                  size="middle"
-                  htmlType="submit"
-                  type="primary"
-                  // block
-                >
-                  <ReloadOutlined />
-                </Button>
-              )}
-            </div>
           </div>
           {/* user info */}
           <div className="mt-5"></div>

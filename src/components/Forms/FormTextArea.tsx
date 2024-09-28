@@ -46,7 +46,7 @@ const FormTextArea = ({
         control={control}
         render={({ field }) => (
           <Input.TextArea
-            className="bg-white text-mirage dark:bg-bg_dark dark:text-white focus-within:!border-primary hover:!border-primary disabled:text-mirage dark:disabled:text-white"
+            className="bg-white text-mirage dark:bg-bg_dark dark:text-white focus-within:!border-primary hover:!border-primary disabled:text-mirage dark:disabled:text-white placeholder:text-[#ddddddbb]"
             rows={rows}
             placeholder={placeholder}
             {...field}

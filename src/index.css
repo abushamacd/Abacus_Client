@@ -79,13 +79,15 @@
 }
 
 .ant-table-cell,
-.dark .ant-table-cell::before {
+.dark .ant-table-cell::before,
+.ant-select-clear {
   background-color: var(--white) !important;
   color: var(--mirage) !important;
 }
 
 .dark .ant-table-cell,
-.ant-table-cell::before {
+.ant-table-cell::before,
+.dark .ant-select-clear {
   background-color: var(--bg_dark) !important;
   color: var(--white) !important;
 }
@@ -185,6 +187,11 @@
 
 .ant-card-head-title {
   color: var(--mirage) !important;
+}
+
+.ant-select-selection-placeholder,
+.dark .ant-select-selection-placeholder {
+  color: #ddddddbb;
 }
 
 .dark .ant-card-head-title {
