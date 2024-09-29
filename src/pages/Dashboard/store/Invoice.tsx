@@ -17,11 +17,12 @@ import FormInput from "../../../components/Forms/FormInput";
 import FormDatePicker from "../../../components/Forms/FormDatePicker";
 import FormSelectField from "../../../components/Forms/FormSelectField";
 import { SelectOptions } from "../../../types";
+import { FiEdit } from "react-icons/fi";
+import { MdDeleteForever } from "react-icons/md";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { createInvoiceSchema } from "../../../schemas/store";
 
 export const Invoice = () => {
-  const dispatch = useAppDispatch();
-  const { view } = useAppSelector((state) => state.site);
-
   // Format the date to Bangladesh Standard Time (BST)
   const formattedDate = new Date().toLocaleString("en-GB", {
     timeZone: "Asia/Dhaka",
@@ -29,45 +30,6 @@ export const Invoice = () => {
     month: "short",
     year: "numeric",
   });
-
-  const query: Record<string, any> = {};
-  const [searchTerm, setSearchTerm] = useState<string>("Unknown");
-
-  useEffect(() => {
-    if (searchTerm === "") {
-      setSearchTerm("Unknown");
-    }
-  }, [searchTerm]);
-
-  const debouncedTerm = useDebounced({
-    searchQuery: searchTerm,
-    delay: 600,
-  });
-
-  if (!!debouncedTerm) {
-    query["searchTerm"] = debouncedTerm;
-  }
-
-  const { data: usersData, isLoading: staffsLoading } = useGetUsersQuery({
-    ...query,
-  });
-  // @ts-ignore
-  const allUser: any = usersData?.users;
-
-  const users: any[] = [];
-  allUser?.forEach((user: any) => {
-    users?.push({ label: `${user?.name}- ${user?.address} `, value: user?.id });
-  });
-
-  const onChange = (value: string) => {
-    const filteredUser = allUser.filter((user: any) => user.id === value);
-    dispatch(
-      setView({
-        data: filteredUser.length > 0 ? filteredUser?.[0] : null,
-        state: filteredUser.length > 0 && true,
-      })
-    );
-  };
 
   const role = [
     {
@@ -92,29 +54,74 @@ export const Invoice = () => {
     },
   ];
 
-  const createHandler = (data: any) => {
-    console.log(data);
-  };
+  const dispatch = useAppDispatch();
+  const { view } = useAppSelector((state) => state.site);
+
+  const allProducts: any = [];
+
+  const selectdUser: any = view?.data;
+
+  const query: Record<string, any> = {};
+  const [searchTerm, setSearchTerm] = useState<string>("Unknown");
+  const debouncedTerm = useDebounced({
+    searchQuery: searchTerm,
+    delay: 600,
+  });
+
+  if (!!debouncedTerm) {
+    query["searchTerm"] = debouncedTerm;
+  }
+
+  const { data: usersData, isLoading: staffsLoading } = useGetUsersQuery({
+    ...query,
+  });
+  // @ts-ignore
+  const allUser: any = usersData?.users;
+
+  const users: any[] = [];
+  allUser?.forEach((user: any) => {
+    users?.push({ label: `${user?.name}- ${user?.address} `, value: user?.id });
+  });
+
+  useEffect(() => {
+    if (searchTerm === "") {
+      setSearchTerm("Unknown");
+    }
+  }, [searchTerm]);
 
   const onSearch = (value: string) => {
     setSearchTerm(value);
     dispatch(setView({ data: null, state: false }));
   };
 
-  const selectdUser: any = view?.data;
-  console.log(selectdUser);
+  const onChange = (value: string) => {
+    const filteredUser = allUser.filter((user: any) => user.id === value);
+    dispatch(
+      setView({
+        data: filteredUser.length > 0 ? filteredUser?.[0] : null,
+        state: filteredUser.length > 0 && true,
+      })
+    );
+  };
+
+  const createHandler = (data: any) => {
+    const { date, name, role, ...product } = data;
+    allProducts.push(product);
+    console.log(date, name, role, product);
+    console.log(allProducts);
+  };
 
   const defaultValues = {
     name: selectdUser?.name || "",
     role: selectdUser?.role || "",
   };
-  console.log(selectdUser?.name);
 
   if (staffsLoading) {
     return <Loading />;
   }
+
   return (
-    <div>
+    <div className="">
       <section className="dark:bg-bg_dark bg-white p-4 rounded-md">
         <div className="dark:bg-bg_dark bg-white text-mirage dark:text-white !border-secondary border-2 rounded-md">
           {/* store info */}
@@ -201,7 +208,7 @@ export const Invoice = () => {
                 }}
               >
                 <span className="tracking-wide block">
-                  <span className="!font-bold">Previous:</span>
+                  <span className="!font-bold">Due:</span>
                   <span
                     className={`italic ${
                       selectdUser?.previous > 0 && "text-[#D31818] !font-bold"
@@ -218,32 +225,13 @@ export const Invoice = () => {
           <div className="p-4">
             <Form
               submitHandler={createHandler}
-              // resolver={yupResolver(addProductSchema)}
+              resolver={yupResolver(createInvoiceSchema)}
               defaultValues={defaultValues}
             >
               <Row
-                className="!mx-0 border-b-2 border-secondary mb-4"
+                className="!mx-0 border-b-2 border-secondary mb-4 justify-between"
                 gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}
               >
-                <Col
-                  className="gutter-row"
-                  sm={24}
-                  md={6}
-                  style={{
-                    marginBottom: "15px",
-                    paddingLeft: "0px",
-                  }}
-                >
-                  <FormInput
-                    disabled
-                    name="name"
-                    type="number"
-                    size="middle"
-                    label="Invoice number"
-                    placeholder="Invoice number"
-                    required
-                  />
-                </Col>
                 <Col
                   className="gutter-row"
                   sm={24}
@@ -273,7 +261,7 @@ export const Invoice = () => {
                 >
                   <FormSelectField
                     name="role"
-                    label="Customer type"
+                    label="Customer Type"
                     options={role as SelectOptions[]}
                     size="middle"
                     placeholder="Select unit"
@@ -281,11 +269,167 @@ export const Invoice = () => {
                   />
                 </Col>
               </Row>
+              <div className="overflow-x-auto">
+                <table className="md:min-w-full w-[800px] table-auto border-separate">
+                  <thead>
+                    <tr className="bg-secondary">
+                      <th className="text-left p-2 w-[40%]">Particulers</th>
+                      <th className="text-right p-2 w-[20%]">Quantity</th>
+                      <th className="text-right p-2 w-[10%]">Amount</th>
+                      <th className="text-right p-2 w-[10%]">Total</th>
+                      <th className="text-right p-2 w-[10%]">Profit</th>
+                      <th className="text-center p-2 w-[10%]">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr className="hover:bg-secondary duration-300">
+                      <td className="p-2 text-start">Product Name</td>
+                      <td className="p-2 text-right">2 (KG)</td>
+                      <td className="p-2 text-right">price per unit</td>
+                      <td className="p-2 text-right">total price</td>
+                      <td className="p-2 text-right">profit</td>
+                      <td className="p-2 flex gap-2 justify-center items-center">
+                        <FiEdit
+                          style={{ color: "#008A3F" }}
+                          // onClick={() => openEdit(VehicleStatement)}
+                          size={20}
+                        />
+                        <MdDeleteForever
+                          // onClick={() => deleteHandler(VehicleStatement?.id)}
+                          size={20}
+                          style={{ color: "#D92728" }}
+                        />
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <Row
+                className="!mx-0 border-b-2 border-secondary mb-4"
+                gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}
+              >
+                <Col
+                  className="gutter-row"
+                  sm={24}
+                  md={10}
+                  style={{
+                    marginBottom: "15px",
+                    paddingLeft: "0px",
+                    width: "100%",
+                  }}
+                >
+                  <FormSelectField
+                    name="product"
+                    label="Product"
+                    options={
+                      [{ label: "Shama", value: "shama" }] as SelectOptions[]
+                    }
+                    size="middle"
+                    placeholder="Select Product"
+                  />
+                </Col>
+                <Col
+                  className="gutter-row"
+                  sm={24}
+                  md={3}
+                  style={{
+                    marginBottom: "15px",
+                    paddingLeft: "0px",
+                    width: "100%",
+                  }}
+                >
+                  <FormInput
+                    suffix={"৳"}
+                    name="quantity"
+                    label="Quantity"
+                    type="number"
+                    size="middle"
+                    placeholder="Quantity"
+                  />
+                </Col>
+                <Col
+                  className="gutter-row"
+                  sm={24}
+                  md={3}
+                  style={{
+                    marginBottom: "15px",
+                    paddingLeft: "0px",
+                    width: "100%",
+                  }}
+                >
+                  <FormInput
+                    suffix={"৳"}
+                    name="amount"
+                    label="Amount"
+                    type="number"
+                    size="middle"
+                    placeholder="Amount"
+                  />
+                </Col>
+                <Col
+                  className="gutter-row"
+                  sm={24}
+                  md={3}
+                  style={{
+                    marginBottom: "15px",
+                    paddingLeft: "0px",
+                    width: "100%",
+                  }}
+                >
+                  <FormInput
+                    suffix={"৳"}
+                    name="total"
+                    label="Total"
+                    type="number"
+                    size="middle"
+                    placeholder="Total"
+                  />
+                </Col>
+                <Col
+                  className="gutter-row"
+                  sm={24}
+                  md={3}
+                  style={{
+                    marginBottom: "15px",
+                    paddingLeft: "0px",
+                    width: "100%",
+                  }}
+                >
+                  <FormInput
+                    suffix={"৳"}
+                    name="profit"
+                    label="Profit"
+                    type="number"
+                    size="middle"
+                    placeholder="Profit"
+                  />
+                </Col>
+                <Col
+                  className="gutter-row flex justify-center items-center"
+                  sm={24}
+                  md={2}
+                  style={{
+                    marginBottom: "15px",
+                    paddingLeft: "0px",
+                    width: "100%",
+                  }}
+                >
+                  <Button
+                    className="bg-primary hover:!bg-primary text-mirage !bg-opacity-[.8] duration-300 transition-all mt-5"
+                    size="small"
+                    htmlType="submit"
+                    type="primary"
+                    // block
+                  >
+                    + Add
+                  </Button>
+                </Col>
+              </Row>
               <Row justify="start" align="middle">
                 <Button
                   className="bg-primary hover:!bg-primary text-mirage !bg-opacity-[.8] duration-300 transition-all mt-4"
                   size="middle"
-                  htmlType="submit"
+                  // htmlType="submit"
                   type="primary"
                   // block
                 >

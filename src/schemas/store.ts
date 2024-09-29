@@ -14,6 +14,14 @@ export const addUnitSchema = yup.object().shape({
   name: yup.string().required("Unit is required"),
 });
 
+export const createInvoiceSchema = yup.object().shape({
+  name: yup.string().required("Customer is required"),
+  date: yup.string().required("Re-select date to confirm"),
+  profit: yup.number().required("Profit is required"),
+  quantity: yup.number().required("quantity is required"),
+  total: yup.number().required("total is required"),
+});
+
 export const addProductSchema = yup.object().shape({
   name: yup.string().required("Name is required"),
   supplierId: yup.string().optional(),

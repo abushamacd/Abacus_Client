@@ -1,6 +1,7 @@
 import { Input } from "antd";
 import { useFormContext, Controller } from "react-hook-form";
 import { getErrorMessageByPropertyName } from "../../utils/schema-validator";
+import { ReactNode } from "react";
 
 interface IInput {
   name: string;
@@ -13,6 +14,7 @@ interface IInput {
   label?: string;
   required?: boolean;
   disabled?: boolean;
+  suffix?: ReactNode;
 }
 
 const FormInput = ({
@@ -24,6 +26,7 @@ const FormInput = ({
   label,
   required,
   disabled,
+  suffix,
 }: IInput) => {
   const {
     control,
@@ -65,6 +68,8 @@ const FormInput = ({
             />
           ) : (
             <Input
+              suffix={suffix}
+              step={0.01}
               className="bg-white text-mirage dark:bg-bg_dark dark:text-white focus-within:!border-primary hover:!border-primary disabled:text-mirage dark:disabled:text-white placeholder:text-[#ddddddbb]"
               disabled={disabled}
               type={type}
