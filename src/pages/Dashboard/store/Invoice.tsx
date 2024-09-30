@@ -21,6 +21,7 @@ import { FiEdit } from "react-icons/fi";
 import { MdDeleteForever } from "react-icons/md";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { createInvoiceSchema } from "../../../schemas/store";
+import { useGetProductsQuery } from "../../../redux/api/product";
 
 export const Invoice = () => {
   // Format the date to Bangladesh Standard Time (BST)
@@ -54,6 +55,16 @@ export const Invoice = () => {
     },
   ];
 
+  // const [inputData, setInputData] = useState({
+  //   name: "",
+  //   price: 0,
+  // });
+  // console.log(inputData.name, inputData.price);
+
+  const [selectedProdeuct, setSelectedProdeuct] = useState<any[]>([]);
+
+  console.log(selectedProdeuct);
+
   const dispatch = useAppDispatch();
   const { view } = useAppSelector((state) => state.site);
 
@@ -61,6 +72,7 @@ export const Invoice = () => {
 
   const selectdUser: any = view?.data;
 
+  // for customer
   const query: Record<string, any> = {};
   const [searchTerm, setSearchTerm] = useState<string>("Unknown");
   const debouncedTerm = useDebounced({
@@ -83,12 +95,6 @@ export const Invoice = () => {
     users?.push({ label: `${user?.name}- ${user?.address} `, value: user?.id });
   });
 
-  useEffect(() => {
-    if (searchTerm === "") {
-      setSearchTerm("Unknown");
-    }
-  }, [searchTerm]);
-
   const onSearch = (value: string) => {
     setSearchTerm(value);
     dispatch(setView({ data: null, state: false }));
@@ -104,6 +110,40 @@ export const Invoice = () => {
     );
   };
 
+  // for product
+  const { data: productsData, isLoading: productsLoading } =
+    useGetProductsQuery({});
+  // @ts-ignore
+  const allProduct: any = productsData?.products;
+
+  const products: any[] = [];
+  allProduct?.forEach((product: any) => {
+    products?.push({
+      label: product?.name,
+      value: product?.name,
+    });
+  });
+
+  const onProductChange = (value: string) => {
+    const filteredProduct = allProduct.filter(
+      (product: any) => product.name === value
+    );
+    setSelectedProdeuct(filteredProduct);
+  };
+
+  useEffect(() => {
+    if (searchTerm === "") {
+      setSearchTerm("Unknown");
+    }
+  }, [searchTerm]);
+
+  // const inputHandle = (e: any) => {
+  //   setInputData({
+  //     ...inputData,
+  //     [e.target.name]: e.target.value,
+  //   });
+  // };
+
   const createHandler = (data: any) => {
     const { date, name, role, ...product } = data;
     allProducts.push(product);
@@ -111,12 +151,31 @@ export const Invoice = () => {
     console.log(allProducts);
   };
 
+  const [amount, setAmount] = useState(0);
+
   const defaultValues = {
     name: selectdUser?.name || "",
     role: selectdUser?.role || "",
+    amount: amount || 0,
   };
 
-  if (staffsLoading) {
+  console.log(defaultValues);
+
+  useEffect(() => {
+    if (defaultValues.role === "Owner") {
+      setAmount(selectedProdeuct[0]?.purchase || 0);
+    } else if (
+      defaultValues.role === "Manager" ||
+      defaultValues.role === "Staff" ||
+      defaultValues.role === "Retailer"
+    ) {
+      setAmount(selectedProdeuct[0]?.retail || 0);
+    } else {
+      setAmount(selectedProdeuct[0]?.sell || 0);
+    }
+  }, [defaultValues.role, selectedProdeuct]);
+
+  if (staffsLoading || productsLoading) {
     return <Loading />;
   }
 
@@ -318,14 +377,19 @@ export const Invoice = () => {
                     width: "100%",
                   }}
                 >
-                  <FormSelectField
-                    name="product"
-                    label="Product"
-                    options={
-                      [{ label: "Shama", value: "shama" }] as SelectOptions[]
-                    }
-                    size="middle"
-                    placeholder="Select Product"
+                  <div className="mb-1">
+                    <span className="text-mirage dark:text-white">
+                      Select Product
+                    </span>
+                  </div>
+                  <Select
+                    allowClear
+                    className="w-full"
+                    showSearch
+                    placeholder="Search Product"
+                    optionFilterProp="label"
+                    onChange={onProductChange}
+                    options={products as SelectOptions[]}
                   />
                 </Col>
                 <Col

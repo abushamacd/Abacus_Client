@@ -20,6 +20,7 @@ export const createInvoiceSchema = yup.object().shape({
   profit: yup.number().required("Profit is required"),
   quantity: yup.number().required("quantity is required"),
   total: yup.number().required("total is required"),
+  amount: yup.number().required("amount is required"),
 });
 
 export const addProductSchema = yup.object().shape({
