@@ -10,18 +10,21 @@ import {
   useAppSelector,
   useDebounced,
 } from "../../../redux/hooks";
-import { Button, Col, Row, Select } from "antd";
+import {
+  Button,
+  Col,
+  DatePicker,
+  DatePickerProps,
+  Input,
+  Row,
+  Select,
+} from "antd";
 import { setView } from "../../../redux/features/siteSlice";
-import Form from "../../../components/Forms/Forms";
-import FormInput from "../../../components/Forms/FormInput";
-import FormDatePicker from "../../../components/Forms/FormDatePicker";
-import FormSelectField from "../../../components/Forms/FormSelectField";
 import { SelectOptions } from "../../../types";
 import { FiEdit } from "react-icons/fi";
 import { MdDeleteForever } from "react-icons/md";
-import { yupResolver } from "@hookform/resolvers/yup";
-import { createInvoiceSchema } from "../../../schemas/store";
 import { useGetProductsQuery } from "../../../redux/api/product";
+import dayjs from "dayjs";
 
 export const Invoice = () => {
   // Format the date to Bangladesh Standard Time (BST)
@@ -32,7 +35,7 @@ export const Invoice = () => {
     year: "numeric",
   });
 
-  const role = [
+  const roles = [
     {
       label: "Owner",
       value: "Owner",
@@ -55,20 +58,18 @@ export const Invoice = () => {
     },
   ];
 
-  // const [inputData, setInputData] = useState({
-  //   name: "",
-  //   price: 0,
-  // });
-  // console.log(inputData.name, inputData.price);
+  const [inputData, setInputData] = useState({
+    quantity: 0,
+  });
 
-  const [selectedProdeuct, setSelectedProdeuct] = useState<any[]>([]);
-
-  console.log(selectedProdeuct);
+  const [selectedProduct, setselectedProduct] = useState<any[]>([]);
+  const [role, setRole] = useState("");
+  const [invoiceDate, setInvoiceDate] = useState("");
 
   const dispatch = useAppDispatch();
   const { view } = useAppSelector((state) => state.site);
 
-  const allProducts: any = [];
+  const [allProducts, setAllProducts] = useState<any[]>([]);
 
   const selectdUser: any = view?.data;
 
@@ -108,6 +109,7 @@ export const Invoice = () => {
         state: filteredUser.length > 0 && true,
       })
     );
+    setRole("");
   };
 
   // for product
@@ -128,7 +130,18 @@ export const Invoice = () => {
     const filteredProduct = allProduct.filter(
       (product: any) => product.name === value
     );
-    setSelectedProdeuct(filteredProduct);
+    setselectedProduct(filteredProduct);
+  };
+
+  const onRoleChange = (value: string) => {
+    setRole(value);
+  };
+
+  const onDateChange: DatePickerProps["onChange"] = (
+    _date: any,
+    dateString: any
+  ) => {
+    setInvoiceDate(dateString);
   };
 
   useEffect(() => {
@@ -137,43 +150,49 @@ export const Invoice = () => {
     }
   }, [searchTerm]);
 
-  // const inputHandle = (e: any) => {
-  //   setInputData({
-  //     ...inputData,
-  //     [e.target.name]: e.target.value,
-  //   });
-  // };
-
-  const createHandler = (data: any) => {
-    const { date, name, role, ...product } = data;
-    allProducts.push(product);
-    console.log(date, name, role, product);
-    console.log(allProducts);
+  const inputHandle = (e: any) => {
+    setInputData({
+      ...inputData,
+      [e.target.name]: e.target.value,
+    });
   };
 
   const [amount, setAmount] = useState(0);
 
   const defaultValues = {
     name: selectdUser?.name || "",
-    role: selectdUser?.role || "",
+    invoiceDate: invoiceDate,
+    role: role || "",
+    product: selectedProduct[0]?.name,
     amount: amount || 0,
+    quantity: +inputData?.quantity,
+    total: +inputData?.quantity * amount,
+    profit:
+      +inputData?.quantity * amount -
+      selectedProduct[0]?.purchase * +inputData?.quantity,
   };
 
-  console.log(defaultValues);
+  const insertProudct = (e: any, defaultValues: any) => {
+    e.preventDefault();
+    setAllProducts((prevProducts) => [...prevProducts, defaultValues]);
+  };
+  console.log(allProducts);
+
+  // const [defaultValues, setDefaultValues] = useState({
+  //   name: selectdUser?.name || "",
+  //   role: role || "",
+  //   amount: amount || 0,
+  // });
 
   useEffect(() => {
-    if (defaultValues.role === "Owner") {
-      setAmount(selectedProdeuct[0]?.purchase || 0);
-    } else if (
-      defaultValues.role === "Manager" ||
-      defaultValues.role === "Staff" ||
-      defaultValues.role === "Retailer"
-    ) {
-      setAmount(selectedProdeuct[0]?.retail || 0);
+    if (role === "Owner") {
+      setAmount(selectedProduct[0]?.purchase || 0);
+    } else if (role === "Manager" || role === "Staff" || role === "Retailer") {
+      setAmount(selectedProduct[0]?.retail || 0);
     } else {
-      setAmount(selectedProdeuct[0]?.sell || 0);
+      setAmount(selectedProduct[0]?.sell || 0);
     }
-  }, [defaultValues.role, selectedProdeuct]);
+  }, [role, selectedProduct]);
 
   if (staffsLoading || productsLoading) {
     return <Loading />;
@@ -282,225 +301,296 @@ export const Invoice = () => {
 
           {/* products info */}
           <div className="p-4">
-            <Form
-              submitHandler={createHandler}
-              resolver={yupResolver(createInvoiceSchema)}
-              defaultValues={defaultValues}
+            <Row
+              className="!mx-0  justify-between"
+              gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}
             >
-              <Row
-                className="!mx-0 border-b-2 border-secondary mb-4 justify-between"
-                gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}
+              <Col
+                className="gutter-row"
+                sm={24}
+                md={6}
+                style={{
+                  marginBottom: "15px",
+                  paddingLeft: "0px",
+                  width: "100%",
+                }}
               >
-                <Col
-                  className="gutter-row"
-                  sm={24}
-                  md={6}
-                  style={{
-                    marginBottom: "15px",
-                    paddingLeft: "0px",
-                    width: "100%",
-                  }}
-                >
-                  <FormDatePicker
-                    name="date"
-                    label="Invoice Date"
-                    size="middle"
-                    required
-                  />
-                </Col>
-                <Col
-                  className="gutter-row"
-                  sm={24}
-                  md={6}
-                  style={{
-                    marginBottom: "15px",
-                    paddingLeft: "0px",
-                    width: "100%",
-                  }}
-                >
-                  <FormSelectField
-                    name="role"
-                    label="Customer Type"
-                    options={role as SelectOptions[]}
-                    size="middle"
-                    placeholder="Select unit"
-                    required
-                  />
-                </Col>
-              </Row>
-              <div className="overflow-x-auto">
-                <table className="md:min-w-full w-[800px] table-auto border-separate">
-                  <thead>
-                    <tr className="bg-secondary">
-                      <th className="text-left p-2 w-[40%]">Particulers</th>
-                      <th className="text-right p-2 w-[20%]">Quantity</th>
-                      <th className="text-right p-2 w-[10%]">Amount</th>
-                      <th className="text-right p-2 w-[10%]">Total</th>
-                      <th className="text-right p-2 w-[10%]">Profit</th>
-                      <th className="text-center p-2 w-[10%]">Action</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr className="hover:bg-secondary duration-300">
-                      <td className="p-2 text-start">Product Name</td>
-                      <td className="p-2 text-right">2 (KG)</td>
-                      <td className="p-2 text-right">price per unit</td>
-                      <td className="p-2 text-right">total price</td>
-                      <td className="p-2 text-right">profit</td>
-                      <td className="p-2 flex gap-2 justify-center items-center">
-                        <FiEdit
-                          style={{ color: "#008A3F" }}
-                          // onClick={() => openEdit(VehicleStatement)}
-                          size={20}
-                        />
-                        <MdDeleteForever
-                          // onClick={() => deleteHandler(VehicleStatement?.id)}
-                          size={20}
-                          style={{ color: "#D92728" }}
-                        />
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-              <Row
-                className="!mx-0 border-b-2 border-secondary mb-4"
-                gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}
-              >
-                <Col
-                  className="gutter-row"
-                  sm={24}
-                  md={10}
-                  style={{
-                    marginBottom: "15px",
-                    paddingLeft: "0px",
-                    width: "100%",
-                  }}
-                >
-                  <div className="mb-1">
-                    <span className="text-mirage dark:text-white">
-                      Select Product
-                    </span>
-                  </div>
-                  <Select
-                    allowClear
-                    className="w-full"
-                    showSearch
-                    placeholder="Search Product"
-                    optionFilterProp="label"
-                    onChange={onProductChange}
-                    options={products as SelectOptions[]}
-                  />
-                </Col>
-                <Col
-                  className="gutter-row"
-                  sm={24}
-                  md={3}
-                  style={{
-                    marginBottom: "15px",
-                    paddingLeft: "0px",
-                    width: "100%",
-                  }}
-                >
-                  <FormInput
-                    suffix={"৳"}
-                    name="quantity"
-                    label="Quantity"
-                    type="number"
-                    size="middle"
-                    placeholder="Quantity"
-                  />
-                </Col>
-                <Col
-                  className="gutter-row"
-                  sm={24}
-                  md={3}
-                  style={{
-                    marginBottom: "15px",
-                    paddingLeft: "0px",
-                    width: "100%",
-                  }}
-                >
-                  <FormInput
-                    suffix={"৳"}
-                    name="amount"
-                    label="Amount"
-                    type="number"
-                    size="middle"
-                    placeholder="Amount"
-                  />
-                </Col>
-                <Col
-                  className="gutter-row"
-                  sm={24}
-                  md={3}
-                  style={{
-                    marginBottom: "15px",
-                    paddingLeft: "0px",
-                    width: "100%",
-                  }}
-                >
-                  <FormInput
-                    suffix={"৳"}
-                    name="total"
-                    label="Total"
-                    type="number"
-                    size="middle"
-                    placeholder="Total"
-                  />
-                </Col>
-                <Col
-                  className="gutter-row"
-                  sm={24}
-                  md={3}
-                  style={{
-                    marginBottom: "15px",
-                    paddingLeft: "0px",
-                    width: "100%",
-                  }}
-                >
-                  <FormInput
-                    suffix={"৳"}
-                    name="profit"
-                    label="Profit"
-                    type="number"
-                    size="middle"
-                    placeholder="Profit"
-                  />
-                </Col>
-                <Col
-                  className="gutter-row flex justify-center items-center"
-                  sm={24}
-                  md={2}
-                  style={{
-                    marginBottom: "15px",
-                    paddingLeft: "0px",
-                    width: "100%",
-                  }}
-                >
-                  <Button
-                    className="bg-primary hover:!bg-primary text-mirage !bg-opacity-[.8] duration-300 transition-all mt-5"
-                    size="small"
-                    htmlType="submit"
-                    type="primary"
-                    // block
+                <div className="mb-1">
+                  <span className="text-mirage dark:text-white">
+                    Invoice Data
+                  </span>
+
+                  <span
+                    style={{
+                      color: "red",
+                      marginLeft: "2px",
+                    }}
                   >
-                    + Add
-                  </Button>
-                </Col>
-              </Row>
-              <Row justify="start" align="middle">
-                <Button
-                  className="bg-primary hover:!bg-primary text-mirage !bg-opacity-[.8] duration-300 transition-all mt-4"
+                    *
+                  </span>
+                </div>
+                <DatePicker
+                  name="invoiceDate"
+                  className="bg-white text-mirage dark:bg-bg_dark dark:text-white focus-within:!border-primary hover:!border-primary disabled:text-mirage dark:disabled:text-white"
+                  defaultValue={dayjs(Date.now())}
+                  format={"DD/MM/YYYY"}
+                  onChange={onDateChange}
                   size="middle"
-                  // htmlType="submit"
+                  style={{ width: "100%" }}
+                />
+              </Col>
+              <Col
+                className="gutter-row"
+                sm={24}
+                md={6}
+                style={{
+                  marginBottom: "15px",
+                  paddingLeft: "0px",
+                  width: "100%",
+                }}
+              >
+                <div className="mb-1">
+                  <span className="text-mirage dark:text-white">
+                    Customer Type
+                  </span>
+                  <span
+                    style={{
+                      color: "red",
+                      marginLeft: "2px",
+                    }}
+                  >
+                    *
+                  </span>
+                </div>
+                <Select
+                  allowClear
+                  value={role || selectdUser?.role}
+                  className="w-full"
+                  showSearch
+                  placeholder="Select Customer Type"
+                  optionFilterProp="label"
+                  onChange={onRoleChange}
+                  // onSearch={onSearch}
+                  options={roles as SelectOptions[]}
+                />
+              </Col>
+            </Row>
+            <div className="overflow-x-auto border-y-2 border-secondary py-4 mb-4">
+              <table className="md:min-w-full w-[800px] table-auto border-separate">
+                <thead>
+                  <tr className="bg-secondary">
+                    <th className="text-left p-2 w-[40%]">Particulers</th>
+                    <th className="text-right p-2 w-[20%]">Quantity</th>
+                    <th className="text-right p-2 w-[10%]">Amount</th>
+                    <th className="text-right p-2 w-[10%]">Total</th>
+                    <th className="text-right p-2 w-[10%]">Profit</th>
+                    <th className="text-center p-2 w-[10%]">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {allProducts?.map((product: any) => {
+                    console.log(product);
+                    return (
+                      <tr className="hover:bg-secondary duration-300">
+                        <td className="p-2 text-start">Product Name</td>
+                        <td className="p-2 text-right">2 (KG)</td>
+                        <td className="p-2 text-right">price per unit</td>
+                        <td className="p-2 text-right">total price</td>
+                        <td className="p-2 text-right">profit</td>
+                        <td className="p-2 flex gap-2 justify-center items-center">
+                          <FiEdit
+                            style={{ color: "#008A3F" }}
+                            // onClick={() => openEdit(VehicleStatement)}
+                            size={20}
+                          />
+                          <MdDeleteForever
+                            // onClick={() => deleteHandler(VehicleStatement?.id)}
+                            size={20}
+                            style={{ color: "#D92728" }}
+                          />
+                        </td>
+                      </tr>
+                    );
+                  })}
+                  <tr className="hover:bg-secondary duration-300">
+                    <td className="p-2 text-start">Product Name</td>
+                    <td className="p-2 text-right">2 (KG)</td>
+                    <td className="p-2 text-right">price per unit</td>
+                    <td className="p-2 text-right">total price</td>
+                    <td className="p-2 text-right">profit</td>
+                    <td className="p-2 flex gap-2 justify-center items-center">
+                      <FiEdit
+                        style={{ color: "#008A3F" }}
+                        // onClick={() => openEdit(VehicleStatement)}
+                        size={20}
+                      />
+                      <MdDeleteForever
+                        // onClick={() => deleteHandler(VehicleStatement?.id)}
+                        size={20}
+                        style={{ color: "#D92728" }}
+                      />
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <Row
+              className="!mx-0 border-b-2 border-secondary mb-4"
+              gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}
+            >
+              <Col
+                className="gutter-row"
+                sm={24}
+                md={10}
+                style={{
+                  marginBottom: "15px",
+                  paddingLeft: "0px",
+                  width: "100%",
+                }}
+              >
+                <div className="mb-1">
+                  <span className="text-mirage dark:text-white">
+                    Select Product
+                  </span>
+                </div>
+                <Select
+                  suffixIcon={`${selectedProduct[0]?.purchase}`}
+                  // allowClear
+                  className="w-full"
+                  showSearch
+                  placeholder="Search Product"
+                  optionFilterProp="label"
+                  onChange={onProductChange}
+                  options={products as SelectOptions[]}
+                />
+              </Col>
+              <Col
+                className="gutter-row"
+                sm={24}
+                md={3}
+                style={{
+                  marginBottom: "15px",
+                  paddingLeft: "0px",
+                  width: "100%",
+                }}
+              >
+                <div className="mb-1">
+                  <span className="text-mirage dark:text-white">Quantity</span>
+                </div>
+                <Input
+                  className="bg-white text-mirage dark:bg-bg_dark dark:text-white focus-within:!border-primary hover:!border-primary disabled:text-mirage dark:disabled:text-white !placeholder:text-[#ddddddbb]"
+                  name="quantity"
+                  suffix={selectedProduct[0]?.unit?.name}
+                  step={0.01}
+                  type="number"
+                  min={0}
+                  size="middle"
+                  placeholder="Quantity"
+                  onChange={inputHandle}
+                />
+              </Col>
+              <Col
+                className="gutter-row"
+                sm={24}
+                md={3}
+                style={{
+                  marginBottom: "15px",
+                  paddingLeft: "0px",
+                  width: "100%",
+                }}
+              >
+                <div className="mb-1">
+                  <span className="text-mirage dark:text-white">Amount</span>
+                </div>
+                <Input
+                  disabled
+                  value={amount}
+                  className="bg-white text-mirage dark:bg-bg_dark dark:text-white focus-within:!border-primary hover:!border-primary disabled:text-mirage dark:disabled:text-white !placeholder:text-[#ddddddbb]"
+                  name="amount"
+                  suffix={`৳ / ${selectedProduct[0]?.unit?.name}`}
+                  step={0.01}
+                  type="number"
+                  min={0}
+                  size="middle"
+                  placeholder="Quantity"
+                  onChange={inputHandle}
+                />
+              </Col>
+              <Col
+                className="gutter-row"
+                sm={24}
+                md={3}
+                style={{
+                  marginBottom: "15px",
+                  paddingLeft: "0px",
+                  width: "100%",
+                }}
+              >
+                <div className="mb-1">
+                  <span className="text-mirage dark:text-white">Total</span>
+                </div>
+                <Input
+                  disabled
+                  value={defaultValues?.total}
+                  className="bg-white text-mirage dark:bg-bg_dark dark:text-white focus-within:!border-primary hover:!border-primary disabled:text-mirage dark:disabled:text-white !placeholder:text-[#ddddddbb]"
+                  name="total"
+                  suffix={"৳"}
+                  step={0.01}
+                  type="number"
+                  min={0}
+                  size="middle"
+                  placeholder="Total"
+                  onChange={inputHandle}
+                />
+              </Col>
+              <Col
+                className="gutter-row"
+                sm={24}
+                md={3}
+                style={{
+                  marginBottom: "15px",
+                  paddingLeft: "0px",
+                  width: "100%",
+                }}
+              >
+                <div className="mb-1">
+                  <span className="text-mirage dark:text-white">Profit</span>
+                </div>
+                <Input
+                  disabled
+                  value={defaultValues?.profit}
+                  className="bg-white text-mirage dark:bg-bg_dark dark:text-white focus-within:!border-primary hover:!border-primary disabled:text-mirage dark:disabled:text-white !placeholder:text-[#ddddddbb]"
+                  name="total"
+                  suffix={"৳"}
+                  step={0.01}
+                  type="number"
+                  min={0}
+                  size="middle"
+                  placeholder="Total"
+                  onChange={inputHandle}
+                />
+              </Col>
+              <Col
+                className="gutter-row flex justify-center items-center"
+                sm={24}
+                md={2}
+                style={{
+                  marginBottom: "15px",
+                  paddingLeft: "0px",
+                  width: "100%",
+                }}
+              >
+                <Button
+                  className="bg-primary hover:!bg-primary text-mirage !bg-opacity-[.8] duration-300 transition-all mt-5"
+                  size="small"
+                  onClick={(e) => insertProudct(e, defaultValues)}
                   type="primary"
                   // block
                 >
-                  Create
+                  + Add
                 </Button>
-              </Row>
-            </Form>
+              </Col>
+            </Row>
           </div>
         </div>
       </section>
