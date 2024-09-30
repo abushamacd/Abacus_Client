@@ -266,7 +266,8 @@
 .ant-select-selector,
 .ant-picker-cell-inner::before,
 .ant-picker-header,
-.ant-picker-footer {
+.ant-picker-footer,
+.ant-checkbox-checked .ant-checkbox-inner {
   border-color: var(--primary) !important;
 }
 
@@ -286,7 +287,8 @@
 }
 
 .ant-picker-cell-selected > .ant-picker-cell-inner,
-.ant-picker-cell-selected > .ant-picker-cell-inner:hover {
+.ant-picker-cell-selected > .ant-picker-cell-inner:hover,
+.ant-checkbox-checked .ant-checkbox-inner {
   background-color: var(--primary) !important;
 }
 

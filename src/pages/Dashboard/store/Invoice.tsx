@@ -12,6 +12,7 @@ import {
 } from "../../../redux/hooks";
 import {
   Button,
+  Checkbox,
   Col,
   DatePicker,
   DatePickerProps,
@@ -62,9 +63,11 @@ export const Invoice = () => {
     quantity: 0,
   });
 
-  const [selectedProduct, setselectedProduct] = useState<any[]>([]);
+  const [selectedProduct, setSelectedProduct] = useState<any[]>([]);
   const [role, setRole] = useState("");
   const [invoiceDate, setInvoiceDate] = useState("");
+  const [showPrice, setShowPrice] = useState(false);
+  const [errMessage, setErrMessage] = useState("");
 
   const dispatch = useAppDispatch();
   const { view } = useAppSelector((state) => state.site);
@@ -130,7 +133,8 @@ export const Invoice = () => {
     const filteredProduct = allProduct.filter(
       (product: any) => product.name === value
     );
-    setselectedProduct(filteredProduct);
+    setSelectedProduct(filteredProduct);
+    setErrMessage("");
   };
 
   const onRoleChange = (value: string) => {
@@ -155,42 +159,55 @@ export const Invoice = () => {
       ...inputData,
       [e.target.name]: e.target.value,
     });
+    setErrMessage("");
   };
 
-  const [amount, setAmount] = useState(0);
+  const [rate, setRate] = useState(0);
 
   const defaultValues = {
-    name: selectdUser?.name || "",
-    invoiceDate: invoiceDate,
-    role: role || "",
+    // name: selectdUser?.name || "",
+    // invoiceDate: invoiceDate,
+    // role: role || "",
+    unit: selectedProduct[0]?.unit?.name,
+    purchase: selectedProduct[0]?.purchase,
     product: selectedProduct[0]?.name,
-    amount: amount || 0,
+    rate: rate || 0,
     quantity: +inputData?.quantity,
-    total: +inputData?.quantity * amount,
-    profit:
-      +inputData?.quantity * amount -
-      selectedProduct[0]?.purchase * +inputData?.quantity,
+    total: +(+inputData?.quantity * rate).toFixed(2),
+    profit: +(
+      +inputData?.quantity * rate -
+      selectedProduct[0]?.purchase * +inputData?.quantity
+    ).toFixed(2),
   };
 
   const insertProudct = (e: any, defaultValues: any) => {
     e.preventDefault();
+    if (defaultValues?.product === undefined) {
+      setErrMessage("Please select product");
+      return;
+    }
+    if (defaultValues?.quantity === 0) {
+      setErrMessage("Please enter quantity");
+      return;
+    }
     setAllProducts((prevProducts) => [...prevProducts, defaultValues]);
+    setSelectedProduct([]);
   };
   console.log(allProducts);
 
   // const [defaultValues, setDefaultValues] = useState({
   //   name: selectdUser?.name || "",
   //   role: role || "",
-  //   amount: amount || 0,
+  //   rate: rate || 0,
   // });
 
   useEffect(() => {
     if (role === "Owner") {
-      setAmount(selectedProduct[0]?.purchase || 0);
+      setRate(selectedProduct[0]?.purchase || 0);
     } else if (role === "Manager" || role === "Staff" || role === "Retailer") {
-      setAmount(selectedProduct[0]?.retail || 0);
+      setRate(selectedProduct[0]?.retail || 0);
     } else {
-      setAmount(selectedProduct[0]?.sell || 0);
+      setRate(selectedProduct[0]?.sell || 0);
     }
   }, [role, selectedProduct]);
 
@@ -215,6 +232,15 @@ export const Invoice = () => {
             <p className="text-center text-[.6rem] md:text-[1rem]">
               {formattedDate}
             </p>
+
+            <span className="flex justify-center ">
+              <Checkbox
+                className="text-mirage dark:text-white"
+                onChange={() => setShowPrice(!showPrice)}
+              >
+                Show Profit
+              </Checkbox>
+            </span>
           </div>
           <div className="md:w-64 flex items-center justify-center mx-auto px-4">
             <Select
@@ -380,23 +406,34 @@ export const Invoice = () => {
                 <thead>
                   <tr className="bg-secondary">
                     <th className="text-left p-2 w-[40%]">Particulers</th>
-                    <th className="text-right p-2 w-[20%]">Quantity</th>
-                    <th className="text-right p-2 w-[10%]">Amount</th>
-                    <th className="text-right p-2 w-[10%]">Total</th>
-                    <th className="text-right p-2 w-[10%]">Profit</th>
+                    <th className="text-right p-2 w-[15%]">Quantity</th>
+                    <th className="text-right p-2 w-[15%]">Rate</th>
+                    <th className="text-right p-2 w-[10%]">Total (৳)</th>
+                    {showPrice && (
+                      <th className="text-right p-2 w-[10%]">Profit (৳)</th>
+                    )}
+
                     <th className="text-center p-2 w-[10%]">Action</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {allProducts?.map((product: any) => {
-                    console.log(product);
+                  {allProducts?.map((product: any, i: number) => {
                     return (
-                      <tr className="hover:bg-secondary duration-300">
-                        <td className="p-2 text-start">Product Name</td>
-                        <td className="p-2 text-right">2 (KG)</td>
-                        <td className="p-2 text-right">price per unit</td>
-                        <td className="p-2 text-right">total price</td>
-                        <td className="p-2 text-right">profit</td>
+                      <tr key={i} className="hover:bg-secondary duration-300">
+                        <td className="p-2 text-start flex justify-between items-center">
+                          <span> {product?.product}</span>{" "}
+                          <span>{`ADS-${product?.purchase}`}</span>
+                        </td>
+                        <td className="p-2 text-right">
+                          {product?.quantity} ({product?.unit})
+                        </td>
+                        <td className="p-2 text-right">
+                          {product?.rate} (৳ /{product?.unit})
+                        </td>
+                        <td className="p-2 text-right">{product?.total}</td>
+                        {showPrice && (
+                          <td className="p-2 text-right">{product?.profit}</td>
+                        )}
                         <td className="p-2 flex gap-2 justify-center items-center">
                           <FiEdit
                             style={{ color: "#008A3F" }}
@@ -412,25 +449,6 @@ export const Invoice = () => {
                       </tr>
                     );
                   })}
-                  <tr className="hover:bg-secondary duration-300">
-                    <td className="p-2 text-start">Product Name</td>
-                    <td className="p-2 text-right">2 (KG)</td>
-                    <td className="p-2 text-right">price per unit</td>
-                    <td className="p-2 text-right">total price</td>
-                    <td className="p-2 text-right">profit</td>
-                    <td className="p-2 flex gap-2 justify-center items-center">
-                      <FiEdit
-                        style={{ color: "#008A3F" }}
-                        // onClick={() => openEdit(VehicleStatement)}
-                        size={20}
-                      />
-                      <MdDeleteForever
-                        // onClick={() => deleteHandler(VehicleStatement?.id)}
-                        size={20}
-                        style={{ color: "#D92728" }}
-                      />
-                    </td>
-                  </tr>
                 </tbody>
               </table>
             </div>
@@ -454,7 +472,11 @@ export const Invoice = () => {
                   </span>
                 </div>
                 <Select
-                  suffixIcon={`${selectedProduct[0]?.purchase}`}
+                  suffixIcon={`ADS-${
+                    selectedProduct[0]?.purchase > 0
+                      ? selectedProduct[0]?.purchase
+                      : 0
+                  }`}
                   // allowClear
                   className="w-full"
                   showSearch
@@ -463,11 +485,14 @@ export const Invoice = () => {
                   onChange={onProductChange}
                   options={products as SelectOptions[]}
                 />
+                {errMessage?.includes("product") && (
+                  <small style={{ color: "red" }}>{errMessage}</small>
+                )}
               </Col>
               <Col
                 className="gutter-row"
                 sm={24}
-                md={3}
+                md={showPrice ? 3 : 6}
                 style={{
                   marginBottom: "15px",
                   paddingLeft: "0px",
@@ -488,6 +513,9 @@ export const Invoice = () => {
                   placeholder="Quantity"
                   onChange={inputHandle}
                 />
+                {errMessage?.includes("quantity") && (
+                  <small style={{ color: "red" }}>{errMessage}</small>
+                )}
               </Col>
               <Col
                 className="gutter-row"
@@ -500,14 +528,14 @@ export const Invoice = () => {
                 }}
               >
                 <div className="mb-1">
-                  <span className="text-mirage dark:text-white">Amount</span>
+                  <span className="text-mirage dark:text-white">Rate</span>
                 </div>
                 <Input
                   disabled
-                  value={amount}
+                  value={rate}
                   className="bg-white text-mirage dark:bg-bg_dark dark:text-white focus-within:!border-primary hover:!border-primary disabled:text-mirage dark:disabled:text-white !placeholder:text-[#ddddddbb]"
-                  name="amount"
-                  suffix={`৳ / ${selectedProduct[0]?.unit?.name}`}
+                  name="rate"
+                  suffix={`৳ / ${selectedProduct[0]?.unit?.name || ""}`}
                   step={0.01}
                   type="number"
                   min={0}
@@ -543,33 +571,36 @@ export const Invoice = () => {
                   onChange={inputHandle}
                 />
               </Col>
-              <Col
-                className="gutter-row"
-                sm={24}
-                md={3}
-                style={{
-                  marginBottom: "15px",
-                  paddingLeft: "0px",
-                  width: "100%",
-                }}
-              >
-                <div className="mb-1">
-                  <span className="text-mirage dark:text-white">Profit</span>
-                </div>
-                <Input
-                  disabled
-                  value={defaultValues?.profit}
-                  className="bg-white text-mirage dark:bg-bg_dark dark:text-white focus-within:!border-primary hover:!border-primary disabled:text-mirage dark:disabled:text-white !placeholder:text-[#ddddddbb]"
-                  name="total"
-                  suffix={"৳"}
-                  step={0.01}
-                  type="number"
-                  min={0}
-                  size="middle"
-                  placeholder="Total"
-                  onChange={inputHandle}
-                />
-              </Col>
+              {showPrice && (
+                <Col
+                  className="gutter-row"
+                  sm={24}
+                  md={3}
+                  style={{
+                    marginBottom: "15px",
+                    paddingLeft: "0px",
+                    width: "100%",
+                  }}
+                >
+                  <div className="mb-1">
+                    <span className="text-mirage dark:text-white">Profit</span>
+                  </div>
+                  <Input
+                    disabled
+                    value={defaultValues?.profit}
+                    className="bg-white text-mirage dark:bg-bg_dark dark:text-white focus-within:!border-primary hover:!border-primary disabled:text-mirage dark:disabled:text-white !placeholder:text-[#ddddddbb]"
+                    name="total"
+                    suffix={"৳"}
+                    step={0.01}
+                    type="number"
+                    min={0}
+                    size="middle"
+                    placeholder="Total"
+                    onChange={inputHandle}
+                  />
+                </Col>
+              )}
+
               <Col
                 className="gutter-row flex justify-center items-center"
                 sm={24}
