@@ -1,4 +1,3 @@
-/* eslint-disable no-extra-boolean-cast */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from "react";
@@ -22,14 +21,13 @@ import {
 } from "antd";
 import { setView } from "../../../redux/features/siteSlice";
 import { SelectOptions } from "../../../types";
-import { FiEdit } from "react-icons/fi";
 import { MdDeleteForever } from "react-icons/md";
 import { useGetProductsQuery } from "../../../redux/api/product";
 import dayjs from "dayjs";
 import TextArea from "antd/es/input/TextArea";
 
 export const Invoice = () => {
-  // Format the date to Bangladesh Standard Time (BST)
+  // Date formatting
   const formattedDate = new Date().toLocaleString("en-GB", {
     timeZone: "Asia/Dhaka",
     day: "2-digit",
@@ -37,40 +35,28 @@ export const Invoice = () => {
     year: "numeric",
   });
 
+  // Roles
   const roles = [
-    {
-      label: "Owner",
-      value: "Owner",
-    },
-    {
-      label: "Manager",
-      value: "Manager",
-    },
-    {
-      label: "Staff",
-      value: "Staff",
-    },
-    {
-      label: "Retailer",
-      value: "Retailer",
-    },
-    {
-      label: "Consumer",
-      value: "Consumer",
-    },
+    { label: "Owner", value: "Owner" },
+    { label: "Manager", value: "Manager" },
+    { label: "Staff", value: "Staff" },
+    { label: "Retailer", value: "Retailer" },
+    { label: "Consumer", value: "Consumer" },
   ];
 
-  const [inputData, setInputData] = useState({
-    quantity: 0,
-  });
-
+  // State management
+  const [inputData, setInputData] = useState({ quantity: 0 });
   const [selectedProduct, setSelectedProduct] = useState<any[]>([]);
   const [role, setRole] = useState("");
-  const [invoiceDate, setInvoiceDate] = useState("");
+  const [invoiceDate, setInvoiceDate] = useState(dayjs(Date.now()));
+  const [note, setNote] = useState("");
   const [showProfit, setShowProfit] = useState(false);
   const [errMessage, setErrMessage] = useState("");
   const [discount, setDiscount] = useState<number>(0);
+  const [paid, setPaid] = useState<number>(0);
   const [allProducts, setAllProducts] = useState<any[]>([]);
+  const [rate, setRate] = useState(0);
+  const [searchTerm, setSearchTerm] = useState<string>("Unknown");
 
   const dispatch = useAppDispatch();
   const { view } = useAppSelector((state) => state.site);
@@ -79,29 +65,43 @@ export const Invoice = () => {
   const totalProfit = allProducts.reduce((acc, item) => acc + item.profit, 0);
   const totalAmount = allProducts.reduce((acc, item) => acc + item.total, 0);
 
-  // for customer
-  const query: Record<string, any> = {};
-  const [searchTerm, setSearchTerm] = useState<string>("Unknown");
   const debouncedTerm = useDebounced({
     searchQuery: searchTerm,
     delay: 600,
   });
 
-  if (!!debouncedTerm) {
-    query["searchTerm"] = debouncedTerm;
-  }
+  // Customer query
+  const query: Record<string, any> = debouncedTerm
+    ? { searchTerm: debouncedTerm }
+    : {};
 
-  const { data: usersData, isLoading: staffsLoading } = useGetUsersQuery({
-    ...query,
-  });
+  const { data: usersData, isLoading: staffsLoading } = useGetUsersQuery(query);
   // @ts-ignore
   const allUser: any = usersData?.users;
 
-  const users: any[] = [];
-  allUser?.forEach((user: any) => {
-    users?.push({ label: `${user?.name}- ${user?.address} `, value: user?.id });
-  });
+  const users = allUser?.map((user: any) => ({
+    label: `${user?.name} - ${user?.address}`,
+    value: user?.id,
+  }));
 
+  // Product query
+  const { data: productsData, isLoading: productsLoading } =
+    useGetProductsQuery({});
+  // @ts-ignore
+  const allProduct: any = productsData?.products;
+
+  const products = allProduct?.map((product: any) => ({
+    label: (
+      <span
+        className={product?.quantity <= 0 ? "text-[#D31818] !font-bold" : ""}
+      >
+        {product?.name} ({product?.quantity} {product?.unit?.name})
+      </span>
+    ),
+    value: product?.name,
+  }));
+
+  // Handlers
   const onSearch = (value: string) => {
     setSearchTerm(value);
     dispatch(setView({ data: null, state: false }));
@@ -111,26 +111,12 @@ export const Invoice = () => {
     const filteredUser = allUser.filter((user: any) => user.id === value);
     dispatch(
       setView({
-        data: filteredUser.length > 0 ? filteredUser?.[0] : null,
-        state: filteredUser.length > 0 && true,
+        data: filteredUser.length > 0 ? filteredUser[0] : null,
+        state: filteredUser.length > 0,
       })
     );
     setRole("");
   };
-
-  // for product
-  const { data: productsData, isLoading: productsLoading } =
-    useGetProductsQuery({});
-  // @ts-ignore
-  const allProduct: any = productsData?.products;
-
-  const products: any[] = [];
-  allProduct?.forEach((product: any) => {
-    products?.push({
-      label: product?.name,
-      value: product?.name,
-    });
-  });
 
   const onProductChange = (value: string) => {
     const filteredProduct = allProduct.filter(
@@ -140,9 +126,7 @@ export const Invoice = () => {
     setErrMessage("");
   };
 
-  const onRoleChange = (value: string) => {
-    setRole(value);
-  };
+  const onRoleChange = (value: string) => setRole(value);
 
   const onDateChange: DatePickerProps["onChange"] = (
     _date: any,
@@ -158,62 +142,69 @@ export const Invoice = () => {
   }, [searchTerm]);
 
   const inputHandle = (e: any) => {
-    setInputData({
-      ...inputData,
-      [e.target.name]: e.target.value,
-    });
-    setErrMessage("");
+    if (e.target.name === "rate") {
+      setRate(+e.target.value);
+    } else {
+      setInputData({ ...inputData, [e.target.name]: e.target.value });
+      setErrMessage("");
+    }
   };
 
-  const discountHandler = (value: number) => {
-    console.log(value);
+  const invoiceHandler = (e: any) => {
+    const { name, value } = e.target;
+    if (name === "discount") setDiscount(+value);
+    if (name === "paid") setPaid(+value);
+    if (name === "note") setNote(value);
   };
 
-  console.log(totalAmount, +discount);
-
-  const [rate, setRate] = useState(0);
-
-  const defaultValues = {
-    // name: selectdUser?.name || "",
-    // invoiceDate: invoiceDate,
-    // role: role || "",
-    unit: selectedProduct[0]?.unit?.name,
-    purchase: selectedProduct[0]?.purchase,
-    product: selectedProduct[0]?.name,
-    rate: rate || 0,
-    quantity: +inputData?.quantity,
-    total: +(+inputData?.quantity * rate).toFixed(2),
-    profit: +(
-      +inputData?.quantity * rate -
-      selectedProduct[0]?.purchase * +inputData?.quantity
-    ).toFixed(2),
-  };
-
-  const insertProudct = (e: any, defaultValues: any) => {
+  const insertProduct = (e: any, defaultValues: any) => {
     e.preventDefault();
-    if (defaultValues?.product === undefined) {
-      setErrMessage("Please select product");
+    if (!defaultValues.product) {
+      setErrMessage("Please select a product");
       return;
     }
-    if (defaultValues?.quantity === 0) {
+    if (defaultValues.quantity === 0) {
       setErrMessage("Please enter quantity");
       return;
     }
     setAllProducts((prevProducts) => [...prevProducts, defaultValues]);
     setSelectedProduct([]);
   };
-  console.log(allProducts);
 
-  // const [defaultValues, setDefaultValues] = useState({
-  //   name: selectdUser?.name || "",
-  //   role: role || "",
-  //   rate: rate || 0,
-  // });
+  const deleteHandler = (index: number) => {
+    const updatedProducts = allProducts.filter((_, i) => i !== index);
+    setAllProducts(updatedProducts);
+  };
 
+  const afterDiscount = +(totalAmount - discount).toFixed(2);
+  const due = +(afterDiscount - paid).toFixed(2);
+
+  const defaultValues: {
+    unit: any;
+    purchase: any;
+    product: any;
+    rate: number;
+    quantity: number;
+    total: number;
+    profit: number;
+  } = {
+    unit: selectedProduct[0]?.unit?.name,
+    purchase: selectedProduct[0]?.purchase,
+    product: selectedProduct[0]?.name,
+    rate: rate || 0,
+    quantity: +inputData.quantity,
+    total: +(+inputData.quantity * rate).toFixed(2),
+    profit: +(
+      +inputData.quantity * rate -
+      selectedProduct[0]?.purchase * +inputData.quantity
+    ).toFixed(2),
+  };
+
+  // Rate setting based on role
   useEffect(() => {
     if (role === "Owner") {
       setRate(selectedProduct[0]?.purchase || 0);
-    } else if (role === "Manager" || role === "Staff" || role === "Retailer") {
+    } else if (["Manager", "Staff", "Retailer"].includes(role)) {
       setRate(selectedProduct[0]?.retail || 0);
     } else {
       setRate(selectedProduct[0]?.sell || 0);
@@ -405,7 +396,6 @@ export const Invoice = () => {
                   placeholder="Select Customer Type"
                   optionFilterProp="label"
                   onChange={onRoleChange}
-                  // onSearch={onSearch}
                   options={roles as SelectOptions[]}
                 />
               </Col>
@@ -431,7 +421,7 @@ export const Invoice = () => {
                       <tr key={i} className="hover:bg-secondary duration-300">
                         <td className="p-2 text-start flex justify-between items-center">
                           <span> {product?.product}</span>{" "}
-                          <span>{`ADS-${product?.purchase}`}</span>
+                          <span>{`ADS-${product?.purchase}T`}</span>
                         </td>
                         <td className="p-2 text-right">
                           {product?.quantity} ({product?.unit})
@@ -444,13 +434,8 @@ export const Invoice = () => {
                           <td className="p-2 text-right">{product?.profit}</td>
                         )}
                         <td className="p-2 flex gap-2 justify-center items-center">
-                          <FiEdit
-                            style={{ color: "#008A3F" }}
-                            // onClick={() => openEdit(VehicleStatement)}
-                            size={20}
-                          />
                           <MdDeleteForever
-                            // onClick={() => deleteHandler(VehicleStatement?.id)}
+                            onClick={() => deleteHandler(i)}
                             size={20}
                             style={{ color: "#D92728" }}
                           />
@@ -502,7 +487,7 @@ export const Invoice = () => {
                   className="bg-white text-mirage dark:bg-bg_dark dark:text-white focus-within:!border-primary hover:!border-primary disabled:text-mirage dark:disabled:text-white placeholder:text-[#ddddddbb]"
                   name="note"
                   rows={9}
-                  onChange={inputHandle}
+                  onChange={invoiceHandler}
                   placeholder="Type note"
                 />
               </Col>
@@ -525,21 +510,22 @@ export const Invoice = () => {
                   <span className="subtotal">Discount: </span>
                   <Input
                     className="bg-white text-mirage dark:bg-bg_dark dark:text-white focus-within:!border-primary hover:!border-primary disabled:text-mirage dark:disabled:text-white !placeholder:text-[#ddddddbb] w-16 relative left-[15px]"
-                    // name="discount"
+                    name="discount"
                     step={1}
                     type="number"
-                    // variant={"filled"}
+                    variant={"filled"}
+                    max={totalProfit}
                     min={0}
                     size="small"
                     placeholder="Discount"
-                    onChange={discountHandler}
+                    onChange={invoiceHandler}
                   />
                 </div>
                 <hr className="mx-4 my-2" />
                 <div className="flex justify-between items-center px-4 text-primary">
                   <span className="subtotal !font-bold text-lg">Total: </span>
                   <span className="subtotal !font-bold text-lg">
-                    {totalAmount - discount}
+                    {afterDiscount || 0}
                   </span>
                 </div>
                 <div className="flex justify-between items-center px-4">
@@ -551,20 +537,23 @@ export const Invoice = () => {
                     type="number"
                     variant={"filled"}
                     min={0}
+                    max={afterDiscount}
                     size="small"
                     defaultValue={0}
                     placeholder="Discount"
-                    onChange={inputHandle}
+                    onChange={invoiceHandler}
                   />
                 </div>
                 <hr className="mx-4 my-2" />
                 <div
                   className={`flex justify-between items-center px-4 ${
-                    1 > 0 ? "text-[#D92728]" : ""
+                    due > 0 ? "text-[#D92728]" : ""
                   }`}
                 >
                   <span className="subtotal !font-bold text-lg">Due: </span>
-                  <span className="subtotal !font-bold text-lg">0</span>
+                  <span className="subtotal !font-bold text-lg">
+                    {due || 0}
+                  </span>
                 </div>
               </Col>
               <Button
@@ -602,7 +591,7 @@ export const Invoice = () => {
                     selectedProduct[0]?.purchase > 0
                       ? selectedProduct[0]?.purchase
                       : 0
-                  }`}
+                  }T`}
                   // allowClear
                   className="w-full"
                   showSearch
@@ -657,16 +646,16 @@ export const Invoice = () => {
                   <span className="text-mirage dark:text-white">Rate</span>
                 </div>
                 <Input
-                  disabled
+                  // disabled
                   value={rate}
                   className="bg-white text-mirage dark:bg-bg_dark dark:text-white focus-within:!border-primary hover:!border-primary disabled:text-mirage dark:disabled:text-white !placeholder:text-[#ddddddbb]"
                   name="rate"
                   suffix={`৳ / ${selectedProduct[0]?.unit?.name || ""}`}
-                  step={0.01}
+                  step={0.1}
                   type="number"
-                  min={0}
+                  min={selectedProduct[0]?.purchase}
                   size="middle"
-                  placeholder="Quantity"
+                  placeholder="Product rate"
                   onChange={inputHandle}
                 />
               </Col>
@@ -740,7 +729,7 @@ export const Invoice = () => {
                 <Button
                   className="bg-primary hover:!bg-primary text-mirage !bg-opacity-[.8] duration-300 transition-all mt-5"
                   size="small"
-                  onClick={(e) => insertProudct(e, defaultValues)}
+                  onClick={(e) => insertProduct(e, defaultValues)}
                   type="primary"
                   // block
                 >
