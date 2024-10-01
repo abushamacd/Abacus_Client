@@ -67,15 +67,17 @@ export const Invoice = () => {
   const [selectedProduct, setSelectedProduct] = useState<any[]>([]);
   const [role, setRole] = useState("");
   const [invoiceDate, setInvoiceDate] = useState("");
-  const [showPrice, setShowPrice] = useState(false);
+  const [showProfit, setShowProfit] = useState(false);
   const [errMessage, setErrMessage] = useState("");
+  const [discount, setDiscount] = useState<number>(0);
+  const [allProducts, setAllProducts] = useState<any[]>([]);
 
   const dispatch = useAppDispatch();
   const { view } = useAppSelector((state) => state.site);
-
-  const [allProducts, setAllProducts] = useState<any[]>([]);
-
   const selectdUser: any = view?.data;
+
+  const totalProfit = allProducts.reduce((acc, item) => acc + item.profit, 0);
+  const totalAmount = allProducts.reduce((acc, item) => acc + item.total, 0);
 
   // for customer
   const query: Record<string, any> = {};
@@ -163,7 +165,11 @@ export const Invoice = () => {
     setErrMessage("");
   };
 
-  console.log(inputData);
+  const discountHandler = (value: number) => {
+    console.log(value);
+  };
+
+  console.log(totalAmount, +discount);
 
   const [rate, setRate] = useState(0);
 
@@ -239,7 +245,7 @@ export const Invoice = () => {
             <span className="flex justify-center ">
               <Checkbox
                 className="text-mirage dark:text-white"
-                onChange={() => setShowPrice(!showPrice)}
+                onChange={() => setShowProfit(!showProfit)}
               >
                 Show Profit
               </Checkbox>
@@ -412,7 +418,7 @@ export const Invoice = () => {
                     <th className="text-right p-2 w-[15%]">Quantity</th>
                     <th className="text-right p-2 w-[15%]">Rate</th>
                     <th className="text-right p-2 w-[10%]">Total (৳)</th>
-                    {showPrice && (
+                    {showProfit && (
                       <th className="text-right p-2 w-[10%]">Profit (৳)</th>
                     )}
 
@@ -434,7 +440,7 @@ export const Invoice = () => {
                           {product?.rate} (৳ /{product?.unit})
                         </td>
                         <td className="p-2 text-right">{product?.total}</td>
-                        {showPrice && (
+                        {showProfit && (
                           <td className="p-2 text-right">{product?.profit}</td>
                         )}
                         <td className="p-2 flex gap-2 justify-center items-center">
@@ -452,6 +458,16 @@ export const Invoice = () => {
                       </tr>
                     );
                   })}
+                  {showProfit && (
+                    <tr className="hover:bg-secondary duration-300">
+                      <td colSpan={4} className="p-2 text-right">
+                        Total Profit ={" "}
+                      </td>
+
+                      <td className="p-2 text-right">{totalProfit}</td>
+                      <td className="p-2 text-right"></td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
             </div>
@@ -491,7 +507,7 @@ export const Invoice = () => {
                 />
               </Col>
               <Col
-                className="gutter-row mt-5 border-2 border-primary p-4 rounded-md"
+                className="gutter-row mt-6 border-2 border-primary p-4 rounded-md"
                 sm={24}
                 md={6}
                 style={{
@@ -503,42 +519,44 @@ export const Invoice = () => {
               >
                 <div className="flex justify-between items-center px-4">
                   <span className="subtotal">Subtotal: </span>
-                  <span className="subtotal">0</span>
+                  <span className="subtotal">{totalAmount}</span>
                 </div>
                 <div className="flex justify-between items-center px-4">
                   <span className="subtotal">Discount: </span>
                   <Input
                     className="bg-white text-mirage dark:bg-bg_dark dark:text-white focus-within:!border-primary hover:!border-primary disabled:text-mirage dark:disabled:text-white !placeholder:text-[#ddddddbb] w-16 relative left-[15px]"
-                    name="discount"
+                    // name="discount"
                     step={1}
                     type="number"
-                    // variant={"borderless"}
+                    // variant={"filled"}
                     min={0}
                     size="small"
-                    placeholder="Quantity"
-                    onChange={inputHandle}
+                    placeholder="Discount"
+                    onChange={discountHandler}
                   />
                 </div>
                 <hr className="mx-4 my-2" />
                 <div className="flex justify-between items-center px-4 text-primary">
                   <span className="subtotal !font-bold text-lg">Total: </span>
-                  <span className="subtotal !font-bold text-lg">0</span>
+                  <span className="subtotal !font-bold text-lg">
+                    {totalAmount - discount}
+                  </span>
                 </div>
                 <div className="flex justify-between items-center px-4">
                   <span className="subtotal">Paid: </span>
                   <Input
                     className="bg-white text-mirage dark:bg-bg_dark dark:text-white focus-within:!border-primary hover:!border-primary disabled:text-mirage dark:disabled:text-white !placeholder:text-[#ddddddbb] w-20 relative left-[15px]"
-                    name="discount"
+                    name="paid"
                     step={1}
                     type="number"
-                    // variant={"borderless"}
+                    variant={"filled"}
                     min={0}
                     size="small"
-                    placeholder="Quantity"
+                    defaultValue={0}
+                    placeholder="Discount"
                     onChange={inputHandle}
                   />
                 </div>
-
                 <hr className="mx-4 my-2" />
                 <div
                   className={`flex justify-between items-center px-4 ${
@@ -550,7 +568,7 @@ export const Invoice = () => {
                 </div>
               </Col>
               <Button
-                className="bg-primary hover:!bg-primary text-mirage !bg-opacity-[.8] duration-300 transition-all mt-5"
+                className="bg-primary hover:!bg-primary text-mirage !bg-opacity-[.8] duration-300 transition-all my-5 "
                 size="middle"
                 // onClick={(e) => insertProudct(e, defaultValues)}
                 type="primary"
@@ -600,7 +618,7 @@ export const Invoice = () => {
               <Col
                 className="gutter-row"
                 sm={24}
-                md={showPrice ? 3 : 6}
+                md={showProfit ? 3 : 6}
                 style={{
                   marginBottom: "15px",
                   paddingLeft: "0px",
@@ -679,7 +697,7 @@ export const Invoice = () => {
                   onChange={inputHandle}
                 />
               </Col>
-              {showPrice && (
+              {showProfit && (
                 <Col
                   className="gutter-row"
                   sm={24}
