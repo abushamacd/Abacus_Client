@@ -26,6 +26,7 @@ import { FiEdit } from "react-icons/fi";
 import { MdDeleteForever } from "react-icons/md";
 import { useGetProductsQuery } from "../../../redux/api/product";
 import dayjs from "dayjs";
+import TextArea from "antd/es/input/TextArea";
 
 export const Invoice = () => {
   // Format the date to Bangladesh Standard Time (BST)
@@ -161,6 +162,8 @@ export const Invoice = () => {
     });
     setErrMessage("");
   };
+
+  console.log(inputData);
 
   const [rate, setRate] = useState(0);
 
@@ -452,6 +455,111 @@ export const Invoice = () => {
                 </tbody>
               </table>
             </div>
+            {/* calculation */}
+            <Row
+              className="!mx-0 border-b-2 border-secondary mb-4 px-2 justify-between"
+              gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}
+            >
+              <Col
+                className="gutter-row"
+                sm={24}
+                md={16}
+                style={{
+                  marginBottom: "15px",
+                  paddingLeft: "0px",
+                  width: "100%",
+                }}
+              >
+                <div className="mb-1">
+                  <span className="text-mirage dark:text-white">Note</span>
+
+                  <span
+                    style={{
+                      color: "red",
+                      marginLeft: "2px",
+                    }}
+                  >
+                    *
+                  </span>
+                </div>
+                <TextArea
+                  className="bg-white text-mirage dark:bg-bg_dark dark:text-white focus-within:!border-primary hover:!border-primary disabled:text-mirage dark:disabled:text-white placeholder:text-[#ddddddbb]"
+                  name="note"
+                  rows={9}
+                  onChange={inputHandle}
+                  placeholder="Type note"
+                />
+              </Col>
+              <Col
+                className="gutter-row mt-5 border-2 border-primary p-4 rounded-md"
+                sm={24}
+                md={6}
+                style={{
+                  marginBottom: "15px",
+                  paddingLeft: "0px",
+                  paddingRight: "0px",
+                  width: "100%",
+                }}
+              >
+                <div className="flex justify-between items-center px-4">
+                  <span className="subtotal">Subtotal: </span>
+                  <span className="subtotal">0</span>
+                </div>
+                <div className="flex justify-between items-center px-4">
+                  <span className="subtotal">Discount: </span>
+                  <Input
+                    className="bg-white text-mirage dark:bg-bg_dark dark:text-white focus-within:!border-primary hover:!border-primary disabled:text-mirage dark:disabled:text-white !placeholder:text-[#ddddddbb] w-16 relative left-[15px]"
+                    name="discount"
+                    step={1}
+                    type="number"
+                    // variant={"borderless"}
+                    min={0}
+                    size="small"
+                    placeholder="Quantity"
+                    onChange={inputHandle}
+                  />
+                </div>
+                <hr className="mx-4 my-2" />
+                <div className="flex justify-between items-center px-4 text-primary">
+                  <span className="subtotal !font-bold text-lg">Total: </span>
+                  <span className="subtotal !font-bold text-lg">0</span>
+                </div>
+                <div className="flex justify-between items-center px-4">
+                  <span className="subtotal">Paid: </span>
+                  <Input
+                    className="bg-white text-mirage dark:bg-bg_dark dark:text-white focus-within:!border-primary hover:!border-primary disabled:text-mirage dark:disabled:text-white !placeholder:text-[#ddddddbb] w-20 relative left-[15px]"
+                    name="discount"
+                    step={1}
+                    type="number"
+                    // variant={"borderless"}
+                    min={0}
+                    size="small"
+                    placeholder="Quantity"
+                    onChange={inputHandle}
+                  />
+                </div>
+
+                <hr className="mx-4 my-2" />
+                <div
+                  className={`flex justify-between items-center px-4 ${
+                    1 > 0 ? "text-[#D92728]" : ""
+                  }`}
+                >
+                  <span className="subtotal !font-bold text-lg">Due: </span>
+                  <span className="subtotal !font-bold text-lg">0</span>
+                </div>
+              </Col>
+              <Button
+                className="bg-primary hover:!bg-primary text-mirage !bg-opacity-[.8] duration-300 transition-all mt-5"
+                size="middle"
+                // onClick={(e) => insertProudct(e, defaultValues)}
+                type="primary"
+                block
+              >
+                Create Invoice
+              </Button>
+            </Row>
+            {/* Product input */}
             <Row
               className="!mx-0 border-b-2 border-secondary mb-4"
               gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}
