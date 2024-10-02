@@ -25,6 +25,8 @@ import { MdDeleteForever } from "react-icons/md";
 import { useGetProductsQuery } from "../../../redux/api/product";
 import dayjs from "dayjs";
 import TextArea from "antd/es/input/TextArea";
+import { useCreateInvoiceMutation } from "../../../redux/api/invoice";
+import { toast } from "react-toastify";
 
 export const Invoice = () => {
   // Date formatting
@@ -48,7 +50,9 @@ export const Invoice = () => {
   const [inputData, setInputData] = useState({ quantity: 0 });
   const [selectedProduct, setSelectedProduct] = useState<any[]>([]);
   const [role, setRole] = useState("");
-  const [invoiceDate, setInvoiceDate] = useState(dayjs(Date.now()));
+  const [invoiceDate, setInvoiceDate] = useState(
+    dayjs(Date.now()).format("DD/MM/YYYY")
+  );
   const [note, setNote] = useState("");
   const [showProfit, setShowProfit] = useState(false);
   const [errMessage, setErrMessage] = useState("");
@@ -57,6 +61,7 @@ export const Invoice = () => {
   const [allProducts, setAllProducts] = useState<any[]>([]);
   const [rate, setRate] = useState(0);
   const [searchTerm, setSearchTerm] = useState<string>("Unknown");
+  const [createInvoice] = useCreateInvoiceMutation();
 
   const dispatch = useAppDispatch();
   const { view } = useAppSelector((state) => state.site);
@@ -64,6 +69,30 @@ export const Invoice = () => {
 
   const totalProfit = allProducts.reduce((acc, item) => acc + item.profit, 0);
   const totalAmount = allProducts.reduce((acc, item) => acc + item.total, 0);
+
+  const afterDiscount = +(totalAmount - discount).toFixed(2);
+  const due = +(afterDiscount - paid).toFixed(2);
+
+  const defaultValues: {
+    unit: any;
+    purchase: any;
+    product: any;
+    rate: number;
+    quantity: number;
+    total: number;
+    profit: number;
+  } = {
+    unit: selectedProduct[0]?.unit?.name,
+    purchase: selectedProduct[0]?.purchase,
+    product: selectedProduct[0]?.name,
+    rate: rate || 0,
+    quantity: +inputData.quantity,
+    total: +(+inputData.quantity * rate).toFixed(2),
+    profit: +(
+      +inputData.quantity * rate -
+      selectedProduct[0]?.purchase * +inputData.quantity
+    ).toFixed(2),
+  };
 
   const debouncedTerm = useDebounced({
     searchQuery: searchTerm,
@@ -105,6 +134,7 @@ export const Invoice = () => {
   const onSearch = (value: string) => {
     setSearchTerm(value);
     dispatch(setView({ data: null, state: false }));
+    setErrMessage("");
   };
 
   const onChange = (value: string) => {
@@ -116,6 +146,7 @@ export const Invoice = () => {
       })
     );
     setRole("");
+    setErrMessage("");
   };
 
   const onProductChange = (value: string) => {
@@ -146,11 +177,11 @@ export const Invoice = () => {
       setRate(+e.target.value);
     } else {
       setInputData({ ...inputData, [e.target.name]: e.target.value });
-      setErrMessage("");
     }
+    setErrMessage("");
   };
 
-  const invoiceHandler = (e: any) => {
+  const invoiceInputHandler = (e: any) => {
     const { name, value } = e.target;
     if (name === "discount") setDiscount(+value);
     if (name === "paid") setPaid(+value);
@@ -167,8 +198,13 @@ export const Invoice = () => {
       setErrMessage("Please enter quantity");
       return;
     }
+    if (defaultValues.rate <= selectedProduct[0]?.purchase) {
+      setErrMessage("Rate is lower then purchase");
+      return;
+    }
     setAllProducts((prevProducts) => [...prevProducts, defaultValues]);
     setSelectedProduct([]);
+    setInputData({ quantity: 0 });
   };
 
   const deleteHandler = (index: number) => {
@@ -176,28 +212,30 @@ export const Invoice = () => {
     setAllProducts(updatedProducts);
   };
 
-  const afterDiscount = +(totalAmount - discount).toFixed(2);
-  const due = +(afterDiscount - paid).toFixed(2);
+  const invoiceHandler = async () => {
+    if (selectdUser === null) {
+      setErrMessage("Must be select the customer");
+      return;
+    }
 
-  const defaultValues: {
-    unit: any;
-    purchase: any;
-    product: any;
-    rate: number;
-    quantity: number;
-    total: number;
-    profit: number;
-  } = {
-    unit: selectedProduct[0]?.unit?.name,
-    purchase: selectedProduct[0]?.purchase,
-    product: selectedProduct[0]?.name,
-    rate: rate || 0,
-    quantity: +inputData.quantity,
-    total: +(+inputData.quantity * rate).toFixed(2),
-    profit: +(
-      +inputData.quantity * rate -
-      selectedProduct[0]?.purchase * +inputData.quantity
-    ).toFixed(2),
+    const data = {
+      customerId: selectdUser?.id,
+      customerName: selectdUser?.name,
+      date: invoiceDate,
+      note: note,
+      due: due,
+      profit: totalProfit,
+      total: afterDiscount,
+      discount: discount,
+      products: allProducts,
+    };
+
+    try {
+      await createInvoice(data).unwrap();
+      toast.success("Add product successfully");
+    } catch (err: any) {
+      toast.error(`${err.data?.message}`);
+    }
   };
 
   // Rate setting based on role
@@ -243,16 +281,21 @@ export const Invoice = () => {
             </span>
           </div>
           <div className="md:w-64 flex items-center justify-center mx-auto px-4">
-            <Select
-              allowClear
-              className="w-full"
-              showSearch
-              placeholder="Search customer"
-              optionFilterProp="label"
-              onChange={onChange}
-              onSearch={onSearch}
-              options={users}
-            />
+            <div className="">
+              <Select
+                allowClear
+                className="w-full"
+                showSearch
+                placeholder="Search customer"
+                optionFilterProp="label"
+                onChange={onChange}
+                onSearch={onSearch}
+                options={users}
+              />
+              {errMessage?.includes("customer") && (
+                <small style={{ color: "red" }}>{errMessage}</small>
+              )}
+            </div>
           </div>
           {/* user info */}
           <div className="py-4 border-t-2 border-secondary mt-4 mx-4">
@@ -343,9 +386,8 @@ export const Invoice = () => {
               >
                 <div className="mb-1">
                   <span className="text-mirage dark:text-white">
-                    Invoice Data
+                    Invoice Date
                   </span>
-
                   <span
                     style={{
                       color: "red",
@@ -473,21 +515,12 @@ export const Invoice = () => {
               >
                 <div className="mb-1">
                   <span className="text-mirage dark:text-white">Note</span>
-
-                  <span
-                    style={{
-                      color: "red",
-                      marginLeft: "2px",
-                    }}
-                  >
-                    *
-                  </span>
                 </div>
                 <TextArea
                   className="bg-white text-mirage dark:bg-bg_dark dark:text-white focus-within:!border-primary hover:!border-primary disabled:text-mirage dark:disabled:text-white placeholder:text-[#ddddddbb]"
                   name="note"
                   rows={9}
-                  onChange={invoiceHandler}
+                  onChange={invoiceInputHandler}
                   placeholder="Type note"
                 />
               </Col>
@@ -518,7 +551,7 @@ export const Invoice = () => {
                     min={0}
                     size="small"
                     placeholder="Discount"
-                    onChange={invoiceHandler}
+                    onChange={invoiceInputHandler}
                   />
                 </div>
                 <hr className="mx-4 my-2" />
@@ -541,7 +574,7 @@ export const Invoice = () => {
                     size="small"
                     defaultValue={0}
                     placeholder="Discount"
-                    onChange={invoiceHandler}
+                    onChange={invoiceInputHandler}
                   />
                 </div>
                 <hr className="mx-4 my-2" />
@@ -559,7 +592,7 @@ export const Invoice = () => {
               <Button
                 className="bg-primary hover:!bg-primary text-mirage !bg-opacity-[.8] duration-300 transition-all my-5 "
                 size="middle"
-                // onClick={(e) => insertProudct(e, defaultValues)}
+                onClick={invoiceHandler}
                 type="primary"
                 block
               >
@@ -587,6 +620,7 @@ export const Invoice = () => {
                   </span>
                 </div>
                 <Select
+                  value={selectedProduct[0]?.name}
                   suffixIcon={`ADS-${
                     selectedProduct[0]?.purchase > 0
                       ? selectedProduct[0]?.purchase
@@ -618,6 +652,7 @@ export const Invoice = () => {
                   <span className="text-mirage dark:text-white">Quantity</span>
                 </div>
                 <Input
+                  value={inputData.quantity}
                   className="bg-white text-mirage dark:bg-bg_dark dark:text-white focus-within:!border-primary hover:!border-primary disabled:text-mirage dark:disabled:text-white !placeholder:text-[#ddddddbb]"
                   name="quantity"
                   suffix={selectedProduct[0]?.unit?.name}
@@ -658,6 +693,9 @@ export const Invoice = () => {
                   placeholder="Product rate"
                   onChange={inputHandle}
                 />
+                {errMessage?.includes("Rate") && (
+                  <small style={{ color: "red" }}>{errMessage}</small>
+                )}
               </Col>
               <Col
                 className="gutter-row"
