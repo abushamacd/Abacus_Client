@@ -145,7 +145,7 @@ export const Invoice = () => {
         state: filteredUser.length > 0,
       })
     );
-    setRole("");
+    setRole(filteredUser?.role);
     setErrMessage("");
   };
 
@@ -198,7 +198,7 @@ export const Invoice = () => {
       setErrMessage("Please enter quantity");
       return;
     }
-    if (defaultValues.rate <= selectedProduct[0]?.purchase) {
+    if (defaultValues.rate < selectedProduct[0]?.purchase) {
       setErrMessage("Rate is lower then purchase");
       return;
     }
@@ -232,7 +232,7 @@ export const Invoice = () => {
 
     try {
       await createInvoice(data).unwrap();
-      toast.success("Add product successfully");
+      toast.success("Create invoice successfully");
     } catch (err: any) {
       toast.error(`${err.data?.message}`);
     }
@@ -247,7 +247,11 @@ export const Invoice = () => {
     } else {
       setRate(selectedProduct[0]?.sell || 0);
     }
-  }, [role, selectedProduct]);
+  }, [role, selectedProduct, selectdUser]);
+
+  useEffect(() => {
+    setRole(selectdUser?.role);
+  }, [selectdUser]);
 
   if (staffsLoading || productsLoading) {
     return <Loading />;
