@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable no-extra-boolean-cast */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from "react";
@@ -25,8 +27,15 @@ import { MdDeleteForever } from "react-icons/md";
 import { useGetProductsQuery } from "../../../redux/api/product";
 import dayjs from "dayjs";
 import TextArea from "antd/es/input/TextArea";
-import { useCreateInvoiceMutation } from "../../../redux/api/invoice";
+import {
+  useCreateInvoiceMutation,
+  useGetInvoicesQuery,
+} from "../../../redux/api/invoice";
 import { toast } from "react-toastify";
+import { FaRegEye } from "react-icons/fa";
+import Title from "antd/es/typography/Title";
+import { ReloadOutlined } from "@ant-design/icons";
+import DataTable from "../../../components/ui/DataTable";
 
 export const Invoice = () => {
   // Date formatting
@@ -56,16 +65,20 @@ export const Invoice = () => {
   const [note, setNote] = useState("");
   const [showProfit, setShowProfit] = useState(false);
   const [errMessage, setErrMessage] = useState("");
+  const [selectdUser, setSelectdUser] = useState<any>({});
   const [discount, setDiscount] = useState<number>(0);
   const [paid, setPaid] = useState<number>(0);
   const [allProducts, setAllProducts] = useState<any[]>([]);
   const [rate, setRate] = useState(0);
-  const [searchTerm, setSearchTerm] = useState<string>("Unknown");
+  const [customerSearchTerm, setCustomerSearchTerm] =
+    useState<string>("Unknown");
   const [createInvoice] = useCreateInvoiceMutation();
 
   const dispatch = useAppDispatch();
   const { view } = useAppSelector((state) => state.site);
-  const selectdUser: any = view?.data;
+  const selectedInvoice: any = view?.data;
+
+  console.log(selectedInvoice);
 
   const totalProfit = allProducts.reduce((acc, item) => acc + item.profit, 0);
   const totalAmount = allProducts.reduce((acc, item) => acc + item.total, 0);
@@ -94,17 +107,19 @@ export const Invoice = () => {
     ).toFixed(2),
   };
 
-  const debouncedTerm = useDebounced({
-    searchQuery: searchTerm,
+  const customerDebouncedTerm = useDebounced({
+    searchQuery: customerSearchTerm,
     delay: 600,
   });
 
   // Customer query
-  const query: Record<string, any> = debouncedTerm
-    ? { searchTerm: debouncedTerm }
+  const customerQuery: Record<string, any> = customerDebouncedTerm
+    ? { searchTerm: customerDebouncedTerm }
     : {};
 
-  const { data: usersData, isLoading: staffsLoading } = useGetUsersQuery(query);
+  const { data: usersData, isLoading: staffsLoading } = useGetUsersQuery({
+    ...customerQuery,
+  });
   // @ts-ignore
   const allUser: any = usersData?.users;
 
@@ -130,21 +145,50 @@ export const Invoice = () => {
     value: product?.name,
   }));
 
+  // invoice query
+  const query: Record<string, any> = {};
+  const [page, setPage] = useState<number>(1);
+  const [size, setSize] = useState<number>(20);
+  const [sortBy, setSortBy] = useState<string>("");
+  const [sortOrder, setSortOrder] = useState<string>("");
+  const [searchTerm, setSearchTerm] = useState<string>("");
+
+  query["limit"] = size;
+  query["page"] = page;
+  query["sortBy"] = sortBy;
+  query["sortOrder"] = sortOrder;
+
+  const debouncedTerm = useDebounced({
+    searchQuery: searchTerm,
+    delay: 600,
+  });
+
+  if (!!debouncedTerm) {
+    query["searchTerm"] = debouncedTerm;
+  }
+  const { data: invoicesData, isLoading: invoicesLoading } =
+    useGetInvoicesQuery({ ...query });
+  // @ts-ignore
+  const allInvoices: any = invoicesData?.invoices;
+  // @ts-ignore
+  const meta = invoicesData?.meta;
+
   // Handlers
-  const onSearch = (value: string) => {
-    setSearchTerm(value);
+  const onCustomerSearch = (value: string) => {
+    setCustomerSearchTerm(value);
     dispatch(setView({ data: null, state: false }));
     setErrMessage("");
   };
 
-  const onChange = (value: string) => {
+  const onCustomerChange = (value: string) => {
     const filteredUser = allUser.filter((user: any) => user.id === value);
-    dispatch(
-      setView({
-        data: filteredUser.length > 0 ? filteredUser[0] : null,
-        state: filteredUser.length > 0,
-      })
-    );
+    // dispatch(
+    //   setView({
+    //     data: filteredUser.length > 0 ? filteredUser[0] : null,
+    //     state: filteredUser.length > 0,
+    //   })
+    // );
+    setSelectdUser(filteredUser[0]);
     setRole(filteredUser?.role);
     setErrMessage("");
   };
@@ -167,10 +211,10 @@ export const Invoice = () => {
   };
 
   useEffect(() => {
-    if (searchTerm === "") {
-      setSearchTerm("Unknown");
+    if (customerSearchTerm === "") {
+      setCustomerSearchTerm("Unknown");
     }
-  }, [searchTerm]);
+  }, [customerSearchTerm]);
 
   const inputHandle = (e: any) => {
     if (e.target.name === "rate") {
@@ -238,6 +282,78 @@ export const Invoice = () => {
     }
   };
 
+  const columns = [
+    {
+      title: "Invoice No.",
+      dataIndex: "invoiceNumber",
+      sorter: true,
+    },
+    {
+      title: "Date",
+      dataIndex: "date",
+      sorter: true,
+    },
+    {
+      title: "Customer Name",
+      dataIndex: "customerName",
+      sorter: true,
+    },
+    {
+      title: "Due",
+      sorter: true,
+      render: function (invoice: any) {
+        return (
+          <span className={`${invoice?.due && "text-[#D31818] !font-bold"}`}>
+            {invoice?.due}
+          </span>
+        );
+      },
+    },
+    {
+      title: "Paid",
+      render: function (invoice: any) {
+        return <span className={``}>{invoice?.total - invoice?.due}</span>;
+      },
+    },
+
+    {
+      title: "Action",
+      render: function (porduct: any) {
+        return (
+          <div className="flex gap-2">
+            <FaRegEye
+              style={{ color: "#008A3F" }}
+              // onClick={() => openView(porduct)}
+              size={22}
+            />
+            <MdDeleteForever
+              // onClick={() => deleteHandler(porduct?.id)}
+              size={22}
+              style={{ color: "#D92728" }}
+            />
+          </div>
+        );
+      },
+    },
+  ];
+
+  const onPaginationChange = (page: number, pageSize: number) => {
+    setPage(page);
+    setSize(pageSize);
+  };
+  // @ts-ignore
+  const onTableChange = (pagination: any, filter: any, sorter: any) => {
+    const { order, field } = sorter;
+    setSortBy(field as string);
+    setSortOrder(order === "ascend" ? "asc" : "desc");
+  };
+
+  const resetFilters = () => {
+    setSortBy("");
+    setSortOrder("");
+    setSearchTerm("");
+  };
+
   // Rate setting based on role
   useEffect(() => {
     if (role === "Owner") {
@@ -249,6 +365,7 @@ export const Invoice = () => {
     }
   }, [role, selectedProduct, selectdUser]);
 
+  // Role setting based on selected user
   useEffect(() => {
     setRole(selectdUser?.role);
   }, [selectdUser]);
@@ -259,6 +376,7 @@ export const Invoice = () => {
 
   return (
     <div className="">
+      {/* create invoice */}
       <section className="dark:bg-bg_dark bg-white p-4 rounded-md">
         <div className="dark:bg-bg_dark bg-white text-mirage dark:text-white !border-secondary border-2 rounded-md">
           {/* store info */}
@@ -292,8 +410,8 @@ export const Invoice = () => {
                 showSearch
                 placeholder="Search customer"
                 optionFilterProp="label"
-                onChange={onChange}
-                onSearch={onSearch}
+                onChange={onCustomerChange}
+                onSearch={onCustomerSearch}
                 options={users}
               />
               {errMessage?.includes("customer") && (
@@ -782,6 +900,55 @@ export const Invoice = () => {
           </div>
         </div>
       </section>
+      {/* all product */}
+      <div className="dark:bg-bg_dark bg-white p-4 rounded-md mt-5">
+        <div className="">
+          <div className="w-full dark:bg-bg_dark bg-white py-5 rounded-md md:mb-0 mb-5 flex md:flex-row flex-col justify-between md:items-center items-start">
+            <Title
+              className="text-mirage dark:text-white !font-medium"
+              level={4}
+            >
+              All Invoices ({meta?.total})
+            </Title>
+            <div className="flex items-center">
+              <Input
+                type="text"
+                size="middle"
+                className="bg-white text-mirage placeholder:text-mirage dark:placeholder:text-white dark:bg-black dark:text-white focus-within:!border-primary hover:!border-primary"
+                placeholder="Search..."
+                onChange={(e) => {
+                  setSearchTerm(e.target.value);
+                }}
+              />
+              <div>
+                {(!!sortBy || !!sortOrder || !!searchTerm) && (
+                  <Button
+                    onClick={resetFilters}
+                    className="bg-primary hover:!bg-primary text-mirage !bg-opacity-[.8] duration-300 transition-all ml-4"
+                    size="middle"
+                    htmlType="submit"
+                    type="primary"
+                    // block
+                  >
+                    <ReloadOutlined />
+                  </Button>
+                )}
+              </div>
+            </div>
+          </div>
+          <DataTable
+            loading={invoicesLoading}
+            columns={columns}
+            dataSource={allInvoices}
+            pageSize={size}
+            totalPages={meta?.total}
+            showSizeChanger={true}
+            onPaginationChange={onPaginationChange}
+            onTableChange={onTableChange}
+            showPagination={true}
+          />
+        </div>
+      </div>
     </div>
   );
 };
