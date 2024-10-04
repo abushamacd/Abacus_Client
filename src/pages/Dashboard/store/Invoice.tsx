@@ -29,6 +29,7 @@ import dayjs from "dayjs";
 import TextArea from "antd/es/input/TextArea";
 import {
   useCreateInvoiceMutation,
+  useDeleteInvoiceMutation,
   useGetInvoicesQuery,
 } from "../../../redux/api/invoice";
 import { toast } from "react-toastify";
@@ -64,8 +65,9 @@ export const Invoice = () => {
   );
   const [note, setNote] = useState("");
   const [showProfit, setShowProfit] = useState(false);
+  const [fullPaid, setFullPaid] = useState(false);
   const [errMessage, setErrMessage] = useState("");
-  const [selectdUser, setSelectdUser] = useState<any>({});
+  const [selectdUser, setSelectdUser] = useState<any>(null);
   const [discount, setDiscount] = useState<number>(0);
   const [paid, setPaid] = useState<number>(0);
   const [allProducts, setAllProducts] = useState<any[]>([]);
@@ -78,15 +80,13 @@ export const Invoice = () => {
   const { view } = useAppSelector((state) => state.site);
   const selectedInvoice: any = view?.data;
 
-  console.log(selectedInvoice);
-
   const totalProfit = allProducts.reduce((acc, item) => acc + item.profit, 0);
   const totalAmount = allProducts.reduce((acc, item) => acc + item.total, 0);
 
   const afterDiscount = +(totalAmount - discount).toFixed(2);
   const due = +(afterDiscount - paid).toFixed(2);
 
-  const defaultValues: {
+  const productValues: {
     unit: any;
     purchase: any;
     product: any;
@@ -106,6 +106,8 @@ export const Invoice = () => {
       selectedProduct[0]?.purchase * +inputData.quantity
     ).toFixed(2),
   };
+
+  const [deleteInvoice] = useDeleteInvoiceMutation();
 
   const customerDebouncedTerm = useDebounced({
     searchQuery: customerSearchTerm,
@@ -232,26 +234,26 @@ export const Invoice = () => {
     if (name === "note") setNote(value);
   };
 
-  const insertProduct = (e: any, defaultValues: any) => {
+  const insertProduct = (e: any, productValues: any) => {
     e.preventDefault();
-    if (!defaultValues.product) {
+    if (!productValues.product) {
       setErrMessage("Please select a product");
       return;
     }
-    if (defaultValues.quantity === 0) {
+    if (productValues.quantity === 0) {
       setErrMessage("Please enter quantity");
       return;
     }
-    if (defaultValues.rate < selectedProduct[0]?.purchase) {
+    if (productValues.rate < selectedProduct[0]?.purchase) {
       setErrMessage("Rate is lower then purchase");
       return;
     }
-    setAllProducts((prevProducts) => [...prevProducts, defaultValues]);
+    setAllProducts((prevProducts) => [...prevProducts, productValues]);
     setSelectedProduct([]);
     setInputData({ quantity: 0 });
   };
 
-  const deleteHandler = (index: number) => {
+  const removeHandler = (index: number) => {
     const updatedProducts = allProducts.filter((_, i) => i !== index);
     setAllProducts(updatedProducts);
   };
@@ -267,16 +269,30 @@ export const Invoice = () => {
       customerName: selectdUser?.name,
       date: invoiceDate,
       note: note,
-      due: due,
-      profit: totalProfit,
-      total: afterDiscount,
-      discount: discount,
+      due: due || 0,
+      profit: totalProfit || 0,
+      total: afterDiscount || 0,
+      discount: discount || 0,
       products: allProducts,
     };
 
     try {
       await createInvoice(data).unwrap();
       toast.success("Create invoice successfully");
+      setSelectdUser(null);
+      setRole("");
+      setAllProducts([]);
+      setPaid(0);
+      setDiscount(0);
+    } catch (err: any) {
+      toast.error(`${err.data?.message}`);
+    }
+  };
+
+  const deleteHandler = async (id: string) => {
+    try {
+      await deleteInvoice(id).unwrap();
+      toast("Invoice deleted successfully");
     } catch (err: any) {
       toast.error(`${err.data?.message}`);
     }
@@ -298,16 +314,11 @@ export const Invoice = () => {
       dataIndex: "customerName",
       sorter: true,
     },
+
     {
-      title: "Due",
+      title: "Total",
+      dataIndex: "total",
       sorter: true,
-      render: function (invoice: any) {
-        return (
-          <span className={`${invoice?.due && "text-[#D31818] !font-bold"}`}>
-            {invoice?.due}
-          </span>
-        );
-      },
     },
     {
       title: "Paid",
@@ -315,19 +326,31 @@ export const Invoice = () => {
         return <span className={``}>{invoice?.total - invoice?.due}</span>;
       },
     },
-
+    {
+      title: "Due",
+      sorter: true,
+      render: function (invoice: any) {
+        return (
+          <span
+            className={`${invoice?.due > 0 && "text-[#D31818] !font-bold"}`}
+          >
+            {invoice?.due}
+          </span>
+        );
+      },
+    },
     {
       title: "Action",
-      render: function (porduct: any) {
+      render: function (invoice: any) {
         return (
           <div className="flex gap-2">
             <FaRegEye
               style={{ color: "#008A3F" }}
-              // onClick={() => openView(porduct)}
+              // onClick={() => openView(invoice)}
               size={22}
             />
             <MdDeleteForever
-              // onClick={() => deleteHandler(porduct?.id)}
+              onClick={() => deleteHandler(invoice?.id)}
               size={22}
               style={{ color: "#D92728" }}
             />
@@ -369,6 +392,15 @@ export const Invoice = () => {
   useEffect(() => {
     setRole(selectdUser?.role);
   }, [selectdUser]);
+
+  // Role setting based on selected user
+  useEffect(() => {
+    if (fullPaid) {
+      setPaid(afterDiscount);
+    } else {
+      setPaid(0);
+    }
+  }, [afterDiscount, fullPaid]);
 
   if (staffsLoading || productsLoading) {
     return <Loading />;
@@ -599,7 +631,7 @@ export const Invoice = () => {
                         )}
                         <td className="p-2 flex gap-2 justify-center items-center">
                           <MdDeleteForever
-                            onClick={() => deleteHandler(i)}
+                            onClick={() => removeHandler(i)}
                             size={20}
                             style={{ color: "#D92728" }}
                           />
@@ -664,6 +696,7 @@ export const Invoice = () => {
                 <div className="flex justify-between items-center px-4">
                   <span className="subtotal">Discount: </span>
                   <Input
+                    value={discount}
                     className="bg-white text-mirage dark:bg-bg_dark dark:text-white focus-within:!border-primary hover:!border-primary disabled:text-mirage dark:disabled:text-white !placeholder:text-[#ddddddbb] w-16 relative left-[15px]"
                     name="discount"
                     step={1}
@@ -684,8 +717,15 @@ export const Invoice = () => {
                   </span>
                 </div>
                 <div className="flex justify-between items-center px-4">
-                  <span className="subtotal">Paid: </span>
+                  <span className="subtotal">
+                    Paid:{" "}
+                    <Checkbox
+                      className="text-mirage dark:text-white"
+                      onChange={() => setFullPaid(!fullPaid)}
+                    ></Checkbox>
+                  </span>
                   <Input
+                    value={paid}
                     className="bg-white text-mirage dark:bg-bg_dark dark:text-white focus-within:!border-primary hover:!border-primary disabled:text-mirage dark:disabled:text-white !placeholder:text-[#ddddddbb] w-20 relative left-[15px]"
                     name="paid"
                     step={1}
@@ -834,7 +874,7 @@ export const Invoice = () => {
                 </div>
                 <Input
                   disabled
-                  value={defaultValues?.total}
+                  value={productValues?.total}
                   className="bg-white text-mirage dark:bg-bg_dark dark:text-white focus-within:!border-primary hover:!border-primary disabled:text-mirage dark:disabled:text-white !placeholder:text-[#ddddddbb]"
                   name="total"
                   suffix={"৳"}
@@ -862,7 +902,7 @@ export const Invoice = () => {
                   </div>
                   <Input
                     disabled
-                    value={defaultValues?.profit}
+                    value={productValues?.profit}
                     className="bg-white text-mirage dark:bg-bg_dark dark:text-white focus-within:!border-primary hover:!border-primary disabled:text-mirage dark:disabled:text-white !placeholder:text-[#ddddddbb]"
                     name="total"
                     suffix={"৳"}
@@ -889,7 +929,7 @@ export const Invoice = () => {
                 <Button
                   className="bg-primary hover:!bg-primary text-mirage !bg-opacity-[.8] duration-300 transition-all mt-5"
                   size="small"
-                  onClick={(e) => insertProduct(e, defaultValues)}
+                  onClick={(e) => insertProduct(e, productValues)}
                   type="primary"
                   // block
                 >

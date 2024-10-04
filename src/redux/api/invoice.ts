@@ -13,7 +13,7 @@ export const invoiceApi = baseApi.injectEndpoints({
         method: "POST",
         data: data,
       }),
-      invalidatesTags: [tagTypes.invoice],
+      invalidatesTags: [tagTypes.invoice, tagTypes.product],
     }),
     // get all invoices
     getInvoices: build.query({
@@ -47,7 +47,7 @@ export const invoiceApi = baseApi.injectEndpoints({
         method: "PATCH",
         data: data.body,
       }),
-      invalidatesTags: [tagTypes.invoice],
+      invalidatesTags: [tagTypes.invoice, tagTypes.product],
     }),
     // delete invoice
     deleteInvoice: build.mutation({
@@ -55,7 +55,7 @@ export const invoiceApi = baseApi.injectEndpoints({
         url: `/invoice/${id}`,
         method: "DELETE",
       }),
-      invalidatesTags: [tagTypes.invoice],
+      invalidatesTags: [tagTypes.invoice, tagTypes.product],
     }),
   }),
 });
