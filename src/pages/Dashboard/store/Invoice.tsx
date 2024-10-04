@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable no-extra-boolean-cast */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -6,11 +5,7 @@ import { useEffect, useState } from "react";
 import text_logo from "../../../assets/text_logo.png";
 import Loading from "../../../components/ui/Loading";
 import { useGetUsersQuery } from "../../../redux/api/userApi";
-import {
-  useAppDispatch,
-  useAppSelector,
-  useDebounced,
-} from "../../../redux/hooks";
+import { useAppDispatch, useDebounced } from "../../../redux/hooks";
 import {
   Button,
   Checkbox,
@@ -37,8 +32,10 @@ import { FaRegEye } from "react-icons/fa";
 import Title from "antd/es/typography/Title";
 import { ReloadOutlined } from "@ant-design/icons";
 import DataTable from "../../../components/ui/DataTable";
+import { useNavigate } from "react-router-dom";
 
 export const Invoice = () => {
+  const navigate = useNavigate();
   // Date formatting
   const formattedDate = new Date().toLocaleString("en-GB", {
     timeZone: "Asia/Dhaka",
@@ -77,8 +74,6 @@ export const Invoice = () => {
   const [createInvoice] = useCreateInvoiceMutation();
 
   const dispatch = useAppDispatch();
-  const { view } = useAppSelector((state) => state.site);
-  const selectedInvoice: any = view?.data;
 
   const totalProfit = allProducts.reduce((acc, item) => acc + item.profit, 0);
   const totalAmount = allProducts.reduce((acc, item) => acc + item.total, 0);
@@ -298,6 +293,10 @@ export const Invoice = () => {
     }
   };
 
+  const openView = (id: string) => {
+    navigate(`${id}`, { replace: true });
+  };
+
   const columns = [
     {
       title: "Invoice No.",
@@ -346,7 +345,7 @@ export const Invoice = () => {
           <div className="flex gap-2">
             <FaRegEye
               style={{ color: "#008A3F" }}
-              // onClick={() => openView(invoice)}
+              onClick={() => openView(invoice?.id)}
               size={22}
             />
             <MdDeleteForever

@@ -457,155 +457,151 @@ export const ProductDetails = () => {
             </div>
           )}
         </Card>
-        <Modal
-          title={`Add New Supplier`}
-          open={isAdd}
-          centered
-          footer={null}
-          onCancel={() => setIsAdd(!isAdd)}
-        >
-          <Form
-            submitHandler={supplierCreateHandler}
-            resolver={yupResolver(addSupplierSchema)}
-          >
-            <Row className="!mx-0" gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
-              <Col
-                className="gutter-row"
-                sm={24}
-                md={8}
-                style={{
-                  marginBottom: "15px",
-                  paddingLeft: "0px",
-                }}
-              >
-                <FormInput
-                  name="name"
-                  type="text"
-                  size="middle"
-                  label="Supplier Name"
-                  placeholder="Allardan Treders"
-                  required
-                />
-              </Col>
-              <Col
-                className="gutter-row"
-                sm={24}
-                md={8}
-                style={{
-                  marginBottom: "15px",
-                  paddingLeft: "0px",
-                }}
-              >
-                <FormInput
-                  name="address"
-                  type="text"
-                  size="middle"
-                  label="Address"
-                  placeholder="Dhaka"
-                  required
-                />
-              </Col>
-              <Col
-                className="gutter-row"
-                sm={24}
-                md={8}
-                style={{
-                  marginBottom: "15px",
-                  paddingLeft: "0px",
-                }}
-              >
-                <FormInput
-                  name="ownerName"
-                  type="text"
-                  size="middle"
-                  label="Owner Name"
-                  placeholder="Md Abdullah"
-                  required
-                />
-              </Col>
-              <Col
-                className="gutter-row"
-                sm={24}
-                md={8}
-                style={{
-                  marginBottom: "15px",
-                  paddingLeft: "0px",
-                }}
-              >
-                <FormInput
-                  name="ownerPhone"
-                  type="text"
-                  size="middle"
-                  label="Owner Phone"
-                  placeholder="017XXXXXXXX"
-                  required
-                />
-              </Col>
-              <Col
-                className="gutter-row"
-                sm={24}
-                md={8}
-                style={{
-                  marginBottom: "15px",
-                  paddingLeft: "0px",
-                }}
-              >
-                <FormInput
-                  name="srName"
-                  type="text"
-                  size="middle"
-                  label="SR. Name"
-                  placeholder="Md Abdullah"
-                  required
-                />
-              </Col>
-              <Col
-                className="gutter-row"
-                sm={24}
-                md={8}
-                style={{
-                  marginBottom: "15px",
-                  paddingLeft: "0px",
-                }}
-              >
-                <FormInput
-                  name="srPhone"
-                  type="text"
-                  size="middle"
-                  label="SR. Phone"
-                  placeholder="017XXXXXXXX"
-                  required
-                />
-              </Col>
-              <Col
-                className="gutter-row"
-                sm={24}
-                md={24}
-                style={{
-                  marginBottom: "15px",
-                  paddingLeft: "0px",
-                }}
-              >
-                <FormTextArea
-                  name="comment"
-                  label="Details"
-                  placeholder="Note"
-                />
-              </Col>
-            </Row>
-            <Row justify="start" align="middle">
-              <Button
-                className="bg-primary hover:!bg-primary text-mirage !bg-opacity-[.8] duration-300 transition-all mt-4"
-                size="middle"
-                htmlType="submit"
-                type="primary"
-              >
-                Add Supplier
-              </Button>
-            </Row>
-          </Form>
-        </Modal>
       </section>
+      <Modal
+        title={`Add New Supplier`}
+        open={isAdd}
+        centered
+        footer={null}
+        onCancel={() => setIsAdd(!isAdd)}
+      >
+        <Form
+          submitHandler={supplierCreateHandler}
+          resolver={yupResolver(addSupplierSchema)}
+        >
+          <Row className="!mx-0" gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
+            <Col
+              className="gutter-row"
+              sm={24}
+              md={8}
+              style={{
+                marginBottom: "15px",
+                paddingLeft: "0px",
+              }}
+            >
+              <FormInput
+                name="name"
+                type="text"
+                size="middle"
+                label="Supplier Name"
+                placeholder="Allardan Treders"
+                required
+              />
+            </Col>
+            <Col
+              className="gutter-row"
+              sm={24}
+              md={8}
+              style={{
+                marginBottom: "15px",
+                paddingLeft: "0px",
+              }}
+            >
+              <FormInput
+                name="address"
+                type="text"
+                size="middle"
+                label="Address"
+                placeholder="Dhaka"
+                required
+              />
+            </Col>
+            <Col
+              className="gutter-row"
+              sm={24}
+              md={8}
+              style={{
+                marginBottom: "15px",
+                paddingLeft: "0px",
+              }}
+            >
+              <FormInput
+                name="ownerName"
+                type="text"
+                size="middle"
+                label="Owner Name"
+                placeholder="Md Abdullah"
+                required
+              />
+            </Col>
+            <Col
+              className="gutter-row"
+              sm={24}
+              md={8}
+              style={{
+                marginBottom: "15px",
+                paddingLeft: "0px",
+              }}
+            >
+              <FormInput
+                name="ownerPhone"
+                type="text"
+                size="middle"
+                label="Owner Phone"
+                placeholder="017XXXXXXXX"
+                required
+              />
+            </Col>
+            <Col
+              className="gutter-row"
+              sm={24}
+              md={8}
+              style={{
+                marginBottom: "15px",
+                paddingLeft: "0px",
+              }}
+            >
+              <FormInput
+                name="srName"
+                type="text"
+                size="middle"
+                label="SR. Name"
+                placeholder="Md Abdullah"
+                required
+              />
+            </Col>
+            <Col
+              className="gutter-row"
+              sm={24}
+              md={8}
+              style={{
+                marginBottom: "15px",
+                paddingLeft: "0px",
+              }}
+            >
+              <FormInput
+                name="srPhone"
+                type="text"
+                size="middle"
+                label="SR. Phone"
+                placeholder="017XXXXXXXX"
+                required
+              />
+            </Col>
+            <Col
+              className="gutter-row"
+              sm={24}
+              md={24}
+              style={{
+                marginBottom: "15px",
+                paddingLeft: "0px",
+              }}
+            >
+              <FormTextArea name="comment" label="Details" placeholder="Note" />
+            </Col>
+          </Row>
+          <Row justify="start" align="middle">
+            <Button
+              className="bg-primary hover:!bg-primary text-mirage !bg-opacity-[.8] duration-300 transition-all mt-4"
+              size="middle"
+              htmlType="submit"
+              type="primary"
+            >
+              Add Supplier
+            </Button>
+          </Row>
+        </Form>
+      </Modal>
     </div>
   );
 };
