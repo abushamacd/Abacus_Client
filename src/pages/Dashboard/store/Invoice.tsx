@@ -179,12 +179,6 @@ export const Invoice = () => {
 
   const onCustomerChange = (value: string) => {
     const filteredUser = allUser.filter((user: any) => user.id === value);
-    // dispatch(
-    //   setView({
-    //     data: filteredUser.length > 0 ? filteredUser[0] : null,
-    //     state: filteredUser.length > 0,
-    //   })
-    // );
     setSelectdUser(filteredUser[0]);
     setRole(filteredUser?.role);
     setErrMessage("");
@@ -313,7 +307,11 @@ export const Invoice = () => {
       dataIndex: "customerName",
       sorter: true,
     },
-
+    {
+      title: "Update By",
+      dataIndex: "updateBy",
+      sorter: true,
+    },
     {
       title: "Total",
       dataIndex: "total",
