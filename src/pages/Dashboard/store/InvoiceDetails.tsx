@@ -131,8 +131,8 @@ export const InvoiceDetails = () => {
 
   useEffect(() => {
     setInvoiceDate(invoice?.date);
-    setDiscount(invoice?.discount);
-    setPaid(invoice?.total - invoice?.due);
+    // setDiscount(invoice?.discount);
+    // setPaid(invoice?.total - invoice?.due);
   }, [invoice]);
 
   console.log(invoice);
@@ -162,6 +162,11 @@ export const InvoiceDetails = () => {
 
   const afterDiscount = +(totalAmount - discount).toFixed(2);
   const due = +(afterDiscount - paid).toFixed(2);
+
+  const removeHandler = (index: number) => {
+    const updatedProducts = allProducts.filter((_, i) => i !== index);
+    setAllProducts(updatedProducts);
+  };
 
   // @ts-ignore
   console.log(allUser);
@@ -243,6 +248,7 @@ export const InvoiceDetails = () => {
                   </Checkbox>
                 </span>
               </div>
+              {/* user info */}
               <div className="md:w-64 flex items-center justify-center mx-auto px-4">
                 <div className="">
                   <Select
@@ -261,7 +267,6 @@ export const InvoiceDetails = () => {
                   )}
                 </div>
               </div>
-              {/* user info */}
               <div className="py-4 border-t-2 border-secondary mt-4 mx-4">
                 <Row
                   className="!mx-0"
@@ -451,8 +456,13 @@ export const InvoiceDetails = () => {
                               </td>
                             )}
                             <td className="p-2 flex gap-2 justify-center items-center">
+                              <FaEdit
+                                style={{ color: "#008A3F" }}
+                                // onClick={() => openView(invoice?.id)}
+                                size={22}
+                              />
                               <MdDeleteForever
-                                // onClick={() => removeHandler(i)}
+                                onClick={() => removeHandler(i)}
                                 size={20}
                                 style={{ color: "#D92728" }}
                               />
