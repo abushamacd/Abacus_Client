@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import text_logo from "../../../assets/text_logo.png";
 import Loading from "../../../components/ui/Loading";
 import { useGetUsersQuery } from "../../../redux/api/userApi";
-import { useAppDispatch, useDebounced } from "../../../redux/hooks";
+import { useDebounced } from "../../../redux/hooks";
 import {
   Button,
   Checkbox,
@@ -16,7 +16,6 @@ import {
   Row,
   Select,
 } from "antd";
-import { setView } from "../../../redux/features/siteSlice";
 import { SelectOptions } from "../../../types";
 import { MdDeleteForever } from "react-icons/md";
 import { useGetProductsQuery } from "../../../redux/api/product";
@@ -72,8 +71,6 @@ export const Invoice = () => {
   const [customerSearchTerm, setCustomerSearchTerm] =
     useState<string>("Unknown");
   const [createInvoice] = useCreateInvoiceMutation();
-
-  const dispatch = useAppDispatch();
 
   const totalProfit = allProducts.reduce((acc, item) => acc + item.profit, 0);
   const totalAmount = allProducts.reduce((acc, item) => acc + item.total, 0);
@@ -173,7 +170,6 @@ export const Invoice = () => {
   // Handlers
   const onCustomerSearch = (value: string) => {
     setCustomerSearchTerm(value);
-    dispatch(setView({ data: null, state: false }));
     setErrMessage("");
   };
 
@@ -259,7 +255,7 @@ export const Invoice = () => {
       date: invoiceDate,
       note: note,
       due: due || 0,
-      profit: totalProfit || 0,
+      profit: totalProfit - discount || 0,
       total: afterDiscount || 0,
       discount: discount || 0,
       products: allProducts,
@@ -937,7 +933,7 @@ export const Invoice = () => {
           </div>
         </div>
       </section>
-      {/* all product */}
+      {/* all Invoice */}
       <div className="dark:bg-bg_dark bg-white p-4 rounded-md mt-5">
         <div className="">
           <div className="w-full dark:bg-bg_dark bg-white py-5 rounded-md md:mb-0 mb-5 flex md:flex-row flex-col justify-between md:items-center items-start">
