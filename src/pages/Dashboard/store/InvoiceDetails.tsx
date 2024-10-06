@@ -62,9 +62,12 @@ export const InvoiceDetails = () => {
   const [role, setRole] = useState("");
   const [note, setNote] = useState("");
   const [fullPaid, setFullPaid] = useState(false);
-  const [discount, setDiscount] = useState<number>(invoice?.discount);
-  const [paid, setPaid] = useState<number>(invoice?.total - invoice?.due);
+  const [discount, setDiscount] = useState<number>(0);
+  const [returnAmount, setReturnAmount] = useState<number>(0);
+  const [paid, setPaid] = useState<number>(0);
   const [allProducts, setAllProducts] = useState<any[]>([]);
+  const [removedProducts, setRemovedProducts] = useState<any[]>([]);
+
   let products: [];
 
   // Customer query
@@ -131,9 +134,27 @@ export const InvoiceDetails = () => {
 
   useEffect(() => {
     setInvoiceDate(invoice?.date);
-    // setDiscount(invoice?.discount);
-    // setPaid(invoice?.total - invoice?.due);
+    setDiscount(invoice?.discount);
+    setPaid(invoice?.total - invoice?.due);
   }, [invoice]);
+
+  useEffect(() => {
+    const returns = removedProducts?.reduce(
+      (acc: any, item: { total: any }) => acc + item.total,
+      0
+    );
+
+    console.log(invoice?.discount - discount);
+    if (removedProducts?.length > 0) {
+      if (allProducts?.length > 0) {
+        setReturnAmount(returns - discount);
+      } else {
+        setReturnAmount(returns);
+      }
+    } else {
+      setReturnAmount(returns);
+    }
+  }, [removedProducts, invoice, allProducts, discount]);
 
   console.log(invoice);
 
@@ -164,12 +185,14 @@ export const InvoiceDetails = () => {
   const due = +(afterDiscount - paid).toFixed(2);
 
   const removeHandler = (index: number) => {
+    const removedProduct: any = allProducts[index];
+    setRemovedProducts([...removedProducts, removedProduct]);
+
     const updatedProducts = allProducts.filter((_, i) => i !== index);
+
     setAllProducts(updatedProducts);
   };
-
-  // @ts-ignore
-  console.log(allUser);
+  console.log(removedProducts);
 
   const invoiceHandler = async () => {
     if (selectdUser === null) {
@@ -330,11 +353,20 @@ export const InvoiceDetails = () => {
                       <span className="!font-bold">Due:</span>
                       <span
                         className={`italic ${
-                          selectdUser?.previous > 0 &&
-                          "text-[#D31818] !font-bold"
+                          invoice?.due > 0 && "text-[#D31818] !font-bold"
                         }`}
                       >
-                        {selectdUser?.previous}
+                        {" "}
+                        {invoice?.due}
+                      </span>
+                    </span>
+                    <span className="tracking-wide block">
+                      <span className="!font-bold">Return Amount:</span>
+                      <span className={`italic text-[#D31818] !font-bold`}>
+                        {" "}
+                        {returnAmount > 0
+                          ? returnAmount - invoice?.due
+                          : returnAmount}
                       </span>
                     </span>
                   </Col>
@@ -557,7 +589,7 @@ export const InvoiceDetails = () => {
                         ></Checkbox>
                       </span>
                       <Input
-                        value={paid}
+                        value={paid - returnAmount}
                         className="bg-white text-mirage dark:bg-bg_dark dark:text-white focus-within:!border-primary hover:!border-primary disabled:text-mirage dark:disabled:text-white !placeholder:text-[#ddddddbb] w-20 relative left-[15px]"
                         name="paid"
                         step={1}
