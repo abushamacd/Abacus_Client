@@ -134,7 +134,7 @@ export const InvoiceDetails = () => {
 
   useEffect(() => {
     setInvoiceDate(invoice?.date);
-    setDiscount(invoice?.discount);
+    // setDiscount(invoice?.discount);
     setPaid(invoice?.total - invoice?.due);
   }, [invoice]);
 
@@ -144,10 +144,9 @@ export const InvoiceDetails = () => {
       0
     );
 
-    console.log(invoice?.discount - discount);
     if (removedProducts?.length > 0) {
       if (allProducts?.length > 0) {
-        setReturnAmount(returns - discount);
+        setReturnAmount(returns - invoice?.discount);
       } else {
         setReturnAmount(returns);
       }
@@ -349,24 +348,55 @@ export const InvoiceDetails = () => {
                       paddingLeft: "0px",
                     }}
                   >
-                    <span className="tracking-wide block">
+                    <span className="tracking-wide flex justify-between">
+                      <span className="!font-bold">Paid:</span>
+                      <span className={`italic `}>
+                        {" "}
+                        {invoice?.total - invoice?.due}
+                      </span>
+                    </span>
+                    <span className="tracking-wide flex justify-between">
+                      <span className="!font-bold">Discount:</span>
+                      <span className={`italic `}> {invoice?.discount}</span>
+                    </span>
+                    <span className="tracking-wide flex justify-between">
                       <span className="!font-bold">Due:</span>
                       <span
                         className={`italic ${
                           invoice?.due > 0 && "text-[#D31818] !font-bold"
                         }`}
                       >
-                        {" "}
                         {invoice?.due}
                       </span>
                     </span>
-                    <span className="tracking-wide block">
-                      <span className="!font-bold">Return Amount:</span>
+                    <span className="tracking-wide flex justify-between border-t">
+                      <span className="!font-bold">Total:</span>
+                      <span className={`italic `}>
+                        {invoice?.total + invoice?.discount}
+                      </span>
+                    </span>
+                    <span className="tracking-wide flex justify-between">
+                      {/* ({returnAmount}
+                        {`- Discount: ${+(
+                          invoice?.discount /
+                          (invoice?.profit / 100)
+                        ).toFixed(3)} %`}
+                        ) */}
+                      <span className="!font-bold">Return:</span>
                       <span className={`italic text-[#D31818] !font-bold`}>
-                        {" "}
-                        {returnAmount > 0
+                        {/* {returnAmount > 0
                           ? returnAmount - invoice?.due
-                          : returnAmount}
+                          : returnAmount} */}
+                        {returnAmount || 0}
+                      </span>
+                    </span>
+                    <span className="tracking-wide flex justify-between border-t">
+                      <span className="!font-bold">Remain:</span>
+                      <span className={`italic `}>
+                        {invoice?.total -
+                          (returnAmount > 0
+                            ? returnAmount - invoice?.due
+                            : returnAmount)}
                       </span>
                     </span>
                   </Col>
@@ -566,6 +596,7 @@ export const InvoiceDetails = () => {
                         type="number"
                         variant={"filled"}
                         max={totalProfit}
+                        min={0}
                         size="small"
                         placeholder="Discount"
                         onChange={invoiceInputHandler}
@@ -611,7 +642,7 @@ export const InvoiceDetails = () => {
                     >
                       <span className="subtotal !font-bold text-lg">Due: </span>
                       <span className="subtotal !font-bold text-lg">
-                        {due || 0}
+                        {due - returnAmount || 0}
                       </span>
                     </div>
                   </Col>
