@@ -60,11 +60,11 @@ export const Invoice = () => {
     dayjs(Date.now()).format("DD/MM/YYYY")
   );
   const [note, setNote] = useState("");
+  const [reduce, setReduce] = useState(false);
   const [showProfit, setShowProfit] = useState(false);
   const [fullPaid, setFullPaid] = useState(false);
   const [errMessage, setErrMessage] = useState("");
   const [selectdUser, setSelectdUser] = useState<any>(null);
-  const [discount, setDiscount] = useState<number>(0);
   const [paid, setPaid] = useState<number>(0);
   const [allProducts, setAllProducts] = useState<any[]>([]);
   const [rate, setRate] = useState(0);
@@ -75,7 +75,7 @@ export const Invoice = () => {
   const totalProfit = allProducts.reduce((acc, item) => acc + item.profit, 0);
   const totalAmount = allProducts.reduce((acc, item) => acc + item.total, 0);
 
-  const afterDiscount = +(totalAmount - discount).toFixed(2);
+  const afterDiscount = +totalAmount.toFixed(2);
   const due = +(afterDiscount - paid).toFixed(2);
 
   const productValues: {
@@ -214,9 +214,21 @@ export const Invoice = () => {
 
   const invoiceInputHandler = (e: any) => {
     const { name, value } = e.target;
-    if (name === "discount") setDiscount(+value);
     if (name === "paid") setPaid(+value);
     if (name === "note") setNote(value);
+  };
+
+  console.log(allProducts);
+
+  const totalhandler = (e: any, index: number) => {
+    const { value } = e.target;
+    allProducts[index].total = +value;
+    allProducts[index].profit = +(
+      allProducts[index].total -
+      allProducts[index]?.purchase * allProducts[index]?.quantity
+    );
+    setAllProducts(allProducts);
+    setReduce(!reduce);
   };
 
   const insertProduct = (e: any, productValues: any) => {
@@ -255,9 +267,8 @@ export const Invoice = () => {
       date: invoiceDate,
       note: note,
       due: due || 0,
-      profit: totalProfit - discount || 0,
+      profit: totalProfit || 0,
       total: afterDiscount || 0,
-      discount: discount || 0,
       products: allProducts,
     };
 
@@ -268,7 +279,6 @@ export const Invoice = () => {
       setRole("");
       setAllProducts([]);
       setPaid(0);
-      setDiscount(0);
     } catch (err: any) {
       toast.error(`${err.data?.message}`);
     }
@@ -385,6 +395,11 @@ export const Invoice = () => {
   useEffect(() => {
     setRole(selectdUser?.role);
   }, [selectdUser]);
+
+  // Role setting based on selected user
+  useEffect(() => {
+    setAllProducts(allProducts);
+  }, [allProducts, reduce]);
 
   // Role setting based on selected user
   useEffect(() => {
@@ -606,6 +621,7 @@ export const Invoice = () => {
                 </thead>
                 <tbody>
                   {allProducts?.map((product: any, i: number) => {
+                    console.log(product);
                     return (
                       <tr key={i} className="hover:bg-secondary duration-300">
                         <td className="p-2 text-start flex justify-between items-center">
@@ -618,7 +634,23 @@ export const Invoice = () => {
                         <td className="p-2 text-right">
                           {product?.rate} (৳ /{product?.unit})
                         </td>
-                        <td className="p-2 text-right">{product?.total}</td>
+                        {/* <td className="p-2 text-right">{product?.total}</td> */}
+                        <td className="p-2 text-right">
+                          <Input
+                            value={product?.total}
+                            // value={product?.total}
+                            className="bg-white text-mirage dark:bg-bg_dark dark:text-white focus-within:!border-primary hover:!border-primary disabled:text-mirage dark:disabled:text-white !placeholder:text-[#ddddddbb] w-16"
+                            name="total"
+                            step={1}
+                            type="number"
+                            variant={"filled"}
+                            max={product?.rate * product?.quantity}
+                            min={product?.purchase * product?.quantity}
+                            size="small"
+                            placeholder="Total"
+                            onChange={(e) => totalhandler(e, i)}
+                          />
+                        </td>
                         {showProfit && (
                           <td className="p-2 text-right">{product?.profit}</td>
                         )}
@@ -666,7 +698,7 @@ export const Invoice = () => {
                 <TextArea
                   className="bg-white text-mirage dark:bg-bg_dark dark:text-white focus-within:!border-primary hover:!border-primary disabled:text-mirage dark:disabled:text-white placeholder:text-[#ddddddbb]"
                   name="note"
-                  rows={9}
+                  rows={3}
                   onChange={invoiceInputHandler}
                   placeholder="Type note"
                 />
@@ -682,35 +714,14 @@ export const Invoice = () => {
                   width: "100%",
                 }}
               >
-                <div className="flex justify-between items-center px-4">
-                  <span className="subtotal">Subtotal: </span>
-                  <span className="subtotal">{totalAmount}</span>
-                </div>
-                <div className="flex justify-between items-center px-4">
-                  <span className="subtotal">Discount: </span>
-                  <Input
-                    value={discount}
-                    className="bg-white text-mirage dark:bg-bg_dark dark:text-white focus-within:!border-primary hover:!border-primary disabled:text-mirage dark:disabled:text-white !placeholder:text-[#ddddddbb] w-16 relative left-[15px]"
-                    name="discount"
-                    step={1}
-                    type="number"
-                    variant={"filled"}
-                    max={totalProfit}
-                    min={0}
-                    size="small"
-                    placeholder="Discount"
-                    onChange={invoiceInputHandler}
-                  />
-                </div>
-                <hr className="mx-4 my-2" />
                 <div className="flex justify-between items-center px-4 text-primary">
-                  <span className="subtotal !font-bold text-lg">Total: </span>
-                  <span className="subtotal !font-bold text-lg">
+                  <span className="total !font-bold text-lg">Total: </span>
+                  <span className="total !font-bold text-lg">
                     {afterDiscount || 0}
                   </span>
                 </div>
                 <div className="flex justify-between items-center px-4">
-                  <span className="subtotal">
+                  <span className="total">
                     Paid:{" "}
                     <Checkbox
                       className="text-mirage dark:text-white"
