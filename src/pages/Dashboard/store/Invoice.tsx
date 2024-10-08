@@ -216,19 +216,31 @@ export const Invoice = () => {
     const { name, value } = e.target;
     if (name === "paid") setPaid(+value);
     if (name === "note") setNote(value);
+    setErrMessage("");
   };
 
-  console.log(allProducts);
-
-  const totalhandler = (e: any, index: number) => {
-    const { value } = e.target;
-    allProducts[index].total = +value;
-    allProducts[index].profit = +(
-      allProducts[index].total -
-      allProducts[index]?.purchase * allProducts[index]?.quantity
-    );
-    setAllProducts(allProducts);
-    setReduce(!reduce);
+  const productHandler = (e: any, index: number) => {
+    const { name, value } = e.target;
+    if (name === "quantity") {
+      allProducts[index].quantity = +value;
+      allProducts[index].total =
+        allProducts[index].quantity * allProducts[index].rate;
+      allProducts[index].profit = +(
+        allProducts[index].total -
+        allProducts[index]?.purchase * allProducts[index]?.quantity
+      );
+      setAllProducts(allProducts);
+      setReduce(!reduce);
+    }
+    if (name === "total") {
+      allProducts[index].total = +value;
+      allProducts[index].profit = +(
+        allProducts[index].total -
+        allProducts[index]?.purchase * allProducts[index]?.quantity
+      );
+      setAllProducts(allProducts);
+      setReduce(!reduce);
+    }
   };
 
   const insertProduct = (e: any, productValues: any) => {
@@ -261,14 +273,19 @@ export const Invoice = () => {
       return;
     }
 
+    if (due < 0) {
+      setErrMessage("Due won't be negative");
+    }
+
     const data = {
       customerId: selectdUser?.id,
       customerName: selectdUser?.name,
       date: invoiceDate,
       note: note,
+      total: afterDiscount || 0,
+      paid: paid || 0,
       due: due || 0,
       profit: totalProfit || 0,
-      total: afterDiscount || 0,
       products: allProducts,
     };
 
@@ -621,7 +638,6 @@ export const Invoice = () => {
                 </thead>
                 <tbody>
                   {allProducts?.map((product: any, i: number) => {
-                    console.log(product);
                     return (
                       <tr key={i} className="hover:bg-secondary duration-300">
                         <td className="p-2 text-start flex justify-between items-center">
@@ -629,30 +645,42 @@ export const Invoice = () => {
                           <span>{`ADS-${product?.purchase}T`}</span>
                         </td>
                         <td className="p-2 text-right">
-                          {product?.quantity} ({product?.unit})
+                          <Input
+                            value={product?.quantity}
+                            className="bg-white text-mirage dark:bg-bg_dark dark:text-white focus-within:!border-primary hover:!border-primary disabled:text-mirage dark:disabled:text-white !placeholder:text-[#ddddddbb] w-20"
+                            name="quantity"
+                            step={0.01}
+                            type="number"
+                            variant={"filled"}
+                            min={0}
+                            size="small"
+                            placeholder="Quantity"
+                            onChange={(e) => productHandler(e, i)}
+                          />
+                          ({product?.unit})
                         </td>
                         <td className="p-2 text-right">
                           {product?.rate} (৳ /{product?.unit})
                         </td>
-                        {/* <td className="p-2 text-right">{product?.total}</td> */}
                         <td className="p-2 text-right">
                           <Input
                             value={product?.total}
-                            // value={product?.total}
-                            className="bg-white text-mirage dark:bg-bg_dark dark:text-white focus-within:!border-primary hover:!border-primary disabled:text-mirage dark:disabled:text-white !placeholder:text-[#ddddddbb] w-16"
+                            className="bg-white text-mirage dark:bg-bg_dark dark:text-white focus-within:!border-primary hover:!border-primary disabled:text-mirage dark:disabled:text-white !placeholder:text-[#ddddddbb] w-20"
                             name="total"
-                            step={1}
+                            step={0.01}
                             type="number"
                             variant={"filled"}
                             max={product?.rate * product?.quantity}
                             min={product?.purchase * product?.quantity}
                             size="small"
                             placeholder="Total"
-                            onChange={(e) => totalhandler(e, i)}
+                            onChange={(e) => productHandler(e, i)}
                           />
                         </td>
                         {showProfit && (
-                          <td className="p-2 text-right">{product?.profit}</td>
+                          <td className="p-2 text-right">
+                            {product?.profit.toFixed(2)}
+                          </td>
                         )}
                         <td className="p-2 flex gap-2 justify-center items-center">
                           <MdDeleteForever
@@ -667,10 +695,11 @@ export const Invoice = () => {
                   {showProfit && (
                     <tr className="hover:bg-secondary duration-300">
                       <td colSpan={4} className="p-2 text-right">
-                        Total Profit ={" "}
+                        Total Profit =
                       </td>
-
-                      <td className="p-2 text-right">{totalProfit}</td>
+                      <td className="p-2 text-right">
+                        {totalProfit.toFixed(2)}
+                      </td>
                       <td className="p-2 text-right"></td>
                     </tr>
                   )}
@@ -732,7 +761,7 @@ export const Invoice = () => {
                     value={paid}
                     className="bg-white text-mirage dark:bg-bg_dark dark:text-white focus-within:!border-primary hover:!border-primary disabled:text-mirage dark:disabled:text-white !placeholder:text-[#ddddddbb] w-20 relative left-[15px]"
                     name="paid"
-                    step={1}
+                    step={0.01}
                     type="number"
                     variant={"filled"}
                     min={0}
@@ -744,15 +773,16 @@ export const Invoice = () => {
                   />
                 </div>
                 <hr className="mx-4 my-2" />
-                <div
-                  className={`flex justify-between items-center px-4 ${
-                    due > 0 ? "text-[#D92728]" : ""
-                  }`}
-                >
-                  <span className="subtotal !font-bold text-lg">Due: </span>
-                  <span className="subtotal !font-bold text-lg">
-                    {due || 0}
+                <div className={` px-4 ${due > 0 ? "text-[#D92728]" : ""}`}>
+                  <span className="flex justify-between items-center">
+                    <span className="subtotal !font-bold text-lg">Due: </span>
+                    <span className="subtotal !font-bold text-lg">
+                      {due || 0}
+                    </span>
                   </span>
+                  {errMessage?.includes("Due") && (
+                    <small style={{ color: "red" }}>{errMessage}</small>
+                  )}
                 </div>
               </Col>
               <Button
