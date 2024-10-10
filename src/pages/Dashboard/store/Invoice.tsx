@@ -270,11 +270,14 @@ export const Invoice = () => {
   const invoiceHandler = async () => {
     if (selectdUser === null) {
       setErrMessage("Must be select the customer");
+      toast.error(`${errMessage}`);
       return;
     }
 
     if (due < 0) {
       setErrMessage("Due won't be negative");
+      toast.error(`${errMessage}`);
+      return;
     }
 
     const data = {

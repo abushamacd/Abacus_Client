@@ -157,6 +157,9 @@ export const InvoiceDetails = () => {
         setAfterReturnDue(-afterReturn);
         setRemainAmount(invoice?.total - returns);
       }
+    } else if (returns > 0) {
+      setReturnAmount(returns);
+      setRemainAmount(invoice?.total - returns);
     }
 
     // setReturnAmount(returns);
