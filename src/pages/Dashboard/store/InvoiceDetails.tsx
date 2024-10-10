@@ -63,7 +63,9 @@ export const InvoiceDetails = () => {
   const [note, setNote] = useState("");
   const [fullPaid, setFullPaid] = useState(false);
   const [discount, setDiscount] = useState<number>(0);
+  const [afterReturnDue, setAfterReturnDue] = useState<number>(0);
   const [returnAmount, setReturnAmount] = useState<number>(0);
+  const [remainAmount, setRemainAmount] = useState<number>(0);
   const [paid, setPaid] = useState<number>(0);
   const [allProducts, setAllProducts] = useState<any[]>([]);
   const [removedProducts, setRemovedProducts] = useState<any[]>([]);
@@ -134,8 +136,9 @@ export const InvoiceDetails = () => {
 
   useEffect(() => {
     setInvoiceDate(invoice?.date);
-    // setDiscount(invoice?.discount);
-    setPaid(invoice?.total - invoice?.due);
+    setAfterReturnDue(invoice?.due);
+    setRemainAmount(invoice?.total);
+    // setPaid(invoice?.total - invoice?.due);
   }, [invoice]);
 
   useEffect(() => {
@@ -144,18 +147,22 @@ export const InvoiceDetails = () => {
       0
     );
 
-    if (removedProducts?.length > 0) {
-      if (allProducts?.length > 0) {
-        setReturnAmount(returns - invoice?.discount);
+    if (invoice?.due > 0 && returns > 0) {
+      const afterReturn = returns - invoice?.due;
+      if (afterReturn > 0) {
+        setReturnAmount(afterReturn);
+        setAfterReturnDue(0);
+        setRemainAmount(invoice?.total - returns);
       } else {
-        setReturnAmount(returns);
+        setAfterReturnDue(-afterReturn);
+        setRemainAmount(invoice?.total - returns);
       }
-    } else {
-      setReturnAmount(returns);
     }
-  }, [removedProducts, invoice, allProducts, discount]);
 
-  console.log(invoice);
+    // setReturnAmount(returns);
+  }, [removedProducts, invoice, allProducts]);
+
+  // console.log(invoice);
 
   useEffect(() => {
     setSelectdUser(allUser?.[0]);
@@ -180,8 +187,8 @@ export const InvoiceDetails = () => {
     0
   );
 
-  const afterDiscount = +(totalAmount - discount).toFixed(2);
-  const due = +(afterDiscount - paid).toFixed(2);
+  const afterDiscount = +totalAmount?.toFixed(2);
+  const due = +(afterDiscount - paid)?.toFixed(2);
 
   const removeHandler = (index: number) => {
     const removedProduct: any = allProducts[index];
@@ -191,7 +198,6 @@ export const InvoiceDetails = () => {
 
     setAllProducts(updatedProducts);
   };
-  console.log(removedProducts);
 
   const invoiceHandler = async () => {
     if (selectdUser === null) {
@@ -350,54 +356,35 @@ export const InvoiceDetails = () => {
                   >
                     <span className="tracking-wide flex justify-between">
                       <span className="!font-bold">Paid:</span>
-                      <span className={`italic `}>
-                        {" "}
-                        {invoice?.total - invoice?.due}
-                      </span>
-                    </span>
-                    <span className="tracking-wide flex justify-between">
-                      <span className="!font-bold">Discount:</span>
-                      <span className={`italic `}> {invoice?.discount}</span>
+                      <span className={`italic `}> {invoice?.paid}</span>
                     </span>
                     <span className="tracking-wide flex justify-between">
                       <span className="!font-bold">Due:</span>
                       <span
                         className={`italic ${
-                          invoice?.due > 0 && "text-[#D31818] !font-bold"
+                          afterReturnDue > 0 && "text-[#D31818] !font-bold"
                         }`}
                       >
-                        {invoice?.due}
+                        {afterReturnDue}
                       </span>
                     </span>
                     <span className="tracking-wide flex justify-between border-t">
                       <span className="!font-bold">Total:</span>
-                      <span className={`italic `}>
-                        {invoice?.total + invoice?.discount}
-                      </span>
+                      <span className={`italic `}>{invoice?.total}</span>
                     </span>
                     <span className="tracking-wide flex justify-between">
-                      {/* ({returnAmount}
-                        {`- Discount: ${+(
-                          invoice?.discount /
-                          (invoice?.profit / 100)
-                        ).toFixed(3)} %`}
-                        ) */}
                       <span className="!font-bold">Return:</span>
-                      <span className={`italic text-[#D31818] !font-bold`}>
-                        {/* {returnAmount > 0
-                          ? returnAmount - invoice?.due
-                          : returnAmount} */}
+                      <span
+                        className={`italic ${
+                          returnAmount > 0 && "text-[#D31818] !font-bold"
+                        }`}
+                      >
                         {returnAmount || 0}
                       </span>
                     </span>
                     <span className="tracking-wide flex justify-between border-t">
                       <span className="!font-bold">Remain:</span>
-                      <span className={`italic `}>
-                        {invoice?.total -
-                          (returnAmount > 0
-                            ? returnAmount - invoice?.due
-                            : returnAmount)}
-                      </span>
+                      <span className={`italic `}>{remainAmount}</span>
                     </span>
                   </Col>
                 </Row>
@@ -582,27 +569,6 @@ export const InvoiceDetails = () => {
                       width: "100%",
                     }}
                   >
-                    <div className="flex justify-between items-center px-4">
-                      <span className="subtotal">Subtotal: </span>
-                      <span className="subtotal">{totalAmount}</span>
-                    </div>
-                    <div className="flex justify-between items-center px-4">
-                      <span className="subtotal">Discount: </span>
-                      <Input
-                        value={discount}
-                        className="bg-white text-mirage dark:bg-bg_dark dark:text-white focus-within:!border-primary hover:!border-primary disabled:text-mirage dark:disabled:text-white !placeholder:text-[#ddddddbb] w-16 relative left-[15px]"
-                        name="discount"
-                        step={1}
-                        type="number"
-                        variant={"filled"}
-                        max={totalProfit}
-                        min={0}
-                        size="small"
-                        placeholder="Discount"
-                        onChange={invoiceInputHandler}
-                      />
-                    </div>
-                    <hr className="mx-4 my-2" />
                     <div className="flex justify-between items-center px-4 text-primary">
                       <span className="subtotal !font-bold text-lg">
                         Total:{" "}
@@ -620,7 +586,7 @@ export const InvoiceDetails = () => {
                         ></Checkbox>
                       </span>
                       <Input
-                        value={paid - returnAmount}
+                        value={paid}
                         className="bg-white text-mirage dark:bg-bg_dark dark:text-white focus-within:!border-primary hover:!border-primary disabled:text-mirage dark:disabled:text-white !placeholder:text-[#ddddddbb] w-20 relative left-[15px]"
                         name="paid"
                         step={1}
