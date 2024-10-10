@@ -55,6 +55,7 @@ export const InvoiceDetails = () => {
   ];
 
   const [isEdit, setIsEdit] = useState(true);
+  const [reduce, setReduce] = useState(false);
   const [errMessage, setErrMessage] = useState("");
   const [selectdUser, setSelectdUser] = useState<any>(null);
   const [showProfit, setShowProfit] = useState(false);
@@ -193,12 +194,34 @@ export const InvoiceDetails = () => {
   const afterDiscount = +totalAmount?.toFixed(2);
   const due = +(afterDiscount - paid)?.toFixed(2);
 
+  const productHandler = (e: any, index: number) => {
+    const { name, value } = e.target;
+    if (name === "quantity") {
+      allProducts[index].quantity = +value;
+      allProducts[index].total =
+        allProducts[index].quantity * allProducts[index].rate;
+      allProducts[index].profit = +(
+        allProducts[index].total -
+        allProducts[index]?.purchase * allProducts[index]?.quantity
+      );
+      setAllProducts(allProducts);
+      setReduce(!reduce);
+    }
+    if (name === "total") {
+      allProducts[index].total = +value;
+      allProducts[index].profit = +(
+        allProducts[index].total -
+        allProducts[index]?.purchase * allProducts[index]?.quantity
+      );
+      setAllProducts(allProducts);
+      setReduce(!reduce);
+    }
+  };
+
   const removeHandler = (index: number) => {
     const removedProduct: any = allProducts[index];
     setRemovedProducts([...removedProducts, removedProduct]);
-
     const updatedProducts = allProducts.filter((_, i) => i !== index);
-
     setAllProducts(updatedProducts);
   };
 
@@ -496,15 +519,41 @@ export const InvoiceDetails = () => {
                               <span>{`ADS-${product?.purchase}T`}</span>
                             </td>
                             <td className="p-2 text-right">
-                              {product?.quantity} ({product?.unit})
+                              <Input
+                                value={product?.quantity}
+                                className="bg-white text-mirage dark:bg-bg_dark dark:text-white focus-within:!border-primary hover:!border-primary disabled:text-mirage dark:disabled:text-white !placeholder:text-[#ddddddbb] w-20"
+                                name="quantity"
+                                step={0.01}
+                                type="number"
+                                variant={"filled"}
+                                min={0}
+                                size="small"
+                                placeholder="Quantity"
+                                onChange={(e) => productHandler(e, i)}
+                              />
+                              ({product?.unit})
                             </td>
                             <td className="p-2 text-right">
                               {product?.rate} (৳ /{product?.unit})
                             </td>
-                            <td className="p-2 text-right">{product?.total}</td>
+                            <td className="p-2 text-right">
+                              <Input
+                                value={+product?.total.toFixed(2)}
+                                className="bg-white text-mirage dark:bg-bg_dark dark:text-white focus-within:!border-primary hover:!border-primary disabled:text-mirage dark:disabled:text-white !placeholder:text-[#ddddddbb] w-20"
+                                name="total"
+                                step={0.01}
+                                type="number"
+                                variant={"filled"}
+                                max={product?.rate * product?.quantity}
+                                min={product?.purchase * product?.quantity}
+                                size="small"
+                                placeholder="Total"
+                                onChange={(e) => productHandler(e, i)}
+                              />
+                            </td>
                             {showProfit && (
                               <td className="p-2 text-right">
-                                {product?.profit}
+                                {product?.profit.toFixed(2)}
                               </td>
                             )}
                             <td className="p-2 flex gap-2 justify-center items-center">
@@ -537,7 +586,7 @@ export const InvoiceDetails = () => {
                 </div>
                 {/* calculation */}
                 <Row
-                  className="!mx-0 border-b-2 border-secondary mb-4 px-2 justify-between"
+                  className="!mx-0 mb-4 px-2 justify-between"
                   gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}
                 >
                   <Col
@@ -556,7 +605,7 @@ export const InvoiceDetails = () => {
                     <TextArea
                       className="bg-white text-mirage dark:bg-bg_dark dark:text-white focus-within:!border-primary hover:!border-primary disabled:text-mirage dark:disabled:text-white placeholder:text-[#ddddddbb]"
                       name="note"
-                      rows={9}
+                      rows={6}
                       onChange={invoiceInputHandler}
                       placeholder="Type note"
                     />
@@ -590,6 +639,7 @@ export const InvoiceDetails = () => {
                       </span>
                       <Input
                         value={paid}
+                        // defaultValue={invoice?.paid}
                         className="bg-white text-mirage dark:bg-bg_dark dark:text-white focus-within:!border-primary hover:!border-primary disabled:text-mirage dark:disabled:text-white !placeholder:text-[#ddddddbb] w-20 relative left-[15px]"
                         name="paid"
                         step={1}
@@ -598,7 +648,6 @@ export const InvoiceDetails = () => {
                         min={0}
                         max={afterDiscount}
                         size="small"
-                        defaultValue={0}
                         placeholder="Discount"
                         onChange={invoiceInputHandler}
                       />
