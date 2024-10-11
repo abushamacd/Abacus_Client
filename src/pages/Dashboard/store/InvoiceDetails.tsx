@@ -151,16 +151,16 @@ export const InvoiceDetails = () => {
     if (invoice?.due > 0 && returns > 0) {
       const afterReturn = returns - invoice?.due;
       if (afterReturn > 0) {
-        setReturnAmount(afterReturn);
+        setReturnAmount(+afterReturn.toFixed(2));
         setAfterReturnDue(0);
-        setRemainAmount(invoice?.total - returns);
+        setRemainAmount(+(invoice?.total - returns).toFixed(2));
       } else {
-        setAfterReturnDue(-afterReturn);
-        setRemainAmount(invoice?.total - returns);
+        setAfterReturnDue(-afterReturn.toFixed(2));
+        setRemainAmount(+(invoice?.total - returns).toFixed(2));
       }
     } else if (returns > 0) {
-      setReturnAmount(returns);
-      setRemainAmount(invoice?.total - returns);
+      setReturnAmount(+returns.toFixed(2));
+      setRemainAmount(+(invoice?.total - returns).toFixed(2));
     }
 
     // setReturnAmount(returns);

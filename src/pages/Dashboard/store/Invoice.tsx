@@ -270,13 +270,13 @@ export const Invoice = () => {
   const invoiceHandler = async () => {
     if (selectdUser === null) {
       setErrMessage("Must be select the customer");
-      toast.error(`${errMessage}`);
+      toast.error(`Must be select the customer`);
       return;
     }
 
     if (due < 0) {
       setErrMessage("Due won't be negative");
-      toast.error(`${errMessage}`);
+      toast.error(`Due won't be negative`);
       return;
     }
 
@@ -345,13 +345,11 @@ export const Invoice = () => {
     },
     {
       title: "Paid",
-      render: function (invoice: any) {
-        return <span className={``}>{invoice?.total - invoice?.due}</span>;
-      },
+      dataIndex: "paid",
+      sorter: true,
     },
     {
       title: "Due",
-      sorter: true,
       render: function (invoice: any) {
         return (
           <span
@@ -730,7 +728,7 @@ export const Invoice = () => {
                 <TextArea
                   className="bg-white text-mirage dark:bg-bg_dark dark:text-white focus-within:!border-primary hover:!border-primary disabled:text-mirage dark:disabled:text-white placeholder:text-[#ddddddbb]"
                   name="note"
-                  rows={3}
+                  rows={6}
                   onChange={invoiceInputHandler}
                   placeholder="Type note"
                 />
