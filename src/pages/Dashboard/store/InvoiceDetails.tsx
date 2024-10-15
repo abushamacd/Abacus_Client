@@ -380,7 +380,7 @@ export const InvoiceDetails = () => {
                       paddingLeft: "0px",
                     }}
                   >
-                    <span className="tracking-wide flex justify-between">
+                    {/* <span className="tracking-wide flex justify-between">
                       <span className="!font-bold">Paid:</span>
                       <span className={`italic `}> {invoice?.paid}</span>
                     </span>
@@ -398,6 +398,12 @@ export const InvoiceDetails = () => {
                       <span className="!font-bold">Total:</span>
                       <span className={`italic `}>{invoice?.total}</span>
                     </span>
+                    <span className="tracking-wide flex justify-between border-b">
+                      <span className="!font-bold">Return PP:</span>
+                      <span className={`italic `}>
+                        {invoice?.total - remainAmount}
+                      </span>
+                    </span>
                     <span className="tracking-wide flex justify-between">
                       <span className="!font-bold">Return:</span>
                       <span
@@ -408,10 +414,10 @@ export const InvoiceDetails = () => {
                         {returnAmount || 0}
                       </span>
                     </span>
-                    <span className="tracking-wide flex justify-between border-t">
+                    <span className="tracking-wide flex justify-between border-b border-dashed">
                       <span className="!font-bold">Remain:</span>
                       <span className={`italic `}>{remainAmount}</span>
-                    </span>
+                    </span> */}
                   </Col>
                 </Row>
               </div>
@@ -621,7 +627,47 @@ export const InvoiceDetails = () => {
                       width: "100%",
                     }}
                   >
-                    <div className="flex justify-between items-center px-4 text-primary">
+                    <div className="px-4">
+                      <span className="tracking-wide flex justify-between">
+                        <span className="!font-bold">Paid:</span>
+                        <span className={`italic `}> {invoice?.paid}</span>
+                      </span>
+                      <span className="tracking-wide flex justify-between">
+                        <span className="!font-bold">Due:</span>
+                        <span
+                          className={`italic ${
+                            afterReturnDue > 0 && "text-[#D31818] !font-bold"
+                          }`}
+                        >
+                          {afterReturnDue}
+                        </span>
+                      </span>
+                      <span className="tracking-wide flex justify-between border-t">
+                        <span className="!font-bold">Total:</span>
+                        <span className={`italic `}>{invoice?.total}</span>
+                      </span>
+                      <span className="tracking-wide flex justify-between border-b">
+                        <span className="!font-bold">Return PP:</span>
+                        <span className={`italic `}>
+                          {invoice?.total - remainAmount}
+                        </span>
+                      </span>
+                      <span className="tracking-wide flex justify-between">
+                        <span className="!font-bold">Return:</span>
+                        <span
+                          className={`italic ${
+                            returnAmount > 0 && "text-[#D31818] !font-bold"
+                          }`}
+                        >
+                          {returnAmount || 0}
+                        </span>
+                      </span>
+                      <span className="tracking-wide flex justify-between border-b border-dashed">
+                        <span className="!font-bold">Remain:</span>
+                        <span className={`italic `}>{remainAmount}</span>
+                      </span>
+                    </div>
+                    {/* <div className="flex justify-between items-center px-4 text-primary">
                       <span className="subtotal !font-bold text-lg">
                         Total:{" "}
                       </span>
@@ -662,7 +708,7 @@ export const InvoiceDetails = () => {
                       <span className="subtotal !font-bold text-lg">
                         {due - returnAmount || 0}
                       </span>
-                    </div>
+                    </div> */}
                   </Col>
                   <Button
                     className="bg-primary hover:!bg-primary text-mirage !bg-opacity-[.8] duration-300 transition-all my-5 "
