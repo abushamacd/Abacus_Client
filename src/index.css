@@ -191,8 +191,9 @@
 }
 
 .ant-select-selection-placeholder,
-.dark .ant-select-selection-placeholder {
-  color: #ddddddbb;
+.dark .ant-select-selection-placeholder,
+.ant-picker-input > input[disabled] {
+  color: #ddddddbb !important;
 }
 
 .dark .ant-card-head-title {
