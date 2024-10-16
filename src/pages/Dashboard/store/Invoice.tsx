@@ -7,6 +7,7 @@ import Loading from "../../../components/ui/Loading";
 import { useGetUsersQuery } from "../../../redux/api/userApi";
 import { useDebounced } from "../../../redux/hooks";
 import {
+  Badge,
   Button,
   Checkbox,
   Col,
@@ -32,6 +33,19 @@ import Title from "antd/es/typography/Title";
 import { ReloadOutlined } from "@ant-design/icons";
 import DataTable from "../../../components/ui/DataTable";
 import { useNavigate } from "react-router-dom";
+import { Modal } from "antd";
+import Form from "./../../../components/Forms/Forms";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { addUserSchema } from "../../../schemas/user";
+import FormInput from "../../../components/Forms/FormInput";
+import { SubmitHandler } from "react-hook-form";
+import { useSignUpMutation } from "../../../redux/api/authApi";
+
+type UserFormValues = {
+  name: string;
+  phone: string;
+  address: string;
+};
 
 export const Invoice = () => {
   const navigate = useNavigate();
@@ -56,6 +70,7 @@ export const Invoice = () => {
   const [inputData, setInputData] = useState({ quantity: 0 });
   const [selectedProduct, setSelectedProduct] = useState<any[]>([]);
   const [role, setRole] = useState("");
+  const [isAdd, setIsAdd] = useState(false);
   const [invoiceDate, setInvoiceDate] = useState(
     dayjs(Date.now()).format("DD/MM/YYYY")
   );
@@ -71,6 +86,7 @@ export const Invoice = () => {
   const [customerSearchTerm, setCustomerSearchTerm] =
     useState<string>("Unknown");
   const [createInvoice] = useCreateInvoiceMutation();
+  const [signUp] = useSignUpMutation();
 
   const totalProfit = allProducts.reduce((acc, item) => acc + item.profit, 0);
   const totalAmount = allProducts.reduce((acc, item) => acc + item.total, 0);
@@ -317,6 +333,19 @@ export const Invoice = () => {
     navigate(`${id}`, { replace: true });
   };
 
+  const addUser: SubmitHandler<UserFormValues> = async (data: {
+    name: string;
+    phone: string;
+    address: string;
+  }) => {
+    try {
+      await signUp(data).unwrap();
+      toast.success("Add user successfully");
+    } catch (err: any) {
+      toast.error(`${err.data?.message}`);
+    }
+  };
+
   const columns = [
     {
       title: "Invoice No.",
@@ -461,7 +490,7 @@ export const Invoice = () => {
             </span>
           </div>
           <div className="md:w-64 flex items-center justify-center mx-auto px-4">
-            <div className="">
+            <div className="relative">
               <Select
                 allowClear
                 className="w-full"
@@ -472,6 +501,16 @@ export const Invoice = () => {
                 onSearch={onCustomerSearch}
                 options={users}
               />
+              <div
+                className="absolute md:right-[-2px] right-[0px] top-[-32px]"
+                onClick={() => setIsAdd(!isAdd)}
+              >
+                <Badge.Ribbon
+                  text="+"
+                  className="cursor-pointer"
+                  color="#3fb0ac"
+                ></Badge.Ribbon>
+              </div>
               {errMessage?.includes("customer") && (
                 <small style={{ color: "red" }}>{errMessage}</small>
               )}
@@ -1024,6 +1063,80 @@ export const Invoice = () => {
           />
         </div>
       </div>
+      <Modal
+        title={`Add New Customer`}
+        open={isAdd}
+        centered
+        footer={null}
+        onCancel={() => setIsAdd(!isAdd)}
+      >
+        <Form submitHandler={addUser} resolver={yupResolver(addUserSchema)}>
+          <Row className="!mx-0" gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
+            <Col
+              className="gutter-row"
+              sm={24}
+              md={8}
+              style={{
+                marginBottom: "15px",
+                paddingLeft: "0px",
+              }}
+            >
+              <FormInput
+                name="name"
+                type="text"
+                size="middle"
+                label="Name"
+                required
+              />
+            </Col>
+            <Col
+              className="gutter-row"
+              sm={24}
+              md={8}
+              style={{
+                marginBottom: "15px",
+                paddingLeft: "0px",
+              }}
+            >
+              <FormInput
+                name="phone"
+                type="phone"
+                size="middle"
+                label="Phone"
+                required
+              />
+            </Col>
+            <Col
+              className="gutter-row"
+              sm={24}
+              md={8}
+              style={{
+                marginBottom: "15px",
+                paddingLeft: "0px",
+              }}
+            >
+              <FormInput
+                name="address"
+                type="text"
+                size="middle"
+                label="Address"
+                required
+              />
+            </Col>
+          </Row>
+          <Row justify="start" align="middle">
+            <Button
+              className="bg-primary hover:!bg-primary text-mirage !bg-opacity-[.8] duration-300 transition-all mt-4"
+              size="middle"
+              htmlType="submit"
+              type="primary"
+              // block
+            >
+              Add User
+            </Button>
+          </Row>
+        </Form>
+      </Modal>
     </div>
   );
 };
