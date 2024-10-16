@@ -45,6 +45,8 @@ type UserFormValues = {
   name: string;
   phone: string;
   address: string;
+  due: number;
+  balance: number;
 };
 
 export const Invoice = () => {
@@ -1123,10 +1125,44 @@ export const Invoice = () => {
                 required
               />
             </Col>
+            <Col
+              className="gutter-row"
+              sm={24}
+              md={12}
+              style={{
+                marginBottom: "15px",
+                paddingLeft: "0px",
+              }}
+            >
+              <FormInput
+                step={0.01}
+                name="balance"
+                type="number"
+                size="middle"
+                label="Balance"
+              />
+            </Col>
+            <Col
+              className="gutter-row"
+              sm={24}
+              md={12}
+              style={{
+                marginBottom: "15px",
+                paddingLeft: "0px",
+              }}
+            >
+              <FormInput
+                step={0.01}
+                name="due"
+                type="number"
+                size="middle"
+                label="Due"
+              />
+            </Col>
           </Row>
           <Row justify="start" align="middle">
             <Button
-              className="bg-primary hover:!bg-primary text-mirage !bg-opacity-[.8] duration-300 transition-all mt-4"
+              className="bg-primary hover:!bg-primary text-mirage !bg-opacity-[.8] duration-300 transition-all"
               size="middle"
               htmlType="submit"
               type="primary"

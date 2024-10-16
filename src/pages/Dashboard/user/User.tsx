@@ -4,7 +4,7 @@
 import Card from "antd/es/card/Card";
 import Form from "../../../components/Forms/Forms";
 import FormInput from "../../../components/Forms/FormInput";
-import { Button, Row, Select } from "antd";
+import { Button, Col, Row, Select } from "antd";
 import { SubmitHandler } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { addUserSchema } from "../../../schemas/user";
@@ -29,6 +29,8 @@ type UserFormValues = {
   name: string;
   phone: string;
   address: string;
+  due: number;
+  balance: number;
 };
 
 export const User = () => {
@@ -74,6 +76,15 @@ export const User = () => {
     }
   };
 
+  const handleAccess = async (_value: any, options: any) => {
+    console.log(_value, options);
+    // if (options.label === "Unblock") {
+    //   unblockUser(options.id);
+    // } else {
+    //   blockUser(options.id);
+    // }
+  };
+
   const columns = [
     {
       title: "Name",
@@ -96,6 +107,22 @@ export const User = () => {
               { id: user?.id, value: "Staff", label: "Staff" },
               { id: user?.id, value: "Manager", label: "Manager" },
               { id: user?.id, value: "Owner", label: "Owner" },
+            ]}
+          />
+        );
+      },
+    },
+    {
+      title: "Access",
+      render: function (user: any) {
+        return (
+          <Select
+            defaultValue={user?.hasAccess}
+            style={{ width: 120 }}
+            onChange={handleAccess}
+            options={[
+              { id: user?.id, value: true, label: "Unblock" },
+              { id: user?.id, value: false, label: "Block" },
             ]}
           />
         );
@@ -153,11 +180,9 @@ export const User = () => {
     navigate(`${user.id}`, { replace: true });
   };
 
-  const addUser: SubmitHandler<UserFormValues> = async (data: {
-    name: string;
-    phone: string;
-    address: string;
-  }) => {
+  const addUser: SubmitHandler<UserFormValues> = async (
+    data: UserFormValues
+  ) => {
     try {
       await signUp(data).unwrap();
       toast.success("Add user successfully");
@@ -184,8 +209,16 @@ export const User = () => {
           className="dark:bg-bg_dark bg-white text-mirage dark:text-white !border-secondary border-2"
         >
           <Form submitHandler={addUser} resolver={yupResolver(addUserSchema)}>
-            <div className="w-full flex md:flex-row flex-col items-start justify-between gap-5">
-              <div className="w-full">
+            <Row className="!mx-0" gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
+              <Col
+                className="gutter-row"
+                sm={24}
+                md={8}
+                style={{
+                  marginBottom: "15px",
+                  paddingLeft: "0px",
+                }}
+              >
                 <FormInput
                   name="name"
                   type="text"
@@ -193,8 +226,16 @@ export const User = () => {
                   label="Name"
                   required
                 />
-              </div>
-              <div className="w-full">
+              </Col>
+              <Col
+                className="gutter-row"
+                sm={24}
+                md={8}
+                style={{
+                  marginBottom: "15px",
+                  paddingLeft: "0px",
+                }}
+              >
                 <FormInput
                   name="phone"
                   type="phone"
@@ -202,8 +243,16 @@ export const User = () => {
                   label="Phone"
                   required
                 />
-              </div>
-              <div className="w-full">
+              </Col>
+              <Col
+                className="gutter-row"
+                sm={24}
+                md={8}
+                style={{
+                  marginBottom: "15px",
+                  paddingLeft: "0px",
+                }}
+              >
                 <FormInput
                   name="address"
                   type="text"
@@ -211,11 +260,45 @@ export const User = () => {
                   label="Address"
                   required
                 />
-              </div>
-            </div>
+              </Col>
+              <Col
+                className="gutter-row"
+                sm={24}
+                md={12}
+                style={{
+                  marginBottom: "15px",
+                  paddingLeft: "0px",
+                }}
+              >
+                <FormInput
+                  step={0.01}
+                  name="balance"
+                  type="number"
+                  size="middle"
+                  label="Balance"
+                />
+              </Col>
+              <Col
+                className="gutter-row"
+                sm={24}
+                md={12}
+                style={{
+                  marginBottom: "15px",
+                  paddingLeft: "0px",
+                }}
+              >
+                <FormInput
+                  step={0.01}
+                  name="due"
+                  type="number"
+                  size="middle"
+                  label="Due"
+                />
+              </Col>
+            </Row>
             <Row justify="start" align="middle">
               <Button
-                className="bg-primary hover:!bg-primary text-mirage !bg-opacity-[.8] duration-300 transition-all mt-4"
+                className="bg-primary hover:!bg-primary text-mirage !bg-opacity-[.8] duration-300 transition-all"
                 size="middle"
                 htmlType="submit"
                 type="primary"

@@ -7,7 +7,7 @@ interface IInput {
   name: string;
   type?: string;
   size?: "large" | "small" | "middle";
-  value?: string | string[] | undefined;
+  value?: string | string[] | number | undefined;
   id?: string;
   placeholder?: string;
   validation?: object;
@@ -15,6 +15,7 @@ interface IInput {
   required?: boolean;
   disabled?: boolean;
   suffix?: ReactNode;
+  step?: number;
 }
 
 const FormInput = ({
@@ -27,6 +28,7 @@ const FormInput = ({
   required,
   disabled,
   suffix,
+  step,
 }: IInput) => {
   const {
     control,
@@ -69,7 +71,7 @@ const FormInput = ({
           ) : (
             <Input
               suffix={suffix}
-              step={0.01}
+              step={step}
               className="bg-white text-mirage dark:bg-bg_dark dark:text-white focus-within:!border-primary hover:!border-primary disabled:text-mirage dark:disabled:text-white placeholder:text-[#ddddddbb]"
               disabled={disabled}
               type={type}
