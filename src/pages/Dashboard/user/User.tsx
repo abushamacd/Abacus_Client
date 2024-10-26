@@ -17,6 +17,7 @@ import {
   useDeleteUserMutation,
   useGetUsersQuery,
   useUpdateRoleMutation,
+  useUpdateUserAccessMutation,
 } from "../../../redux/api/userApi";
 import { FaRegEye } from "react-icons/fa";
 import { MdDeleteForever } from "react-icons/md";
@@ -38,6 +39,8 @@ export const User = () => {
   const [signUp] = useSignUpMutation();
   const [deleteUser] = useDeleteUserMutation();
   const [updateRole] = useUpdateRoleMutation();
+
+  const [updateUserAccess] = useUpdateUserAccessMutation();
 
   const query: Record<string, any> = {};
   const [page, setPage] = useState<number>(1);
@@ -77,12 +80,15 @@ export const User = () => {
   };
 
   const handleAccess = async (_value: any, options: any) => {
-    console.log(_value, options);
-    // if (options.label === "Unblock") {
-    //   unblockUser(options.id);
-    // } else {
-    //   blockUser(options.id);
-    // }
+    try {
+      await updateUserAccess({
+        id: options?.id,
+        body: { value: options?.value },
+      }).unwrap();
+      toast.success("Update Access");
+    } catch (err: any) {
+      toast.error(`${err.data?.message}`);
+    }
   };
 
   const columns = [
@@ -98,8 +104,10 @@ export const User = () => {
       render: function (user: any) {
         return (
           <Select
+            size="small"
+            disabled={user.role === "Owner"}
             defaultValue={user?.role}
-            style={{ width: "100%" }}
+            style={{ width: 130 }}
             onChange={handleUpdate}
             options={[
               { id: user?.id, value: "Consumer", label: "Consumer" },
@@ -117,6 +125,8 @@ export const User = () => {
       render: function (user: any) {
         return (
           <Select
+            size="small"
+            disabled={user.role === "Owner"}
             defaultValue={user?.hasAccess}
             style={{ width: 120 }}
             onChange={handleAccess}

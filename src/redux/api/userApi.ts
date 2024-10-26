@@ -92,6 +92,15 @@ export const userApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: [tagTypes.user],
     }),
+    // update user access
+    updateUserAccess: build.mutation({
+      query: (data: { id: any; body: any }) => ({
+        url: `/user/changeAccess/${data.id}`,
+        method: "PATCH",
+        data: data.body,
+      }),
+      invalidatesTags: [tagTypes.user],
+    }),
   }),
 });
 
@@ -104,4 +113,5 @@ export const {
   useGetUserQuery,
   useUpdateRoleMutation,
   useUpdateUserMutation,
+  useUpdateUserAccessMutation,
 } = userApi;
