@@ -573,16 +573,39 @@ export const Invoice = () => {
                 style={{
                   marginBottom: "15px",
                   paddingLeft: "0px",
+                  paddingRight: "0px",
+                  width: "100%",
                 }}
               >
-                <span className="tracking-wide block">
+                <span className="tracking-wide flex justify-between">
+                  <span className="!font-bold">Balance:</span>
+                  <span
+                    className={`italic ${
+                      selectdUser?.balance > 0 && "!font-bold"
+                    }`}
+                  >
+                    {selectdUser?.balance}
+                  </span>
+                </span>
+                <span className="tracking-wide flex justify-between">
                   <span className="!font-bold">Due:</span>
                   <span
                     className={`italic ${
-                      selectdUser?.previous > 0 && "text-[#D31818] !font-bold"
+                      selectdUser?.due > 0 && "text-[#D31818] !font-bold"
                     }`}
                   >
-                    {selectdUser?.previous}
+                    {selectdUser?.due}
+                  </span>
+                </span>
+                <span className="tracking-wide flex justify-end border-t">
+                  <span
+                    className={`italic ${
+                      selectdUser?.balance - selectdUser?.due > 0 &&
+                      "text-[#D31818] !font-bold"
+                    }`}
+                  >
+                    {selectdUser?.balance - selectdUser?.due > 0 &&
+                      selectdUser?.balance - selectdUser?.due}
                   </span>
                 </span>
               </Col>
@@ -590,7 +613,7 @@ export const Invoice = () => {
           </div>
 
           {/* products info */}
-          <div className="p-4">
+          <div className="p-4 pt-0">
             <Row
               className="!mx-0  justify-between"
               gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}
@@ -635,6 +658,7 @@ export const Invoice = () => {
                 style={{
                   marginBottom: "15px",
                   paddingLeft: "0px",
+                  paddingRight: "0px",
                   width: "100%",
                 }}
               >
@@ -750,7 +774,7 @@ export const Invoice = () => {
             </div>
             {/* calculation */}
             <Row
-              className="!mx-0 border-b-2 border-secondary mb-4 px-2 justify-between"
+              className="!mx-0 border-b-2 border-secondary mb-4 justify-between"
               gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}
             >
               <Col
@@ -758,7 +782,7 @@ export const Invoice = () => {
                 sm={24}
                 md={16}
                 style={{
-                  marginBottom: "15px",
+                  marginBottom: "0px",
                   paddingLeft: "0px",
                   width: "100%",
                 }}
@@ -779,7 +803,7 @@ export const Invoice = () => {
                 sm={24}
                 md={6}
                 style={{
-                  marginBottom: "15px",
+                  marginBottom: "0px",
                   paddingLeft: "0px",
                   paddingRight: "0px",
                   width: "100%",
@@ -839,7 +863,7 @@ export const Invoice = () => {
             </Row>
             {/* Product input */}
             <Row
-              className="!mx-0 border-b-2 border-secondary mb-4"
+              className="!mx-0 border-b-2 border-secondary"
               gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}
             >
               <Col
@@ -1003,8 +1027,8 @@ export const Invoice = () => {
                 }}
               >
                 <Button
-                  className="bg-primary hover:!bg-primary text-mirage !bg-opacity-[.8] duration-300 transition-all mt-5"
-                  size="small"
+                  className="bg-primary hover:!bg-primary text-mirage !bg-opacity-[.8] duration-300 transition-all mt-0 md:mt-5"
+                  size="middle"
                   onClick={(e) => insertProduct(e, productValues)}
                   type="primary"
                   // block

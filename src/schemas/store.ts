@@ -21,27 +21,22 @@ export const addProductSchema = yup.object().shape({
   quantity: yup
     .number()
     .required("Quantity is required")
-    .integer()
     .min(0, "Quantity must be at least 0"),
   minQuantity: yup
     .number()
     .required("Minimum quantity is required")
-    .integer()
     .min(0, "Minimum quantity must be at least 0"),
   purchase: yup
     .number()
     .required("Purchase price is required")
-    .integer()
     .min(0, "Purchase price must be at least 0"),
   sell: yup
     .number()
     .required("Sell price is required")
-    .integer()
     .min(0, "Sell price must be at least 0"),
   retail: yup
     .number()
     .required("Retail price is required")
-    .integer()
     .min(0, "Retail price must be at least 0"),
   comment: yup.string().optional(),
 });

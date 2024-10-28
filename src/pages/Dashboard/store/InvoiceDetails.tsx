@@ -231,6 +231,7 @@ export const InvoiceDetails = () => {
       date: invoiceDate,
       note: note,
       due: afterReturnDue || 0,
+      paid: invoice?.paid + invoice?.due - (invoice?.total - remainAmount) || 0,
       profit: +totalProfit.toFixed(2) || 0,
       total: afterDiscount || 0,
       products: allProducts,
@@ -259,19 +260,19 @@ export const InvoiceDetails = () => {
               <span className="">Invoice Details</span>
               <span onClick={() => setIsEdit(!isEdit)} className="">
                 {isEdit ? (
-                  <FaEdit className={`text-xl text-primary`} />
-                ) : (
                   <MdOutlineCancel className={`text-xl text-primary`} />
+                ) : (
+                  <FaEdit className={`text-xl text-primary`} />
                 )}
               </span>
             </div>
           }
-          className="dark:bg-bg_dark bg-white text-mirage dark:text-white !border-secondary border-2 mb-5"
+          className="dark:bg-bg_dark bg-white text-mirage dark:text-white !border-secondary border-2"
         >
           {/* create invoice */}
-          <div className="dark:bg-bg_dark bg-white text-mirage dark:text-white !border-secondary border-2 rounded-md">
+          <div className="dark:bg-bg_dark bg-white text-mirage dark:text-white rounded-md">
             {/* store info */}
-            <div className="store_info p-2">
+            <div className="store_info">
               <img
                 src={text_logo}
                 alt="User Cover"
@@ -294,10 +295,10 @@ export const InvoiceDetails = () => {
               </span>
             </div>
             {/* user info */}
-            <div className="md:w-64 flex items-center justify-center mx-auto px-4">
+            <div className="md:w-64 flex items-center justify-center mx-auto">
               <div className="">
                 <Select
-                  disabled={isEdit}
+                  disabled={!isEdit}
                   allowClear
                   className="w-full"
                   showSearch
@@ -312,7 +313,7 @@ export const InvoiceDetails = () => {
                 )}
               </div>
             </div>
-            <div className="py-4 border-t-2 border-secondary mt-4 mx-4">
+            <div className="py-4 border-t-2 border-secondary mt-4">
               <Row className="!mx-0" gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
                 <Col
                   className="gutter-row"
@@ -366,20 +367,39 @@ export const InvoiceDetails = () => {
                   style={{
                     marginBottom: "15px",
                     paddingLeft: "0px",
+                    paddingRight: "0px",
+                    width: "100%",
                   }}
                 >
                   <span className="tracking-wide flex justify-between">
                     <span className="!font-bold">Balance:</span>
-                    <span className={`italic `}>{selectdUser?.Balance}</span>
-                  </span>
-                  <span className="tracking-wide flex justify-between border-b">
-                    <span className="!font-bold">Due:</span>
-                    <span className={`italic `}>{selectdUser?.due}</span>
+                    <span
+                      className={`italic ${
+                        selectdUser?.balance > 0 && "!font-bold"
+                      }`}
+                    >
+                      {selectdUser?.balance}
+                    </span>
                   </span>
                   <span className="tracking-wide flex justify-between">
-                    <span className="!font-bold">Net:</span>
-                    <span className={`italic `}>
-                      {selectdUser?.Balance - selectdUser?.due || 0}
+                    <span className="!font-bold">Due:</span>
+                    <span
+                      className={`italic ${
+                        selectdUser?.due > 0 && "text-[#D31818] !font-bold"
+                      }`}
+                    >
+                      {selectdUser?.due}
+                    </span>
+                  </span>
+                  <span className="tracking-wide flex justify-end border-t">
+                    <span
+                      className={`italic ${
+                        selectdUser?.balance - selectdUser?.due > 0 &&
+                        "text-[#D31818] !font-bold"
+                      }`}
+                    >
+                      {selectdUser?.balance - selectdUser?.due > 0 &&
+                        selectdUser?.balance - selectdUser?.due}
                     </span>
                   </span>
                 </Col>
@@ -387,7 +407,7 @@ export const InvoiceDetails = () => {
             </div>
 
             {/* products info */}
-            <div className="p-4">
+            <div className="">
               <Row
                 className="!mx-0  justify-between"
                 gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}
@@ -416,7 +436,7 @@ export const InvoiceDetails = () => {
                     </span>
                   </div>
                   <DatePicker
-                    disabled={isEdit}
+                    disabled={!isEdit}
                     name="invoiceDate"
                     className="bg-white text-mirage dark:bg-bg_dark dark:text-white focus-within:!border-primary hover:!border-primary disabled:text-mirage dark:disabled:text-white"
                     defaultValue={dayjs(formatedDate(invoice?.date))}
@@ -433,6 +453,7 @@ export const InvoiceDetails = () => {
                   style={{
                     marginBottom: "15px",
                     paddingLeft: "0px",
+                    paddingRight: "0px",
                     width: "100%",
                   }}
                 >
@@ -450,7 +471,7 @@ export const InvoiceDetails = () => {
                     </span>
                   </div>
                   <Select
-                    disabled={isEdit}
+                    disabled={!isEdit}
                     allowClear
                     value={role || selectdUser?.role}
                     className="w-full"
@@ -473,7 +494,7 @@ export const InvoiceDetails = () => {
                       {showProfit && (
                         <th className="text-right p-2 w-[10%]">Profit (৳)</th>
                       )}
-                      {!isEdit && (
+                      {isEdit && (
                         <th className="text-center p-2 w-[10%]">Action</th>
                       )}
                     </tr>
@@ -526,7 +547,7 @@ export const InvoiceDetails = () => {
                               {product?.profit.toFixed(2)}
                             </td>
                           )}
-                          {!isEdit && (
+                          {isEdit && (
                             <td className="p-2 flex gap-2 justify-center items-center">
                               <MdDeleteForever
                                 onClick={() => removeHandler(i)}
@@ -547,7 +568,7 @@ export const InvoiceDetails = () => {
                         <td className="p-2 text-right">
                           {+totalProfit.toFixed(2)}
                         </td>
-                        {!isEdit && <td className="p-2 text-right"></td>}
+                        {isEdit && <td className="p-2 text-right"></td>}
                       </tr>
                     )}
                   </tbody>
@@ -555,16 +576,17 @@ export const InvoiceDetails = () => {
               </div>
               {/* calculation */}
               <Row
-                className="!mx-0 mb-4 px-2 justify-between"
+                className="!mx-0 justify-between"
                 gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}
               >
                 <Col
                   className="gutter-row"
                   sm={24}
-                  md={16}
+                  md={13}
                   style={{
-                    marginBottom: "15px",
+                    marginBottom: "0px",
                     paddingLeft: "0px",
+                    paddingRight: "0px",
                     width: "100%",
                   }}
                 >
@@ -572,18 +594,48 @@ export const InvoiceDetails = () => {
                     <span className="text-mirage dark:text-white">Note</span>
                   </div>
                   <TextArea
-                    disabled={isEdit}
+                    disabled={!isEdit}
                     className="bg-white text-mirage dark:bg-bg_dark dark:text-white focus-within:!border-primary hover:!border-primary disabled:text-mirage dark:disabled:text-white placeholder:text-[#ddddddbb]"
                     name="note"
-                    rows={8}
+                    rows={4}
                     onChange={invoiceInputHandler}
                     placeholder="Type note"
                   />
                 </Col>
                 <Col
-                  className="gutter-row mt-6 border-2 border-primary p-4 rounded-md"
+                  className="gutter-row mt-6"
                   sm={24}
-                  md={6}
+                  md={5}
+                  style={{
+                    marginBottom: "0px",
+                    paddingLeft: "0px",
+                    paddingRight: "0px",
+                    width: "100%",
+                  }}
+                >
+                  <div className="p-4 border-2 border-primary rounded-md">
+                    <span className="tracking-wide flex justify-between">
+                      <span className="!font-bold">Total:</span>
+                      <span className={`italic `}>{invoice?.total || 0}</span>
+                    </span>
+                    <span className="tracking-wide flex justify-between border-b">
+                      <span className="!font-bold">Paid:</span>
+                      <span className={`italic `}> {invoice?.paid || 0}</span>
+                    </span>
+                    <span className="tracking-wide flex justify-between">
+                      <span className="!font-bold">Due:</span>
+                      <span
+                        className={`italic ${invoice?.due > 0 && "!font-bold"}`}
+                      >
+                        {invoice?.due || 0}
+                      </span>
+                    </span>
+                  </div>
+                </Col>
+                <Col
+                  className="gutter-row mt-6"
+                  sm={24}
+                  md={5}
                   style={{
                     marginBottom: "15px",
                     paddingLeft: "0px",
@@ -591,34 +643,36 @@ export const InvoiceDetails = () => {
                     width: "100%",
                   }}
                 >
-                  <div className="px-4">
+                  <div className="p-4 border-2 border-primary rounded-md">
                     <span className="tracking-wide flex justify-between">
-                      <span className="!font-bold">Total:</span>
-                      <span className={`italic `}>{invoice?.total || 0}</span>
-                    </span>
-                    <span className="tracking-wide flex justify-between">
-                      <span className="!font-bold">Paid:</span>
-                      <span className={`italic `}> {invoice?.paid || 0}</span>
-                    </span>
-                    <span className="tracking-wide flex justify-between border-t">
-                      <span className="!font-bold">Due:</span>
-                      <span
-                        className={`italic ${
-                          afterReturnDue > 0 && "text-[#D31818] !font-bold"
-                        }`}
-                      >
-                        {afterReturnDue || 0}
-                      </span>
-                    </span>
-
-                    <span className="tracking-wide flex justify-between border-b">
                       <span className="!font-bold">Return PP:</span>
                       <span className={`italic `}>
                         {invoice?.total - remainAmount || 0}
                       </span>
                     </span>
+                    <span className="tracking-wide flex justify-between border-b">
+                      <span className="!font-bold">Due:</span>
+                      {/* <span
+                        className={`italic ${
+                          afterReturnDue > 0 && "text-[#D31818] !font-bold"
+                        }`}
+                      >
+                        {afterReturnDue || 0}
+                      </span> */}
+                      <span
+                        className={`italic ${invoice?.due > 0 && "!font-bold"}`}
+                      >
+                        {invoice?.due || 0}
+                      </span>
+                    </span>
                     <span className="tracking-wide flex justify-between">
-                      <span className="!font-bold">Return:</span>
+                      <span
+                        className={`italic ${
+                          returnAmount > 0 && "text-[#D31818] !font-bold"
+                        }`}
+                      >
+                        Return:
+                      </span>
                       <span
                         className={`italic ${
                           returnAmount > 0 && "text-[#D31818] !font-bold"
@@ -627,15 +681,15 @@ export const InvoiceDetails = () => {
                         {returnAmount || 0}
                       </span>
                     </span>
-                    <span className="tracking-wide flex justify-between ">
+                    {/* <span className="tracking-wide flex justify-between ">
                       <span className="!font-bold">Remain:</span>
                       <span className={`italic `}>{remainAmount || 0}</span>
-                    </span>
+                    </span> */}
                   </div>
                 </Col>
-                {!isEdit && (
+                {isEdit && (
                   <Button
-                    className="bg-primary hover:!bg-primary text-mirage !bg-opacity-[.8] duration-300 transition-all my-5 "
+                    className="bg-primary hover:!bg-primary text-mirage !bg-opacity-[.8] duration-300 transition-all"
                     size="middle"
                     onClick={invoiceHandler}
                     type="primary"

@@ -276,6 +276,7 @@ export const Product = () => {
                 }}
               >
                 <FormInput
+                  step={0.01}
                   name="quantity"
                   type="number"
                   size="middle"
@@ -294,6 +295,7 @@ export const Product = () => {
                 }}
               >
                 <FormInput
+                  step={0.01}
                   name="minQuantity"
                   type="number"
                   size="middle"
@@ -312,6 +314,7 @@ export const Product = () => {
                 }}
               >
                 <FormInput
+                  step={0.01}
                   name="purchase"
                   type="number"
                   size="middle"
@@ -330,6 +333,7 @@ export const Product = () => {
                 }}
               >
                 <FormInput
+                  step={0.01}
                   name="sell"
                   type="number"
                   size="middle"
@@ -348,6 +352,7 @@ export const Product = () => {
                 }}
               >
                 <FormInput
+                  step={0.01}
                   name="retail"
                   type="number"
                   size="middle"
