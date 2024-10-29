@@ -47,7 +47,7 @@ export const invoiceApi = baseApi.injectEndpoints({
         method: "PATCH",
         data: data.body,
       }),
-      invalidatesTags: [tagTypes.invoice, tagTypes.product],
+      invalidatesTags: [tagTypes.invoice, tagTypes.user, tagTypes.product],
     }),
     // delete invoice
     deleteInvoice: build.mutation({

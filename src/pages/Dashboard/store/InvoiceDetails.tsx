@@ -1,9 +1,12 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import text_logo from "../../../assets/text_logo.png";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Loading from "../../../components/ui/Loading";
-import { useGetInvoiceQuery } from "../../../redux/api/invoice";
+import {
+  useGetInvoiceQuery,
+  useUpdateInvoiceMutation,
+} from "../../../redux/api/invoice";
 import { useEffect, useState } from "react";
 import { FaEdit } from "react-icons/fa";
 import { MdDeleteForever, MdOutlineCancel } from "react-icons/md";
@@ -23,6 +26,7 @@ import { useDebounced } from "../../../redux/hooks";
 import dayjs from "dayjs";
 import { SelectOptions } from "../../../types";
 import TextArea from "antd/es/input/TextArea";
+import { toast } from "react-toastify";
 
 const formatedDate = (date: string) => {
   const newDate = new Date(date);
@@ -39,9 +43,11 @@ const formatedDate = (date: string) => {
 
 export const InvoiceDetails = () => {
   const params = useParams();
+  const navigate = useNavigate();
   const { data: invoiceData, isLoading: invoiceLoading } = useGetInvoiceQuery(
     params?.id
   );
+  const [updateInvoice] = useUpdateInvoiceMutation();
 
   const invoice: any = invoiceData;
 
@@ -54,7 +60,7 @@ export const InvoiceDetails = () => {
     { label: "Consumer", value: "Consumer" },
   ];
 
-  const [isEdit, setIsEdit] = useState(false);
+  const [isEdit, setIsEdit] = useState(true);
   const [reduce, setReduce] = useState(false);
   const [errMessage, setErrMessage] = useState("");
   const [selectdUser, setSelectdUser] = useState<any>(null);
@@ -241,11 +247,19 @@ export const InvoiceDetails = () => {
     console.log(data);
 
     // try {
-    //   await createInvoice(data).unwrap();
-    //   toast.success("Create invoice successfully");
-    //   setSelectdUser(null);
-    //   setRole("");
-    //   setAllProducts([]);
+    //   await updateInvoice({
+    //     id: params?.id,
+    //     body: data,
+    //   }).unwrap();
+    //   toast.success("Update invoice successfully");
+    //   // if (allProducts?.length <= 0) {
+    //   //   navigate(`/adbmsdb/invoices`, { replace: true });
+    //   // } else {
+    //   //   navigate(0);
+    //   // }
+    //   // setSelectdUser(null);
+    //   // setRole("");
+    //   // setAllProducts([]);
     // } catch (err: any) {
     //   toast.error(`${err.data?.message}`);
     // }
@@ -393,13 +407,14 @@ export const InvoiceDetails = () => {
                   </span>
                   <span className="tracking-wide flex justify-end border-t">
                     <span
-                      className={`italic ${
-                        selectdUser?.balance - selectdUser?.due > 0 &&
-                        "text-[#D31818] !font-bold"
+                      className={`italic !font-bold ${
+                        selectdUser?.balance - selectdUser?.due > 0
+                          ? "text-primary"
+                          : "text-[#D31818]"
                       }`}
                     >
-                      {selectdUser?.balance - selectdUser?.due > 0 &&
-                        selectdUser?.balance - selectdUser?.due}
+                      {+(selectdUser?.balance - selectdUser?.due).toFixed(2) ||
+                        0}
                     </span>
                   </span>
                 </Col>
@@ -652,18 +667,18 @@ export const InvoiceDetails = () => {
                     </span>
                     <span className="tracking-wide flex justify-between border-b">
                       <span className="!font-bold">Due:</span>
-                      {/* <span
+                      <span
                         className={`italic ${
                           afterReturnDue > 0 && "text-[#D31818] !font-bold"
                         }`}
                       >
                         {afterReturnDue || 0}
-                      </span> */}
-                      <span
+                      </span>
+                      {/* <span
                         className={`italic ${invoice?.due > 0 && "!font-bold"}`}
                       >
                         {invoice?.due || 0}
-                      </span>
+                      </span> */}
                     </span>
                     <span className="tracking-wide flex justify-between">
                       <span

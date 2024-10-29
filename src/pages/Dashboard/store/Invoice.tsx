@@ -24,7 +24,7 @@ import dayjs from "dayjs";
 import TextArea from "antd/es/input/TextArea";
 import {
   useCreateInvoiceMutation,
-  useDeleteInvoiceMutation,
+  // useDeleteInvoiceMutation,
   useGetInvoicesQuery,
 } from "../../../redux/api/invoice";
 import { toast } from "react-toastify";
@@ -117,7 +117,7 @@ export const Invoice = () => {
     ).toFixed(2),
   };
 
-  const [deleteInvoice] = useDeleteInvoiceMutation();
+  // const [deleteInvoice] = useDeleteInvoiceMutation();
 
   const customerDebouncedTerm = useDebounced({
     searchQuery: customerSearchTerm,
@@ -322,14 +322,14 @@ export const Invoice = () => {
     }
   };
 
-  const deleteHandler = async (id: string) => {
-    try {
-      await deleteInvoice(id).unwrap();
-      toast("Invoice deleted successfully");
-    } catch (err: any) {
-      toast.error(`${err.data?.message}`);
-    }
-  };
+  // const deleteHandler = async (id: string) => {
+  //   try {
+  //     await deleteInvoice(id).unwrap();
+  //     toast("Invoice deleted successfully");
+  //   } catch (err: any) {
+  //     toast.error(`${err.data?.message}`);
+  //   }
+  // };
 
   const openView = (id: string) => {
     navigate(`${id}`, { replace: true });
@@ -395,17 +395,17 @@ export const Invoice = () => {
       title: "Action",
       render: function (invoice: any) {
         return (
-          <div className="flex gap-2">
+          <div className="flex gap-2 ml-3">
             <FaRegEye
               style={{ color: "#008A3F" }}
               onClick={() => openView(invoice?.id)}
               size={22}
             />
-            <MdDeleteForever
+            {/* <MdDeleteForever
               onClick={() => deleteHandler(invoice?.id)}
               size={22}
               style={{ color: "#D92728" }}
-            />
+            /> */}
           </div>
         );
       },
@@ -599,13 +599,15 @@ export const Invoice = () => {
                 </span>
                 <span className="tracking-wide flex justify-end border-t">
                   <span
-                    className={`italic ${
-                      selectdUser?.balance - selectdUser?.due > 0 &&
-                      "text-[#D31818] !font-bold"
+                    className={`italic !font-bold ${
+                      selectdUser?.balance - selectdUser?.due > 0
+                        ? "text-primary"
+                        : "text-[#D31818]"
                     }`}
                   >
-                    {selectdUser?.balance - selectdUser?.due > 0 &&
-                      selectdUser?.balance - selectdUser?.due}
+                    {/* {selectdUser?.balance - selectdUser?.due > 0 &&
+                      +(selectdUser?.balance - selectdUser?.due).toFixed(2)} */}
+                    {+(selectdUser?.balance - selectdUser?.due).toFixed(2) ||0}
                   </span>
                 </span>
               </Col>
