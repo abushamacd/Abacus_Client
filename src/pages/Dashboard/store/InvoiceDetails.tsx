@@ -69,6 +69,7 @@ export const InvoiceDetails = () => {
   const [role, setRole] = useState("");
   const [note, setNote] = useState("");
   const [afterReturnDue, setAfterReturnDue] = useState<number>(0);
+  const [afterReturnPaid, setAfterReturnPaid] = useState<number>(0);
   const [returnAmount, setReturnAmount] = useState<number>(0);
   const [remainAmount, setRemainAmount] = useState<number>(0);
   const [allProducts, setAllProducts] = useState<any[]>([]);
@@ -124,6 +125,10 @@ export const InvoiceDetails = () => {
   const invoiceInputHandler = (e: any) => {
     const { name, value } = e.target;
     if (name === "note") setNote(value);
+    if (name === "paid") {
+      setAfterReturnPaid(+value);
+      setAfterReturnDue(remainAmount - +value);
+    }
   };
 
   useEffect(() => {
@@ -177,6 +182,14 @@ export const InvoiceDetails = () => {
     if (invoice) products = JSON.parse(invoice?.products);
     setAllProducts(products);
   }, [invoice]);
+
+  useEffect(() => {
+    if (returnAmount > 0) {
+      setAfterReturnPaid(invoice?.paid - returnAmount);
+    } else {
+      setAfterReturnPaid(invoice?.paid);
+    }
+  }, [invoice, returnAmount]);
 
   if (invoiceLoading || userLoading) {
     return <Loading />;
@@ -237,7 +250,7 @@ export const InvoiceDetails = () => {
       date: invoiceDate,
       note: note,
       due: afterReturnDue || 0,
-      paid: invoice?.paid + invoice?.due - (invoice?.total - remainAmount) || 0,
+      paid: afterReturnPaid || 0,
       profit: +totalProfit.toFixed(2) || 0,
       total: afterDiscount || 0,
       products: allProducts,
@@ -246,23 +259,23 @@ export const InvoiceDetails = () => {
 
     console.log(data);
 
-    // try {
-    //   await updateInvoice({
-    //     id: params?.id,
-    //     body: data,
-    //   }).unwrap();
-    //   toast.success("Update invoice successfully");
-    //   // if (allProducts?.length <= 0) {
-    //   //   navigate(`/adbmsdb/invoices`, { replace: true });
-    //   // } else {
-    //   //   navigate(0);
-    //   // }
-    //   // setSelectdUser(null);
-    //   // setRole("");
-    //   // setAllProducts([]);
-    // } catch (err: any) {
-    //   toast.error(`${err.data?.message}`);
-    // }
+    try {
+      await updateInvoice({
+        id: params?.id,
+        body: data,
+      }).unwrap();
+      toast.success("Update invoice successfully");
+      if (allProducts?.length <= 0) {
+        navigate(`/adbmsdb/invoices`, { replace: true });
+      } else {
+        navigate(0);
+      }
+      // setSelectdUser(null);
+      // setRole("");
+      // setAllProducts([]);
+    } catch (err: any) {
+      toast.error(`${err.data?.message}`);
+    }
   };
 
   return (
@@ -631,18 +644,40 @@ export const InvoiceDetails = () => {
                   <div className="p-4 border-2 border-primary rounded-md">
                     <span className="tracking-wide flex justify-between">
                       <span className="!font-bold">Total:</span>
-                      <span className={`italic `}>{invoice?.total || 0}</span>
+                      {/* <span className={`italic `}>{invoice?.total || 0}</span> */}
+                      <span className={`italic `}>{remainAmount || 0}</span>
                     </span>
                     <span className="tracking-wide flex justify-between border-b">
                       <span className="!font-bold">Paid:</span>
-                      <span className={`italic `}> {invoice?.paid || 0}</span>
+                      {/* <span className={`italic `}> {invoice?.paid || 0}</span> */}
+                      <Input
+                        value={afterReturnPaid}
+                        className="bg-white text-mirage dark:bg-bg_dark dark:text-white focus-within:!border-primary hover:!border-primary disabled:text-mirage dark:disabled:text-white !placeholder:text-[#ddddddbb] w-20 relative left-[15px]"
+                        name="paid"
+                        step={0.01}
+                        type="number"
+                        variant={"filled"}
+                        min={0}
+                        max={afterDiscount}
+                        size="small"
+                        defaultValue={0}
+                        placeholder="Discount"
+                        onChange={invoiceInputHandler}
+                      />
                     </span>
                     <span className="tracking-wide flex justify-between">
                       <span className="!font-bold">Due:</span>
-                      <span
+                      {/* <span
                         className={`italic ${invoice?.due > 0 && "!font-bold"}`}
                       >
                         {invoice?.due || 0}
+                      </span> */}
+                      <span
+                        className={`italic ${
+                          afterReturnDue > 0 && "text-[#D31818] !font-bold"
+                        }`}
+                      >
+                        {afterReturnDue || 0}
                       </span>
                     </span>
                   </div>
