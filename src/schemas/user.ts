@@ -7,3 +7,10 @@ export const addUserSchema = yup.object().shape({
   due: yup.number().optional(),
   balance: yup.number().optional(),
 });
+export const updateUserSchema = yup.object().shape({
+  name: yup.string().optional(),
+  phone: yup.string().optional(),
+  address: yup.string().optional(),
+  due: yup.number().optional(),
+  balance: yup.number().optional(),
+});

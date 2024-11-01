@@ -13,7 +13,7 @@ export const invoiceApi = baseApi.injectEndpoints({
         method: "POST",
         data: data,
       }),
-      invalidatesTags: [tagTypes.invoice, tagTypes.product],
+      invalidatesTags: [tagTypes.invoice, tagTypes.product, tagTypes.user],
     }),
     // get all invoices
     getInvoices: build.query({
