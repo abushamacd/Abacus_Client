@@ -24,7 +24,7 @@ import dayjs from "dayjs";
 import TextArea from "antd/es/input/TextArea";
 import {
   useCreateInvoiceMutation,
-  // useDeleteInvoiceMutation,
+  useDeleteInvoiceMutation,
   useGetInvoicesQuery,
 } from "../../../redux/api/invoice";
 import { toast } from "react-toastify";
@@ -117,7 +117,7 @@ export const Invoice = () => {
     ).toFixed(2),
   };
 
-  // const [deleteInvoice] = useDeleteInvoiceMutation();
+  const [deleteInvoice] = useDeleteInvoiceMutation();
 
   const customerDebouncedTerm = useDebounced({
     searchQuery: customerSearchTerm,
@@ -322,14 +322,14 @@ export const Invoice = () => {
     }
   };
 
-  // const deleteHandler = async (id: string) => {
-  //   try {
-  //     await deleteInvoice(id).unwrap();
-  //     toast("Invoice deleted successfully");
-  //   } catch (err: any) {
-  //     toast.error(`${err.data?.message}`);
-  //   }
-  // };
+  const deleteHandler = async (id: string) => {
+    try {
+      await deleteInvoice(id).unwrap();
+      toast("Invoice deleted successfully");
+    } catch (err: any) {
+      toast.error(`${err.data?.message}`);
+    }
+  };
 
   const openView = (id: string) => {
     navigate(`${id}`, { replace: true });
@@ -401,11 +401,11 @@ export const Invoice = () => {
               onClick={() => openView(invoice?.id)}
               size={22}
             />
-            {/* <MdDeleteForever
+            <MdDeleteForever
               onClick={() => deleteHandler(invoice?.id)}
               size={22}
               style={{ color: "#D92728" }}
-            /> */}
+            />
           </div>
         );
       },
@@ -421,6 +421,10 @@ export const Invoice = () => {
     const { order, field } = sorter;
     setSortBy(field as string);
     setSortOrder(order === "ascend" ? "asc" : "desc");
+  };
+
+  const onSelection = (ids: any) => {
+    console.log("ids: ", ids);
   };
 
   const resetFilters = () => {
@@ -607,7 +611,7 @@ export const Invoice = () => {
                   >
                     {/* {selectdUser?.balance - selectdUser?.due > 0 &&
                       +(selectdUser?.balance - selectdUser?.due).toFixed(2)} */}
-                    {+(selectdUser?.balance - selectdUser?.due).toFixed(2) ||0}
+                    {+(selectdUser?.balance - selectdUser?.due).toFixed(2) || 0}
                   </span>
                 </span>
               </Col>
@@ -1088,6 +1092,8 @@ export const Invoice = () => {
             onPaginationChange={onPaginationChange}
             onTableChange={onTableChange}
             showPagination={true}
+            isSelection={true}
+            onSelection={onSelection}
           />
         </div>
       </div>

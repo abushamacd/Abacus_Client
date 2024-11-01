@@ -12,6 +12,8 @@ type DataTableProps = {
   onPaginationChange?: (page: number, pageSize: number) => void;
   onTableChange?: (pagination: any, filter: any, sorter: any) => void;
   showPagination?: boolean;
+  isSelection?: boolean;
+  onSelection?: (ids: React.Key[]) => void;
 };
 
 const DataTable = ({
@@ -24,6 +26,8 @@ const DataTable = ({
   onPaginationChange,
   onTableChange,
   showPagination = true,
+  isSelection = true,
+  onSelection,
 }: DataTableProps) => {
   const paginationConfig = showPagination
     ? {
@@ -46,9 +50,20 @@ const DataTable = ({
     newArray.push(newData);
   });
 
+  const rowSelection = isSelection
+    ? {
+        onChange: (selectedIds: React.Key[]) => {
+          if (onSelection) {
+            onSelection(selectedIds); // Pass the selected IDs to onSelection
+          }
+        },
+      }
+    : undefined;
+
   return (
     <Table
-      className="overflow-auto "
+      rowSelection={rowSelection}
+      className="overflow-auto"
       loading={loading}
       columns={columns}
       dataSource={newArray}
