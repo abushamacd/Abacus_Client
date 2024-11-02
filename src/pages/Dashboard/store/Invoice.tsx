@@ -25,6 +25,7 @@ import TextArea from "antd/es/input/TextArea";
 import {
   useCreateInvoiceMutation,
   useDeleteInvoiceMutation,
+  useDeleteInvoicesMutation,
   useGetInvoicesQuery,
 } from "../../../redux/api/invoice";
 import { toast } from "react-toastify";
@@ -71,6 +72,7 @@ export const Invoice = () => {
   // State management
   const [inputData, setInputData] = useState({ quantity: 0 });
   const [selectedProduct, setSelectedProduct] = useState<any[]>([]);
+  const [selectedIds, setSelectedIds] = useState<React.Key[]>([]);
   const [role, setRole] = useState("");
   const [isAdd, setIsAdd] = useState(false);
   const [invoiceDate, setInvoiceDate] = useState(
@@ -88,6 +90,7 @@ export const Invoice = () => {
   const [customerSearchTerm, setCustomerSearchTerm] =
     useState<string>("Unknown");
   const [createInvoice] = useCreateInvoiceMutation();
+  const [deleteInvoices] = useDeleteInvoicesMutation();
   const [signUp] = useSignUpMutation();
 
   const totalProfit = allProducts.reduce((acc, item) => acc + item.profit, 0);
@@ -423,8 +426,17 @@ export const Invoice = () => {
     setSortOrder(order === "ascend" ? "asc" : "desc");
   };
 
-  const onSelection = (ids: any) => {
-    console.log("ids: ", ids);
+  const onSelection = (ids: React.Key[]) => {
+    setSelectedIds(ids);
+  };
+
+  const deletesHandler = async (data: React.Key[]) => {
+    try {
+      await deleteInvoices(data).unwrap();
+      toast.success("Delete selected invoices");
+    } catch (err: any) {
+      toast.error(`${err.data?.message}`);
+    }
   };
 
   const resetFilters = () => {
@@ -1057,6 +1069,17 @@ export const Invoice = () => {
               All Invoices ({meta?.total})
             </Title>
             <div className="flex items-center">
+              {selectedIds?.length > 0 && (
+                <>
+                  <MdDeleteForever
+                    className=""
+                    onClick={() => deletesHandler(selectedIds)}
+                    size={40}
+                    style={{ color: "#D92728" }}
+                  />
+                  <span className="mr-2 text-lg">({selectedIds?.length})</span>
+                </>
+              )}
               <Input
                 type="text"
                 size="middle"

@@ -289,7 +289,8 @@
 
 .ant-picker-cell-selected > .ant-picker-cell-inner,
 .ant-picker-cell-selected > .ant-picker-cell-inner:hover,
-.ant-checkbox-checked .ant-checkbox-inner {
+.ant-checkbox-checked .ant-checkbox-inner,
+.ant-checkbox-inner:after {
   background-color: var(--primary) !important;
 }
 

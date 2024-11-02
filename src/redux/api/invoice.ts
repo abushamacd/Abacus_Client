@@ -57,6 +57,15 @@ export const invoiceApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: [tagTypes.invoice, tagTypes.product],
     }),
+    // delete invoice
+    deleteInvoices: build.mutation({
+      query: (data: any) => ({
+        url: `/invoice`,
+        method: "DELETE",
+        data: data,
+      }),
+      invalidatesTags: [tagTypes.invoice, tagTypes.user],
+    }),
   }),
 });
 
@@ -66,4 +75,5 @@ export const {
   useGetInvoiceQuery,
   useUpdateInvoiceMutation,
   useDeleteInvoiceMutation,
+  useDeleteInvoicesMutation,
 } = invoiceApi;

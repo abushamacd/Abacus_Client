@@ -270,9 +270,6 @@ export const InvoiceDetails = () => {
       } else {
         navigate(0);
       }
-      // setSelectdUser(null);
-      // setRole("");
-      // setAllProducts([]);
     } catch (err: any) {
       toast.error(`${err.data?.message}`);
     }
