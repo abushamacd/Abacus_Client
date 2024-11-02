@@ -236,6 +236,7 @@ export const Product = () => {
                 style={{
                   marginBottom: "15px",
                   paddingLeft: "0px",
+                  width: "100%",
                 }}
               >
                 <FormInput
@@ -273,6 +274,7 @@ export const Product = () => {
                 style={{
                   marginBottom: "15px",
                   paddingLeft: "0px",
+                  width: "100%",
                 }}
               >
                 <FormInput
@@ -292,6 +294,7 @@ export const Product = () => {
                 style={{
                   marginBottom: "15px",
                   paddingLeft: "0px",
+                  width: "100%",
                 }}
               >
                 <FormInput
@@ -311,6 +314,7 @@ export const Product = () => {
                 style={{
                   marginBottom: "15px",
                   paddingLeft: "0px",
+                  width: "100%",
                 }}
               >
                 <FormInput
@@ -330,6 +334,7 @@ export const Product = () => {
                 style={{
                   marginBottom: "15px",
                   paddingLeft: "0px",
+                  width: "100%",
                 }}
               >
                 <FormInput
@@ -349,6 +354,7 @@ export const Product = () => {
                 style={{
                   marginBottom: "15px",
                   paddingLeft: "0px",
+                  width: "100%",
                 }}
               >
                 <FormInput
@@ -368,6 +374,7 @@ export const Product = () => {
                 style={{
                   marginBottom: "15px",
                   paddingLeft: "0px",
+                  width: "100%",
                 }}
               >
                 <FormSelectField
@@ -396,6 +403,7 @@ export const Product = () => {
                 style={{
                   marginBottom: "15px",
                   paddingLeft: "0px",
+                  width: "100%",
                 }}
               >
                 <FormTextArea
@@ -489,6 +497,7 @@ export const Product = () => {
               style={{
                 marginBottom: "15px",
                 paddingLeft: "0px",
+                width: "100%",
               }}
             >
               <FormInput
@@ -507,6 +516,7 @@ export const Product = () => {
               style={{
                 marginBottom: "15px",
                 paddingLeft: "0px",
+                width: "100%",
               }}
             >
               <FormInput
@@ -525,6 +535,7 @@ export const Product = () => {
               style={{
                 marginBottom: "15px",
                 paddingLeft: "0px",
+                width: "100%",
               }}
             >
               <FormInput
@@ -543,6 +554,7 @@ export const Product = () => {
               style={{
                 marginBottom: "15px",
                 paddingLeft: "0px",
+                width: "100%",
               }}
             >
               <FormInput
@@ -561,6 +573,7 @@ export const Product = () => {
               style={{
                 marginBottom: "15px",
                 paddingLeft: "0px",
+                width: "100%",
               }}
             >
               <FormInput
@@ -579,6 +592,7 @@ export const Product = () => {
               style={{
                 marginBottom: "15px",
                 paddingLeft: "0px",
+                width: "100%",
               }}
             >
               <FormInput
@@ -597,6 +611,7 @@ export const Product = () => {
               style={{
                 marginBottom: "15px",
                 paddingLeft: "0px",
+                width: "100%",
               }}
             >
               <FormTextArea name="comment" label="Details" placeholder="Note" />

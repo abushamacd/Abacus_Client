@@ -170,6 +170,7 @@ export const Supplier = () => {
                 style={{
                   marginBottom: "15px",
                   paddingLeft: "0px",
+                  width: "100%",
                 }}
               >
                 <FormInput
@@ -188,6 +189,7 @@ export const Supplier = () => {
                 style={{
                   marginBottom: "15px",
                   paddingLeft: "0px",
+                  width: "100%",
                 }}
               >
                 <FormInput
@@ -206,6 +208,7 @@ export const Supplier = () => {
                 style={{
                   marginBottom: "15px",
                   paddingLeft: "0px",
+                  width: "100%",
                 }}
               >
                 <FormInput
@@ -224,6 +227,7 @@ export const Supplier = () => {
                 style={{
                   marginBottom: "15px",
                   paddingLeft: "0px",
+                  width: "100%",
                 }}
               >
                 <FormInput
@@ -242,6 +246,7 @@ export const Supplier = () => {
                 style={{
                   marginBottom: "15px",
                   paddingLeft: "0px",
+                  width: "100%",
                 }}
               >
                 <FormInput
@@ -260,6 +265,7 @@ export const Supplier = () => {
                 style={{
                   marginBottom: "15px",
                   paddingLeft: "0px",
+                  width: "100%",
                 }}
               >
                 <FormInput
@@ -278,6 +284,7 @@ export const Supplier = () => {
                 style={{
                   marginBottom: "15px",
                   paddingLeft: "0px",
+                  width: "100%",
                 }}
               >
                 <FormTextArea

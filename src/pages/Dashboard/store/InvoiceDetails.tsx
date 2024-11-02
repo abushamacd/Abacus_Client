@@ -60,7 +60,7 @@ export const InvoiceDetails = () => {
     { label: "Consumer", value: "Consumer" },
   ];
 
-  const [isEdit, setIsEdit] = useState(true);
+  const [isEdit, setIsEdit] = useState(false);
   const [reduce, setReduce] = useState(false);
   const [errMessage, setErrMessage] = useState("");
   const [selectdUser, setSelectdUser] = useState<any>(null);
@@ -249,15 +249,13 @@ export const InvoiceDetails = () => {
       customerName: selectdUser?.name,
       date: invoiceDate,
       note: note,
-      due: afterReturnDue || 0,
+      due: +afterReturnDue?.toFixed(2) || 0,
       paid: afterReturnPaid || 0,
       profit: +totalProfit.toFixed(2) || 0,
       total: afterDiscount || 0,
       products: allProducts,
       removed: removedProducts,
     };
-
-    console.log(data);
 
     try {
       await updateInvoice({
@@ -512,8 +510,8 @@ export const InvoiceDetails = () => {
                 <table className="md:min-w-full w-[800px] table-auto border-separate">
                   <thead>
                     <tr className="bg-secondary">
-                      <th className="text-left p-2 w-[40%]">Particulers</th>
-                      <th className="text-right p-2 w-[15%]">Quantity</th>
+                      <th className="text-left p-2 w-[35%]">Particulers</th>
+                      <th className="text-right p-2 w-[20%]">Quantity</th>
                       <th className="text-right p-2 w-[15%]">Rate</th>
                       <th className="text-right p-2 w-[10%]">Total (৳)</th>
                       {showProfit && (
@@ -545,7 +543,7 @@ export const InvoiceDetails = () => {
                               size="small"
                               placeholder="Quantity"
                               onChange={(e) => productHandler(e, i)}
-                            />
+                            />{" "}
                             ({product?.unit})
                           </td>
                           <td className="p-2 text-right">
@@ -599,6 +597,11 @@ export const InvoiceDetails = () => {
                   </tbody>
                 </table>
               </div>
+              <div className="mb-2">
+                <h6 className="italic text-[#D31818]">
+                  N.B: First return than do the calculation.
+                </h6>
+              </div>
               {/* calculation */}
               <Row
                 className="!mx-0 justify-between"
@@ -619,6 +622,7 @@ export const InvoiceDetails = () => {
                     <span className="text-mirage dark:text-white">Note</span>
                   </div>
                   <TextArea
+                    defaultValue={invoice?.note}
                     disabled={!isEdit}
                     className="bg-white text-mirage dark:bg-bg_dark dark:text-white focus-within:!border-primary hover:!border-primary disabled:text-mirage dark:disabled:text-white placeholder:text-[#ddddddbb]"
                     name="note"
@@ -674,7 +678,7 @@ export const InvoiceDetails = () => {
                           afterReturnDue > 0 && "text-[#D31818] !font-bold"
                         }`}
                       >
-                        {afterReturnDue || 0}
+                        {+afterReturnDue?.toFixed(2) || 0}
                       </span>
                     </span>
                   </div>
@@ -704,7 +708,7 @@ export const InvoiceDetails = () => {
                           afterReturnDue > 0 && "text-[#D31818] !font-bold"
                         }`}
                       >
-                        {afterReturnDue || 0}
+                        {+afterReturnDue?.toFixed(2) || 0}
                       </span>
                       {/* <span
                         className={`italic ${invoice?.due > 0 && "!font-bold"}`}

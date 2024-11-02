@@ -29,6 +29,19 @@ export const AdminLayout = () => {
     setToLocalStorage("theme", globalTheme ? "light" : "dark");
   }, [globalTheme]);
 
+  useEffect(() => {
+    const handleResize = () => {
+      setCollapsed(window.innerWidth < 1000);
+    };
+
+    // Set initial collapse state based on window size
+    handleResize();
+
+    window.addEventListener("resize", handleResize);
+
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   const db_url = import.meta.env.VITE_REDIRECT_URL;
 
   const signout = () => {

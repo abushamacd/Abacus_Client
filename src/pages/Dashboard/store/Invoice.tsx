@@ -709,8 +709,8 @@ export const Invoice = () => {
               <table className="md:min-w-full w-[800px] table-auto border-separate">
                 <thead>
                   <tr className="bg-secondary">
-                    <th className="text-left p-2 w-[40%]">Particulers</th>
-                    <th className="text-right p-2 w-[15%]">Quantity</th>
+                    <th className="text-left p-2 w-[35%]">Particulers</th>
+                    <th className="text-right p-2 w-[20%]">Quantity</th>
                     <th className="text-right p-2 w-[15%]">Rate</th>
                     <th className="text-right p-2 w-[10%]">Total (৳)</th>
                     {showProfit && (
@@ -740,7 +740,7 @@ export const Invoice = () => {
                             size="small"
                             placeholder="Quantity"
                             onChange={(e) => productHandler(e, i)}
-                          />
+                          />{" "}
                           ({product?.unit})
                         </td>
                         <td className="p-2 text-right">
@@ -965,7 +965,7 @@ export const Invoice = () => {
                   value={rate}
                   className="bg-white text-mirage dark:bg-bg_dark dark:text-white focus-within:!border-primary hover:!border-primary disabled:text-mirage dark:disabled:text-white !placeholder:text-[#ddddddbb]"
                   name="rate"
-                  suffix={`৳ / ${selectedProduct[0]?.unit?.name || ""}`}
+                  suffix={`৳`}
                   step={0.1}
                   type="number"
                   min={selectedProduct[0]?.purchase}
@@ -1074,10 +1074,12 @@ export const Invoice = () => {
                   <MdDeleteForever
                     className=""
                     onClick={() => deletesHandler(selectedIds)}
-                    size={40}
+                    size={36}
                     style={{ color: "#D92728" }}
                   />
-                  <span className="mr-2 text-lg">({selectedIds?.length})</span>
+                  <span className="mr-2 text-mirage dark:text-white font-lg">
+                    ({selectedIds?.length})
+                  </span>
                 </>
               )}
               <Input
@@ -1136,6 +1138,7 @@ export const Invoice = () => {
               style={{
                 marginBottom: "15px",
                 paddingLeft: "0px",
+                width: "100%",
               }}
             >
               <FormInput
@@ -1153,6 +1156,7 @@ export const Invoice = () => {
               style={{
                 marginBottom: "15px",
                 paddingLeft: "0px",
+                width: "100%",
               }}
             >
               <FormInput
@@ -1170,6 +1174,7 @@ export const Invoice = () => {
               style={{
                 marginBottom: "15px",
                 paddingLeft: "0px",
+                width: "100%",
               }}
             >
               <FormInput
@@ -1187,6 +1192,7 @@ export const Invoice = () => {
               style={{
                 marginBottom: "15px",
                 paddingLeft: "0px",
+                width: "100%",
               }}
             >
               <FormInput
@@ -1204,6 +1210,7 @@ export const Invoice = () => {
               style={{
                 marginBottom: "15px",
                 paddingLeft: "0px",
+                width: "100%",
               }}
             >
               <FormInput

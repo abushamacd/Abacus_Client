@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import {
   useGetSupplierQuery,
   useUpdateSupplierMutation,
 } from "../../../redux/api/supplier";
 import Loading from "../../../components/ui/Loading";
 import { Button, Card, Col, Row } from "antd";
-import { FaEdit } from "react-icons/fa";
-import { MdOutlineCancel } from "react-icons/md";
+import { FaEdit, FaRegEye } from "react-icons/fa";
+import { MdDeleteForever, MdOutlineCancel } from "react-icons/md";
 import { useState } from "react";
 import { SubmitHandler } from "react-hook-form";
 import FormInput from "../../../components/Forms/FormInput";
@@ -16,6 +16,7 @@ import FormTextArea from "../../../components/Forms/FormTextArea";
 import { toast } from "react-toastify";
 import Title from "antd/es/typography/Title";
 import DataTable from "../../../components/ui/DataTable";
+import { useDeleteProductMutation } from "../../../redux/api/product";
 
 type SupplierFormValues = {
   name: string;
@@ -29,11 +30,13 @@ type SupplierFormValues = {
 
 export const SupplierDetails = () => {
   const params = useParams();
+  const navigate = useNavigate();
   const [isEdit, setIsEdit] = useState(true);
 
   const { data: supplierData, isLoading: supplierLoading } =
     useGetSupplierQuery(params?.id);
   const [updateSupplier] = useUpdateSupplierMutation();
+  const [deleteProduct] = useDeleteProductMutation();
 
   const supplier: any = supplierData;
 
@@ -78,7 +81,44 @@ export const SupplierDetails = () => {
       dataIndex: "sell",
       sorter: true,
     },
+    {
+      title: "Retail Price",
+      dataIndex: "retail",
+      sorter: true,
+    },
+    {
+      title: "Action",
+      render: function (porduct: any) {
+        return (
+          <div className="flex gap-2">
+            <FaRegEye
+              style={{ color: "#008A3F" }}
+              onClick={() => openView(porduct)}
+              size={22}
+            />
+            <MdDeleteForever
+              onClick={() => deleteHandler(porduct?.id)}
+              size={22}
+              style={{ color: "#D92728" }}
+            />
+          </div>
+        );
+      },
+    },
   ];
+
+  const openView = (porduct: any) => {
+    navigate(`/adbmsdb/products/${porduct.id}`, { replace: true });
+  };
+
+  const deleteHandler = async (id: string) => {
+    try {
+      await deleteProduct(id).unwrap();
+      toast("Porduct deleted successfully");
+    } catch (err: any) {
+      toast.error(`${err.data?.message}`);
+    }
+  };
 
   const updateHandler: SubmitHandler<SupplierFormValues> = async (
     data: SupplierFormValues
@@ -215,6 +255,7 @@ export const SupplierDetails = () => {
                     style={{
                       marginBottom: "15px",
                       paddingLeft: "0px",
+                      width: "100%",
                     }}
                   >
                     <FormInput
@@ -232,6 +273,7 @@ export const SupplierDetails = () => {
                     style={{
                       marginBottom: "15px",
                       paddingLeft: "0px",
+                      width: "100%",
                     }}
                   >
                     <FormInput
@@ -249,6 +291,7 @@ export const SupplierDetails = () => {
                     style={{
                       marginBottom: "15px",
                       paddingLeft: "0px",
+                      width: "100%",
                     }}
                   >
                     <FormInput
@@ -266,6 +309,7 @@ export const SupplierDetails = () => {
                     style={{
                       marginBottom: "15px",
                       paddingLeft: "0px",
+                      width: "100%",
                     }}
                   >
                     <FormInput
@@ -283,6 +327,7 @@ export const SupplierDetails = () => {
                     style={{
                       marginBottom: "15px",
                       paddingLeft: "0px",
+                      width: "100%",
                     }}
                   >
                     <FormInput
@@ -300,6 +345,7 @@ export const SupplierDetails = () => {
                     style={{
                       marginBottom: "15px",
                       paddingLeft: "0px",
+                      width: "100%",
                     }}
                   >
                     <FormInput
@@ -317,6 +363,7 @@ export const SupplierDetails = () => {
                     style={{
                       marginBottom: "15px",
                       paddingLeft: "0px",
+                      width: "100%",
                     }}
                   >
                     <FormTextArea
