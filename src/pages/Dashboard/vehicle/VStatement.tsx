@@ -156,6 +156,7 @@ export const VStatement = () => {
               >
                 <FormInput
                   name="oil"
+                  step={0.1}
                   type="number"
                   size="middle"
                   label="Oil (Litter)"
@@ -173,6 +174,7 @@ export const VStatement = () => {
               >
                 <FormInput
                   name="income"
+                  step={0.1}
                   type="number"
                   size="middle"
                   label="Income"
@@ -190,6 +192,7 @@ export const VStatement = () => {
               >
                 <FormInput
                   name="expense"
+                  step={0.1}
                   type="number"
                   size="middle"
                   label="Expense"
@@ -207,6 +210,7 @@ export const VStatement = () => {
               >
                 <FormInput
                   name="welfare"
+                  step={0.1}
                   type="number"
                   size="middle"
                   label="Welfare Cost"
@@ -224,6 +228,7 @@ export const VStatement = () => {
               >
                 <FormInput
                   name="servicing"
+                  step={0.1}
                   type="number"
                   size="middle"
                   label="Servicing Cost"

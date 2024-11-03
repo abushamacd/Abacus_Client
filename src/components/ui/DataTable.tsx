@@ -33,7 +33,9 @@ const DataTable = ({
     ? {
         pageSize: pageSize,
         total: totalPages,
-        pageSizeOptions: [2, 5, 10, 25, 50, 100, 200, 300, 400, 500],
+        pageSizeOptions: [
+          2, 5, 7, 10, 15, 20, 30, 31, 50, 100, 200, 300, 400, 500,
+        ],
         showSizeChanger: showSizeChanger,
         onChange: onPaginationChange,
         hideOnSinglePage: false,

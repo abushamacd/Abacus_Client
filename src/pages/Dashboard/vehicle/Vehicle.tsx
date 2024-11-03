@@ -197,6 +197,7 @@ export const Vehicle = () => {
                 style={{
                   marginBottom: "15px",
                   paddingLeft: "0px",
+                  width: "100%",
                 }}
               >
                 <FormInput
@@ -327,6 +328,7 @@ export const Vehicle = () => {
             onPaginationChange={onPaginationChange}
             onTableChange={onTableChange}
             showPagination={true}
+            isSelection={false}
           />
         </div>
       </div>

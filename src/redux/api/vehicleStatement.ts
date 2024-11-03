@@ -49,6 +49,15 @@ export const vehicleStatementApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: [tagTypes.vStatement, tagTypes.vehicle],
     }),
+    // delete vehicle statement
+    deleteVehicleStatements: build.mutation({
+      query: (data: any) => ({
+        url: `/VehicleStatement`,
+        method: "DELETE",
+        data: data,
+      }),
+      invalidatesTags: [tagTypes.vStatement, tagTypes.user],
+    }),
   }),
 });
 
@@ -57,4 +66,5 @@ export const {
   useGetVehicleStatementsQuery,
   useUpdateVehicleStatementMutation,
   useDeleteVehicleStatementMutation,
+  useDeleteVehicleStatementsMutation,
 } = vehicleStatementApi;

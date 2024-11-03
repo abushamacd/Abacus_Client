@@ -13,6 +13,7 @@ import { FaEdit } from "react-icons/fa";
 import { MdDeleteForever, MdOutlineCancel } from "react-icons/md";
 import {
   useDeleteVehicleStatementMutation,
+  useDeleteVehicleStatementsMutation,
   useGetVehicleStatementsQuery,
   useUpdateVehicleStatementMutation,
 } from "../../../redux/api/vehicleStatement";
@@ -59,6 +60,7 @@ type VStatementFormValues = {
 export const VehicleDetails = () => {
   const params = useParams();
   const [isEdit, setIsEdit] = useState(true);
+  const [selectedIds, setSelectedIds] = useState<React.Key[]>([]);
   const dispatch = useAppDispatch();
   const { edit } = useAppSelector((state) => state.site);
   const { data: vehicleData, isLoading: vehicleLoading } = useGetVehicleQuery(
@@ -71,6 +73,8 @@ export const VehicleDetails = () => {
   const { data: users } = useGetUsersQuery({
     role: "Staff",
   });
+
+  const [deleteVehicleStatements] = useDeleteVehicleStatementsMutation();
 
   // @ts-ignore
   const vehicleRoutes: any = vRoutes?.vehicleRoutes;
@@ -238,6 +242,15 @@ export const VehicleDetails = () => {
     }
   };
 
+  const deletesHandler = async (data: React.Key[]) => {
+    try {
+      await deleteVehicleStatements(data).unwrap();
+      toast.success("Delete selected statements");
+    } catch (err: any) {
+      toast.error(`${err.data?.message}`);
+    }
+  };
+
   const columns = [
     {
       title: "Date",
@@ -250,7 +263,7 @@ export const VehicleDetails = () => {
       sorter: true,
     },
     {
-      title: `Oil (${queryOil} Litre) `,
+      title: `Oil (${+queryOil?.toFixed(2)} Litre) `,
       dataIndex: "oil",
       sorter: true,
     },
@@ -300,6 +313,10 @@ export const VehicleDetails = () => {
     const { order, field } = sorter;
     setSortBy(field as string);
     setSortOrder(order === "ascend" ? "asc" : "desc");
+  };
+
+  const onSelection = (ids: React.Key[]) => {
+    setSelectedIds(ids);
   };
 
   const resetFilters = () => {
@@ -740,6 +757,19 @@ export const VehicleDetails = () => {
               Statements
             </Title>
             <div className="flex items-center">
+              {selectedIds?.length > 0 && (
+                <>
+                  <MdDeleteForever
+                    className=""
+                    onClick={() => deletesHandler(selectedIds)}
+                    size={35}
+                    style={{ color: "#D92728" }}
+                  />
+                  <span className="mr-2 text-mirage dark:text-white text-lg">
+                    ({selectedIds?.length})
+                  </span>
+                </>
+              )}
               <Input
                 type="text"
                 size="middle"
@@ -775,6 +805,7 @@ export const VehicleDetails = () => {
             onPaginationChange={onPaginationChange}
             onTableChange={onTableChange}
             showPagination={true}
+            onSelection={onSelection}
           />
         </div>
       </div>
@@ -829,7 +860,7 @@ export const VehicleDetails = () => {
             <Col
               className="gutter-row"
               sm={24}
-              md={12}
+              md={8}
               style={{
                 marginBottom: "15px",
                 paddingLeft: "0px",
@@ -838,6 +869,7 @@ export const VehicleDetails = () => {
             >
               <FormInput
                 name="oil"
+                step={0.1}
                 type="number"
                 size="middle"
                 label="Oil (Litter)"
@@ -847,7 +879,7 @@ export const VehicleDetails = () => {
             <Col
               className="gutter-row"
               sm={24}
-              md={12}
+              md={8}
               style={{
                 marginBottom: "15px",
                 paddingLeft: "0px",
@@ -856,6 +888,7 @@ export const VehicleDetails = () => {
             >
               <FormInput
                 name="income"
+                step={0.1}
                 type="number"
                 size="middle"
                 label="Income"
@@ -873,6 +906,7 @@ export const VehicleDetails = () => {
             >
               <FormInput
                 name="expense"
+                step={0.1}
                 type="number"
                 size="middle"
                 label="Expense"
@@ -881,7 +915,7 @@ export const VehicleDetails = () => {
             <Col
               className="gutter-row"
               sm={24}
-              md={8}
+              md={12}
               style={{
                 marginBottom: "15px",
                 paddingLeft: "0px",
@@ -890,6 +924,7 @@ export const VehicleDetails = () => {
             >
               <FormInput
                 name="welfare"
+                step={0.1}
                 type="number"
                 size="middle"
                 label="Welfare Cost"
@@ -898,7 +933,7 @@ export const VehicleDetails = () => {
             <Col
               className="gutter-row"
               sm={24}
-              md={8}
+              md={12}
               style={{
                 marginBottom: "15px",
                 paddingLeft: "0px",
@@ -907,6 +942,7 @@ export const VehicleDetails = () => {
             >
               <FormInput
                 name="servicing"
+                step={0.1}
                 type="number"
                 size="middle"
                 label="Servicing Cost"
