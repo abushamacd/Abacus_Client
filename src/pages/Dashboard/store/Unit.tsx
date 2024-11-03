@@ -205,6 +205,7 @@ export const Units = () => {
             onPaginationChange={onPaginationChange}
             onTableChange={onTableChange}
             showPagination={true}
+            isSelection={false}
           />
         </div>
       </div>

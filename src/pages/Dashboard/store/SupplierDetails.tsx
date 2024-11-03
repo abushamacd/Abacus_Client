@@ -16,7 +16,10 @@ import FormTextArea from "../../../components/Forms/FormTextArea";
 import { toast } from "react-toastify";
 import Title from "antd/es/typography/Title";
 import DataTable from "../../../components/ui/DataTable";
-import { useDeleteProductMutation } from "../../../redux/api/product";
+import {
+  useDeleteProductMutation,
+  useDeleteProductsMutation,
+} from "../../../redux/api/product";
 
 type SupplierFormValues = {
   name: string;
@@ -32,11 +35,13 @@ export const SupplierDetails = () => {
   const params = useParams();
   const navigate = useNavigate();
   const [isEdit, setIsEdit] = useState(true);
+  const [selectedIds, setSelectedIds] = useState<React.Key[]>([]);
 
   const { data: supplierData, isLoading: supplierLoading } =
     useGetSupplierQuery(params?.id);
   const [updateSupplier] = useUpdateSupplierMutation();
   const [deleteProduct] = useDeleteProductMutation();
+  const [deleteProducts] = useDeleteProductsMutation();
 
   const supplier: any = supplierData;
 
@@ -129,6 +134,19 @@ export const SupplierDetails = () => {
         body: data,
       }).unwrap();
       toast("Supplier updated successfully");
+    } catch (err: any) {
+      toast.error(`${err.data?.message}`);
+    }
+  };
+
+  const onSelection = (ids: React.Key[]) => {
+    setSelectedIds(ids);
+  };
+
+  const deletesHandler = async (data: React.Key[]) => {
+    try {
+      await deleteProducts(data).unwrap();
+      toast.success("Delete selected products");
     } catch (err: any) {
       toast.error(`${err.data?.message}`);
     }
@@ -400,13 +418,29 @@ export const SupplierDetails = () => {
               >
                 Products ({supplier?.products?.length})
               </Title>
+              <div className="flex items-center">
+                {selectedIds?.length > 0 && (
+                  <>
+                    <MdDeleteForever
+                      className=""
+                      onClick={() => deletesHandler(selectedIds)}
+                      size={24}
+                      style={{ color: "#D92728" }}
+                    />
+                    <span className="mr-2 text-mirage dark:text-white text-lg">
+                      ({selectedIds?.length})
+                    </span>
+                  </>
+                )}
+              </div>
             </div>
             <DataTable
               loading={supplierLoading}
               columns={columns}
               dataSource={supplier?.products}
               showSizeChanger={true}
-              showPagination={false}
+              showPagination={true}
+              onSelection={onSelection}
             />
           </div>
         </div>

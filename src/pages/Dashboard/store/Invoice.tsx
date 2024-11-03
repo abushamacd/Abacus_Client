@@ -1077,7 +1077,7 @@ export const Invoice = () => {
                     size={36}
                     style={{ color: "#D92728" }}
                   />
-                  <span className="mr-2 text-mirage dark:text-white font-lg">
+                  <span className="mr-2 text-mirage dark:text-white text-lg">
                     ({selectedIds?.length})
                   </span>
                 </>
