@@ -21,6 +21,7 @@ import { toast } from "react-toastify";
 import {
   useCreateProductMutation,
   useDeleteProductMutation,
+  useDeleteProductsMutation,
   useGetProductsQuery,
 } from "../../../redux/api/product";
 import { useDebounced } from "../../../redux/hooks";
@@ -56,6 +57,7 @@ type SupplierFormValues = {
 export const Product = () => {
   const navigate = useNavigate();
   const [isAdd, setIsAdd] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<React.Key[]>([]);
   const query: Record<string, any> = {};
   const [page, setPage] = useState<number>(1);
   const [size, setSize] = useState<number>(50);
@@ -83,6 +85,7 @@ export const Product = () => {
   const [createSupplier] = useCreateSupplierMutation();
   const [createProduct] = useCreateProductMutation();
   const [deleteProduct] = useDeleteProductMutation();
+  const [deleteProducts] = useDeleteProductsMutation();
 
   const { data, isLoading } = useGetProductsQuery({ ...query });
   // @ts-ignore
@@ -135,6 +138,15 @@ export const Product = () => {
     try {
       await deleteProduct(id).unwrap();
       toast("Porduct deleted successfully");
+    } catch (err: any) {
+      toast.error(`${err.data?.message}`);
+    }
+  };
+
+  const deletesHandler = async (data: React.Key[]) => {
+    try {
+      await deleteProducts(data).unwrap();
+      toast.success("Delete selected products");
     } catch (err: any) {
       toast.error(`${err.data?.message}`);
     }
@@ -206,6 +218,10 @@ export const Product = () => {
     const { order, field } = sorter;
     setSortBy(field as string);
     setSortOrder(order === "ascend" ? "asc" : "desc");
+  };
+
+  const onSelection = (ids: React.Key[]) => {
+    setSelectedIds(ids);
   };
 
   const resetFilters = () => {
@@ -440,6 +456,19 @@ export const Product = () => {
               All Products ({meta?.total})
             </Title>
             <div className="flex items-center">
+              {selectedIds?.length > 0 && (
+                <>
+                  <MdDeleteForever
+                    className=""
+                    onClick={() => deletesHandler(selectedIds)}
+                    size={35}
+                    style={{ color: "#D92728" }}
+                  />
+                  <span className="mr-2 text-mirage dark:text-white text-lg">
+                    ({selectedIds?.length})
+                  </span>
+                </>
+              )}
               <Input
                 type="text"
                 size="middle"
@@ -475,6 +504,7 @@ export const Product = () => {
             onPaginationChange={onPaginationChange}
             onTableChange={onTableChange}
             showPagination={true}
+            onSelection={onSelection}
           />
         </div>
       </div>
