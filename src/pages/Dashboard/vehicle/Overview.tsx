@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable no-extra-boolean-cast */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -14,6 +15,16 @@ import { useGetVehiclesQuery } from "../../../redux/api/vehicle";
 import { ReloadOutlined } from "@ant-design/icons";
 import DataTable from "../../../components/ui/DataTable";
 import Title from "antd/es/typography/Title";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from "recharts";
 
 export const VehiclesOverview = () => {
   const query: Record<string, any> = {};
@@ -141,6 +152,51 @@ export const VehiclesOverview = () => {
     setSearchTerm("");
   };
 
+  const data = [
+    {
+      name: "Page A",
+      uv: 4000,
+      pv: 2400,
+      amt: 2400,
+    },
+    {
+      name: "Page B",
+      uv: 3000,
+      pv: 1398,
+      amt: 2210,
+    },
+    {
+      name: "Page C",
+      uv: 2000,
+      pv: 9800,
+      amt: 2290,
+    },
+    {
+      name: "Page D",
+      uv: 2780,
+      pv: 3908,
+      amt: 2000,
+    },
+    {
+      name: "Page E",
+      uv: 1890,
+      pv: 4800,
+      amt: 2181,
+    },
+    {
+      name: "Page F",
+      uv: 2390,
+      pv: 3800,
+      amt: 2500,
+    },
+    {
+      name: "Page G",
+      uv: 3490,
+      pv: 4300,
+      amt: 2100,
+    },
+  ];
+
   if (vehicleStatementLoading || vLoading) return <Loading />;
 
   return (
@@ -197,6 +253,26 @@ export const VehiclesOverview = () => {
           </div>
         </Col>
       </Row>
+      {/* chart */}
+      <div className="border border-primary rounded-md p-4 mb-5">
+        <ResponsiveContainer width={"100%"} height={300}>
+          <LineChart data={data}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="name" padding={{ left: 0, right: 0 }} />
+            <YAxis />
+            <Tooltip />
+            <Legend />
+            <Line
+              type="monotone"
+              dataKey="pv"
+              stroke="#8884d8"
+              activeDot={{ r: 8 }}
+            />
+            <Line type="monotone" dataKey="uv" stroke="#82ca9d" />
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
+      {/* Query */}
       <Row className="!mx-0" gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
         <Col className="gutter-row w-full mb-5 !px-0" sm={24} md={8}>
           <div className="mr-0 md:mr-5 overflow-hidden rounded-md">
