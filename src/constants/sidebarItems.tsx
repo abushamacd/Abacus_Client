@@ -77,7 +77,7 @@ export const sidebarItems = (role: string) => {
           key: `/${db_url}/vehicle`,
         },
         {
-          label: <Link to={`/${db_url}/vehicles`}>All Vehicles</Link>,
+          label: <Link to={`/${db_url}/vehicles`}>Vehicles</Link>,
           key: `/${db_url}/vehicles`,
         },
         {

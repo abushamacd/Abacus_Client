@@ -78,6 +78,8 @@ export const Vehicle = () => {
   // @ts-ignore
   const meta = data?.meta;
 
+  console.log(vehicles);
+
   const routes: any[] = [];
   vehicleRoutes?.forEach((route: any) => {
     routes?.push({ label: route?.name, value: route?.name });
