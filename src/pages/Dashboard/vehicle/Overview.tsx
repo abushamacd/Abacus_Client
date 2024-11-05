@@ -1,32 +1,61 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable no-extra-boolean-cast */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Button, Col, Input, Row, Select } from "antd";
+import { Button, Col, Input, Modal, Row, Select } from "antd";
 import { BsGraphUpArrow } from "react-icons/bs";
 import { BsGraphDownArrow } from "react-icons/bs";
 import { FaSackDollar } from "react-icons/fa6";
 import Loading from "../../../components/ui/Loading";
-import { useGetVehicleStatementsQuery } from "../../../redux/api/vehicleStatement";
+import {
+  useGetVehicleStatementsQuery,
+  useUpdateVehicleStatementMutation,
+} from "../../../redux/api/vehicleStatement";
 import { useState } from "react";
-import { useDebounced } from "../../../redux/hooks";
+import {
+  useAppDispatch,
+  useAppSelector,
+  useDebounced,
+} from "../../../redux/hooks";
 import { SelectOptions } from "../../../types";
 import { useGetVehiclesQuery } from "../../../redux/api/vehicle";
 import { ReloadOutlined } from "@ant-design/icons";
 import DataTable from "../../../components/ui/DataTable";
 import Title from "antd/es/typography/Title";
 import {
-  LineChart,
-  Line,
   XAxis,
   YAxis,
-  CartesianGrid,
   Tooltip,
   Legend,
   ResponsiveContainer,
+  AreaChart,
+  Area,
 } from "recharts";
+import { FiEdit } from "react-icons/fi";
+import { setEdit } from "../../../redux/features/siteSlice";
+import Form from "../../../components/Forms/Forms";
+import FormDatePicker from "../../../components/Forms/FormDatePicker";
+import FormInput from "../../../components/Forms/FormInput";
+import FormSelectField from "../../../components/Forms/FormSelectField";
+import FormTextArea from "../../../components/Forms/FormTextArea";
+import { useGetVehicleRoutesQuery } from "../../../redux/api/vehicleRoute";
+import { SubmitHandler } from "react-hook-form";
+import { toast } from "react-toastify";
+
+type VStatementFormValues = {
+  route: string;
+  oil: number;
+  income: number;
+  expense: number;
+  welfare: number;
+  servicing: number;
+  comment: string;
+};
 
 export const VehiclesOverview = () => {
+  const dispatch = useAppDispatch();
+  const { edit } = useAppSelector((state) => state.site);
+  const editVehicleStatement: any = edit?.data;
+
   const query: Record<string, any> = {};
   const [page, setPage] = useState<number>(1);
   const [size, setSize] = useState<number>();
@@ -64,6 +93,15 @@ export const VehiclesOverview = () => {
   const vehicles: any[] = [];
   allVehicles?.forEach((vehicle: any) => {
     vehicles?.push({ label: vehicle?.vNumber, value: vehicle?.id });
+  });
+
+  const { data: vRoutes } = useGetVehicleRoutesQuery({});
+  // @ts-ignore
+  const vehicleRoutes: any = vRoutes?.vehicleRoutes;
+
+  const routes: any[] = [];
+  vehicleRoutes?.forEach((route: any) => {
+    routes?.push({ label: route?.name, value: route?.name });
   });
 
   const queryIncome = vehicleStatements?.reduce(
@@ -131,7 +169,29 @@ export const VehiclesOverview = () => {
         );
       },
     },
+    {
+      title: "Action",
+      render: function (VehicleStatement: any) {
+        return (
+          <div className="flex gap-2">
+            <FiEdit
+              style={{ color: "#008A3F" }}
+              onClick={() => openEdit(VehicleStatement)}
+              size={22}
+            />
+          </div>
+        );
+      },
+    },
   ];
+
+  const openEdit = (vehicleRoute: any) => {
+    dispatch(setEdit({ data: vehicleRoute, state: true }));
+  };
+
+  const closeEdit = () => {
+    dispatch(setEdit({ data: null, state: false }));
+  };
 
   const onPaginationChange = (page: number, pageSize: number) => {
     setPage(page);
@@ -152,50 +212,105 @@ export const VehiclesOverview = () => {
     setSearchTerm("");
   };
 
-  const data = [
-    {
-      name: "Page A",
-      uv: 4000,
-      pv: 2400,
-      amt: 2400,
-    },
-    {
-      name: "Page B",
-      uv: 3000,
-      pv: 1398,
-      amt: 2210,
-    },
-    {
-      name: "Page C",
-      uv: 2000,
-      pv: 9800,
-      amt: 2290,
-    },
-    {
-      name: "Page D",
-      uv: 2780,
-      pv: 3908,
-      amt: 2000,
-    },
-    {
-      name: "Page E",
-      uv: 1890,
-      pv: 4800,
-      amt: 2181,
-    },
-    {
-      name: "Page F",
-      uv: 2390,
-      pv: 3800,
-      amt: 2500,
-    },
-    {
-      name: "Page G",
-      uv: 3490,
-      pv: 4300,
-      amt: 2100,
-    },
-  ];
+  const CustomTooltip = ({
+    active,
+    payload,
+    label,
+  }: {
+    active?: any;
+    payload?: any;
+    label?: any;
+  }) => {
+    if (active && payload && payload.length) {
+      return (
+        <div className="custom-tooltip bg-white dark:bg-bg_dark text-mirage dark:text-white p-2 rounded-md">
+          <h4 className="italic text-lg">
+            Vehicle No.: {payload[0].payload?.vehicle?.vNumber}
+          </h4>
+          <h4 className="italic text-base text-primary">On Date: {label}</h4>
+          <hr />
+          <p className="label capitalize">{`${
+            payload[0].dataKey
+          } : ${payload[0].value.toFixed(2)}`}</p>
+          <p className="label capitalize">{`${
+            payload[1].dataKey
+          } : ${payload[1].value.toFixed(2)}`}</p>
+          <p className="label capitalize">{`${
+            payload[2].dataKey
+          } : ${payload[2].value.toFixed(2)}`}</p>
+          <p className="label capitalize">{`${
+            payload[3].dataKey
+          } : ${payload[3].value.toFixed(2)}`}</p>
+          <p className="label capitalize">{`${
+            payload[4].dataKey
+          } : ${payload[4].value.toFixed(2)}`}</p>
+          <p
+            className={`label capitalize ${
+              payload[1].value +
+                payload[2].value -
+                (payload[3].value + payload[4].value) >
+              0
+                ? "text-primary"
+                : "text-[#D31818]"
+            }`}
+          >{`Profit: ${(
+            payload[1].value +
+            payload[2].value -
+            (payload[3].value + payload[4].value)
+          ).toFixed(2)}`}</p>
+        </div>
+      );
+    }
+
+    return null;
+  };
+
+  const [updateVehicleStatement] = useUpdateVehicleStatementMutation();
+
+  const statementDefaultValues = {
+    date: editVehicleStatement?.date || "",
+    route: editVehicleStatement?.route || "",
+    comment: editVehicleStatement?.comment || "",
+    oil: editVehicleStatement?.oil,
+    income: editVehicleStatement?.income || 0,
+    expense: editVehicleStatement?.expense || 0,
+    servicing: editVehicleStatement?.servicing || 0,
+    welfare: editVehicleStatement?.welfare || 0,
+  };
+
+  const statementUpdateHandler: SubmitHandler<VStatementFormValues> = async (
+    formData: VStatementFormValues
+  ) => {
+    const { comment, ...others } = formData;
+    const data: { [key: string]: string | number } = {};
+
+    for (const [key, value] of Object.entries(others)) {
+      data[key] = isNaN(Number(value)) ? value : Number(value);
+    }
+
+    data.comment = comment;
+
+    const newDate = new Date(data?.date);
+
+    // Format the date to Bangladesh Standard Time (BST)
+    const formattedDate = newDate.toLocaleString("en-GB", {
+      timeZone: "Asia/Dhaka",
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    });
+    data.date = formattedDate;
+
+    try {
+      await updateVehicleStatement({
+        id: editVehicleStatement?.id,
+        body: data,
+      }).unwrap();
+      toast("Statement updated successfully");
+    } catch (err: any) {
+      toast.error(`${err.data?.message}`);
+    }
+  };
 
   if (vehicleStatementLoading || vLoading) return <Loading />;
 
@@ -205,14 +320,14 @@ export const VehiclesOverview = () => {
         <Col className="gutter-row w-full mb-5 !px-0" sm={24} md={12} lg={8}>
           <div className="mr-0 md:mr-5 overflow-hidden rounded-md">
             <div
-              className={`card_container before:bg-[#7c162e] after:bg-[#7c162e] relative bg-secondary p-4 rounded-md text-mirage dark:text-white`}
+              className={`card_container before:bg-[#cdb4db] after:bg-[#cdb4db] relative bg-secondary p-4 rounded-md text-mirage dark:text-white`}
             >
               <div className="relative z-10">
                 <BsGraphUpArrow
                   size={40}
                   className="border border-primary p-2 rounded-md"
                 />
-                <h1 className="text-3xl ao my-4">{totalIncome} ৳</h1>
+                <h1 className="text-3xl ao my-4">{totalIncome.toFixed(2)} ৳</h1>
                 <p className="text-lg my-2">Total Income</p>
               </div>
             </div>
@@ -221,14 +336,16 @@ export const VehiclesOverview = () => {
         <Col className="gutter-row w-full mb-5 !px-0" sm={24} md={12} lg={8}>
           <div className="mr-0 md:mr-0 lg:mr-5 overflow-hidden rounded-md">
             <div
-              className={`card_container before:bg-[#7c162e] after:bg-[#7c162e] relative bg-secondary p-4 rounded-md text-mirage dark:text-white`}
+              className={`card_container before:bg-[#b5c6e0] after:bg-[#b5c6e0] relative bg-secondary p-4 rounded-md text-mirage dark:text-white`}
             >
               <div className="relative z-10">
                 <BsGraphDownArrow
                   size={40}
                   className="border border-primary p-2 rounded-md"
                 />
-                <h1 className="text-3xl ao my-4">{totalExpanse} ৳</h1>
+                <h1 className="text-3xl ao my-4">
+                  {totalExpanse.toFixed(2)} ৳
+                </h1>
                 <p className="text-lg my-2">Total Expanse</p>
               </div>
             </div>
@@ -237,7 +354,7 @@ export const VehiclesOverview = () => {
         <Col className="gutter-row w-full mb-5 !px-0" sm={24} md={24} lg={8}>
           <div className="overflow-hidden rounded-md">
             <div
-              className={`card_container before:bg-[#7c162e] after:bg-[#7c162e] relative bg-secondary p-4 rounded-md text-mirage dark:text-white`}
+              className={`card_container before:bg-[#c3cfa0] after:bg-[#c3cfa0] relative bg-secondary p-4 rounded-md text-mirage dark:text-white`}
             >
               <div className="relative z-10">
                 <FaSackDollar
@@ -256,20 +373,73 @@ export const VehiclesOverview = () => {
       {/* chart */}
       <div className="border border-primary rounded-md p-4 mb-5">
         <ResponsiveContainer width={"100%"} height={300}>
-          <LineChart data={data}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="name" padding={{ left: 0, right: 0 }} />
+          <AreaChart
+            data={vehicleStatements}
+            margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
+          >
+            <defs>
+              <linearGradient id="oil" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="#82ca9d" stopOpacity={0.8} />
+                <stop offset="95%" stopColor="#82ca9d" stopOpacity={0} />
+              </linearGradient>
+              <linearGradient id="income" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="#8884d8" stopOpacity={0.8} />
+                <stop offset="95%" stopColor="#8884d8" stopOpacity={0} />
+              </linearGradient>
+              <linearGradient id="welfare" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="#f19c79" stopOpacity={0.8} />
+                <stop offset="95%" stopColor="#f19c79" stopOpacity={0} />
+              </linearGradient>
+              <linearGradient id="expense" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="#52b2cf" stopOpacity={0.8} />
+                <stop offset="95%" stopColor="#52b2cf" stopOpacity={0} />
+              </linearGradient>
+              <linearGradient id="servicing" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="#d0b8ac" stopOpacity={0.8} />
+                <stop offset="95%" stopColor="#d0b8ac" stopOpacity={0} />
+              </linearGradient>
+            </defs>
+            {/* <CartesianGrid strokeDasharray="3 3" /> */}
+            <XAxis dataKey="date" padding={{ left: 0, right: 0 }} />
             <YAxis />
-            <Tooltip />
+            <Tooltip content={<CustomTooltip />} />
             <Legend />
-            <Line
+            <Area
               type="monotone"
-              dataKey="pv"
-              stroke="#8884d8"
-              activeDot={{ r: 8 }}
+              dataKey="oil"
+              stroke="#82ca9d"
+              fillOpacity={1}
+              fill="url(#oil)"
             />
-            <Line type="monotone" dataKey="uv" stroke="#82ca9d" />
-          </LineChart>
+            <Area
+              type="monotone"
+              dataKey="income"
+              stroke="#8884d8"
+              fillOpacity={1}
+              fill="url(#income)"
+            />
+            <Area
+              type="monotone"
+              dataKey="welfare"
+              stroke="#f19c79"
+              fillOpacity={1}
+              fill="url(#welfare)"
+            />
+            <Area
+              type="monotone"
+              dataKey="expense"
+              stroke="#52b2cf"
+              fillOpacity={1}
+              fill="url(#expense)"
+            />
+            <Area
+              type="monotone"
+              dataKey="servicing"
+              stroke="#d0b8ac"
+              fillOpacity={1}
+              fill="url(#servicing)"
+            />
+          </AreaChart>
         </ResponsiveContainer>
       </div>
       {/* Query */}
@@ -360,6 +530,172 @@ export const VehiclesOverview = () => {
           />
         </div>
       </div>
+      {/* edit modal */}
+      <Modal
+        title={`Update Statement (${editVehicleStatement?.date})`}
+        open={edit.editState}
+        centered
+        footer={null}
+        onCancel={closeEdit}
+      >
+        <Form
+          submitHandler={statementUpdateHandler}
+          defaultValues={statementDefaultValues}
+        >
+          <Row className="!mx-0" gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
+            <Col
+              className="gutter-row"
+              sm={24}
+              md={12}
+              style={{
+                marginBottom: "15px",
+                paddingLeft: "0px",
+                width: "100%",
+              }}
+            >
+              <FormDatePicker
+                name="date"
+                label="Trip Date"
+                size="middle"
+                required
+              />
+            </Col>
+            <Col
+              className="gutter-row"
+              sm={24}
+              md={12}
+              style={{
+                marginBottom: "15px",
+                paddingLeft: "0px",
+                width: "100%",
+              }}
+            >
+              <FormSelectField
+                name="route"
+                label="Route"
+                options={routes as SelectOptions[]}
+                size="middle"
+                placeholder="Select"
+              />
+            </Col>
+            <Col
+              className="gutter-row"
+              sm={24}
+              md={8}
+              style={{
+                marginBottom: "15px",
+                paddingLeft: "0px",
+                width: "100%",
+              }}
+            >
+              <FormInput
+                name="oil"
+                step={0.1}
+                type="number"
+                size="middle"
+                label="Oil (Litter)"
+                required
+              />
+            </Col>
+            <Col
+              className="gutter-row"
+              sm={24}
+              md={8}
+              style={{
+                marginBottom: "15px",
+                paddingLeft: "0px",
+                width: "100%",
+              }}
+            >
+              <FormInput
+                name="income"
+                step={0.1}
+                type="number"
+                size="middle"
+                label="Income"
+              />
+            </Col>
+            <Col
+              className="gutter-row"
+              sm={24}
+              md={8}
+              style={{
+                marginBottom: "15px",
+                paddingLeft: "0px",
+                width: "100%",
+              }}
+            >
+              <FormInput
+                name="expense"
+                step={0.1}
+                type="number"
+                size="middle"
+                label="Expense"
+              />
+            </Col>
+            <Col
+              className="gutter-row"
+              sm={24}
+              md={12}
+              style={{
+                marginBottom: "15px",
+                paddingLeft: "0px",
+                width: "100%",
+              }}
+            >
+              <FormInput
+                name="welfare"
+                step={0.1}
+                type="number"
+                size="middle"
+                label="Welfare Cost"
+              />
+            </Col>
+            <Col
+              className="gutter-row"
+              sm={24}
+              md={12}
+              style={{
+                marginBottom: "15px",
+                paddingLeft: "0px",
+                width: "100%",
+              }}
+            >
+              <FormInput
+                name="servicing"
+                step={0.1}
+                type="number"
+                size="middle"
+                label="Servicing Cost"
+              />
+            </Col>
+            <Col
+              className="gutter-row"
+              sm={24}
+              md={24}
+              style={{
+                marginBottom: "15px",
+                paddingLeft: "0px",
+                width: "100%",
+              }}
+            >
+              <FormTextArea name="comment" label="Details" placeholder="Note" />
+            </Col>
+          </Row>
+
+          <Row justify="start" align="middle">
+            <Button
+              className="bg-primary hover:!bg-primary text-mirage !bg-opacity-[.8] duration-300 transition-all mt-4"
+              size="middle"
+              htmlType="submit"
+              type="primary"
+              // block
+            >
+              Update
+            </Button>
+          </Row>
+        </Form>
+      </Modal>
     </div>
   );
 };
