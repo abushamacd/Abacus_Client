@@ -50,7 +50,7 @@ export const AdminLayout = () => {
   };
 
   // @ts-ignore
-  const { role } = getUserInfo();
+  const { name, phone, role } = getUserInfo();
 
   const { pathname } = useLocation();
 
@@ -121,20 +121,24 @@ export const AdminLayout = () => {
             <Popover
               className="mr-2 border-[3px] dark:border-primary border-bg_dark"
               placement="bottomRight"
-              title={"User Profile"}
+              title={""}
               content={
-                <Button
-                  onClick={signout}
-                  className="bg-primary hover:!bg-primary text-mirage !bg-opacity-[.8] duration-300 transition-all"
-                  size="middle"
-                  htmlType="submit"
-                  type="primary"
-                  block
-                >
-                  Sign Out
-                </Button>
+                <>
+                  <h3 className="italic text-lg ao text-primary">{name}</h3>
+                  <p className="">{phone}</p>
+                  <p className="">{role}</p>
+                  <Button
+                    onClick={signout}
+                    className="bg-primary hover:!bg-primary text-mirage !bg-opacity-[.8] duration-300 transition-all mt-4"
+                    size="middle"
+                    htmlType="submit"
+                    type="primary"
+                    block
+                  >
+                    Sign Out
+                  </Button>
+                </>
               }
-              // arrow={mergedArrow}
             >
               <Avatar size={40} icon={<FaRegUserCircle />} />
             </Popover>

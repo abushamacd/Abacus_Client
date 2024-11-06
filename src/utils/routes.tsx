@@ -23,6 +23,7 @@ import { InvoiceDetails } from "../pages/Dashboard/store/InvoiceDetails";
 import { StoreOverview } from "../pages/Dashboard/store/Overview";
 import { MyInvoices } from "../pages/Dashboard/user/MyInvoices";
 import PrivateRoute from "./PrivateRoute";
+import Homepage from "../pages/Client/Homepage";
 
 const db_url = import.meta.env.VITE_REDIRECT_URL;
 
@@ -30,6 +31,12 @@ const routes = createBrowserRouter([
   {
     path: "/",
     element: <SiteLayout />,
+    children: [
+      {
+        index: true,
+        element: <Homepage />,
+      },
+    ],
   },
   {
     path: `/${db_url}_signin`,
