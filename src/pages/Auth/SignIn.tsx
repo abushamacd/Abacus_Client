@@ -73,7 +73,7 @@ const SignIn = () => {
               </div>
 
               <div className="text-sm mb-4 text-primary">
-                <Link to={`/auth/reset`}>Forgot Password ?</Link>
+                <Link to={`/${path}/forget-password`}>Forgot Password ?</Link>
               </div>
 
               <Row justify="center" align="middle">

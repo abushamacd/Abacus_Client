@@ -24,6 +24,8 @@ import { StoreOverview } from "../pages/Dashboard/store/Overview";
 import { MyInvoices } from "../pages/Dashboard/user/MyInvoices";
 import PrivateRoute from "./PrivateRoute";
 import Homepage from "../pages/Client/Homepage";
+import { ForgetPassword } from "../pages/Auth/ForgetPassword";
+import { ResetPassword } from "../pages/Auth/ResetPassword";
 
 const db_url = import.meta.env.VITE_REDIRECT_URL;
 
@@ -39,12 +41,20 @@ const routes = createBrowserRouter([
     ],
   },
   {
-    path: `/${db_url}_signin`,
+    path: `/${db_url}`,
     element: <AuthLayout />,
     children: [
       {
-        index: true,
+        path: `/${db_url}/signin`,
         element: <SignIn />,
+      },
+      {
+        path: `/${db_url}/forget-password`,
+        element: <ForgetPassword />,
+      },
+      {
+        path: `/${db_url}/reset-password/:token`,
+        element: <ResetPassword />,
       },
     ],
   },

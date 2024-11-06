@@ -46,7 +46,7 @@ export const AdminLayout = () => {
 
   const signout = () => {
     removeUserInfo(authKey);
-    navigate(`/${db_url}_signin`, { replace: true });
+    navigate(`/${db_url}/signin`, { replace: true });
   };
 
   // @ts-ignore

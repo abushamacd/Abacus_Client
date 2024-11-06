@@ -17,7 +17,7 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     if (!userLoggedIn) {
-      navigate(`/${db_url}_signin`, { replace: true });
+      navigate(`/${db_url}/signin`, { replace: true });
     } else {
       navigate(path, { replace: true });
     }

@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { isLoggedIn } from "../../services/auth.service";
 import { Button } from "antd";
+import { CustomHead } from "../../components/CustomHead";
 
 const Homepage = () => {
   const userLoggedIn = isLoggedIn();
@@ -9,6 +10,7 @@ const Homepage = () => {
   const navigate = useNavigate();
   return (
     <div>
+      <CustomHead title="Welcome" />
       <div className="text-center text-mirage dark:text-white">
         <h2 className="md:text-7xl text-3xl mb-4 text-primary ao p-4">
           Welcome to <span className="italic ao">Allardan</span>
@@ -33,7 +35,7 @@ const Homepage = () => {
           ) : (
             <Button
               onClick={() => {
-                navigate(`/${db_url}_signin`, { replace: true });
+                navigate(`/${db_url}/signin`, { replace: true });
               }}
               className="bg-primary hover:!bg-primary text-mirage !bg-opacity-[.8] duration-300 transition-all mb-5"
               size="middle"
