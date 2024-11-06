@@ -69,8 +69,6 @@ export const UserDetails = () => {
   // @ts-ignore
   const meta = invoicesData?.meta;
 
-  console.log(invoices);
-
   const defaultValues = {
     name: user?.name || "",
     phone: user?.phone || "",

@@ -20,8 +20,8 @@ export const sidebarItems = (role: string) => {
           key: `/profile`,
         },
         {
-          label: <Link to={`/${db_url}_signin`}>Sign In</Link>,
-          key: `/change-password`,
+          label: <Link to={`/${db_url}/myinvoices`}>My Invoices</Link>,
+          key: `/myinvoices`,
         },
       ],
     },

@@ -21,6 +21,7 @@ import { ProductDetails } from "../pages/Dashboard/store/ProductDetails";
 import { Invoice } from "../pages/Dashboard/store/Invoice";
 import { InvoiceDetails } from "../pages/Dashboard/store/InvoiceDetails";
 import { StoreOverview } from "../pages/Dashboard/store/Overview";
+import { MyInvoices } from "../pages/Dashboard/user/MyInvoices";
 
 const db_url = import.meta.env.VITE_REDIRECT_URL;
 
@@ -50,6 +51,10 @@ const routes = createBrowserRouter([
       {
         index: true,
         element: <Profile />,
+      },
+      {
+        path: `/${db_url}/myinvoices`,
+        element: <MyInvoices />,
       },
       {
         path: `/${db_url}/users`,
