@@ -3,7 +3,7 @@ import SiteLayout from "../layouts/SiteLayout";
 import { AuthLayout } from "../layouts/AuthLayout";
 import { NotFound } from "../pages/NotFound";
 import SignIn from "../pages/Auth/SignIn";
-// import ProtectedRoute from "./ProtectedRoute";
+import ProtectedRoute from "./ProtectedRoute";
 import { AdminLayout } from "../layouts/AdminLayout";
 import { Profile } from "../pages/Dashboard/Profile";
 import { UserDetails } from "../pages/Dashboard/user/UserDetails";
@@ -22,6 +22,7 @@ import { Invoice } from "../pages/Dashboard/store/Invoice";
 import { InvoiceDetails } from "../pages/Dashboard/store/InvoiceDetails";
 import { StoreOverview } from "../pages/Dashboard/store/Overview";
 import { MyInvoices } from "../pages/Dashboard/user/MyInvoices";
+import PrivateRoute from "./PrivateRoute";
 
 const db_url = import.meta.env.VITE_REDIRECT_URL;
 
@@ -43,9 +44,9 @@ const routes = createBrowserRouter([
   {
     path: `/${db_url}`,
     element: (
-      // <ProtectedRoute>
-      <AdminLayout />
-      // </ProtectedRoute>
+      <ProtectedRoute>
+        <AdminLayout />
+      </ProtectedRoute>
     ),
     children: [
       {
@@ -66,7 +67,11 @@ const routes = createBrowserRouter([
       },
       {
         path: `/${db_url}/store`,
-        element: <StoreOverview />,
+        element: (
+          <PrivateRoute>
+            <StoreOverview />
+          </PrivateRoute>
+        ),
       },
       {
         path: `/${db_url}/invoices`,
@@ -98,7 +103,11 @@ const routes = createBrowserRouter([
       },
       {
         path: `/${db_url}/vehicle`,
-        element: <VehiclesOverview />,
+        element: (
+          <PrivateRoute>
+            <VehiclesOverview />
+          </PrivateRoute>
+        ),
       },
       {
         path: `/${db_url}/vehicles/`,

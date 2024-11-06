@@ -187,7 +187,6 @@ export const StoreOverview = () => {
   const openView = (id: string) => {
     navigate(`/adbmsdb/invoices/${id}`, { replace: true });
   };
-  //   console.log(allInvoices);
 
   const CustomTooltip = ({
     active,

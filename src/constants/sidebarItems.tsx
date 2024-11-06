@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { MenuProps } from "antd";
 import { MdHomeRepairService } from "react-icons/md";
 import { ImProfile } from "react-icons/im";
@@ -46,10 +48,6 @@ export const sidebarItems = (role: string) => {
       icon: <FaStore />,
       children: [
         {
-          label: <Link to={`/${db_url}/store`}>Overview</Link>,
-          key: `/${db_url}/store`,
-        },
-        {
           label: <Link to={`/${db_url}/invoices`}>Invoices</Link>,
           key: `/${db_url}/invoice`,
         },
@@ -69,8 +67,26 @@ export const sidebarItems = (role: string) => {
     },
   ];
 
+  const managerSidebarItemsWithoutStore: any = managerSidebarItems.filter(
+    (item) => item?.key !== "store"
+  );
+
+  const storeItemCopy = {
+    ...managerSidebarItems.find((item) => item?.key === "store"),
+    children: [
+      {
+        label: <Link to={`/${db_url}/store`}>Overview</Link>,
+        key: `/${db_url}/store`,
+      },
+      // @ts-ignore
+      ...(managerSidebarItems.find((item) => item?.key === "store")?.children ||
+        []),
+    ],
+  };
+
   const adminSidebarItems: MenuProps["items"] = [
-    ...managerSidebarItems,
+    ...managerSidebarItemsWithoutStore,
+    ...(storeItemCopy ? [storeItemCopy] : []),
     {
       label: "Vehicles",
       key: "vehicles",
