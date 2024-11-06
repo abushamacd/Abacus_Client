@@ -18,6 +18,15 @@ import { useGetProductsQuery } from "../../../redux/api/product";
 import Loading from "../../../components/ui/Loading";
 import { SelectOptions } from "../../../types";
 import { useGetUsersQuery } from "../../../redux/api/userApi";
+import {
+  XAxis,
+  YAxis,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+  AreaChart,
+  Area,
+} from "recharts";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export const StoreOverview = () => {
@@ -178,6 +187,43 @@ export const StoreOverview = () => {
   const openView = (id: string) => {
     navigate(`/adbmsdb/invoices/${id}`, { replace: true });
   };
+  //   console.log(allInvoices);
+
+  const CustomTooltip = ({
+    active,
+    payload,
+    label,
+  }: {
+    active?: any;
+    payload?: any;
+    label?: any;
+  }) => {
+    if (active && payload && payload.length) {
+      return (
+        <div className="custom-tooltip bg-white dark:bg-bg_dark text-mirage dark:text-white p-2 rounded-md">
+          <h4 className="italic text-lg">{payload[0].payload?.customerName}</h4>
+          <h4 className="italic text-base text-primary">On Date: {label}</h4>
+          <hr />
+          <p className="label capitalize">{`${
+            payload[0]?.dataKey
+          } : ${payload[0]?.value?.toFixed(2)}`}</p>
+          <p className="label capitalize">{`${
+            payload[1]?.dataKey
+          } : ${payload[1]?.value?.toFixed(2)}`}</p>
+          <p className="label capitalize">{`${
+            payload[2]?.dataKey
+          } : ${payload[2]?.value?.toFixed(2)}`}</p>
+          <p
+            className={`label capitalize ${
+              payload[3]?.value > 0 ? "text-primary" : "text-[#D31818]"
+            }`}
+          >{`Profit: ${payload[3]?.value.toFixed(2)}`}</p>
+        </div>
+      );
+    }
+
+    return null;
+  };
 
   if (invoicesLoading || isLoading || staffsLoading) return <Loading />;
 
@@ -271,6 +317,67 @@ export const StoreOverview = () => {
           </div>
         </Col>
       </Row>
+      {/* chart */}
+      <div className="border border-primary rounded-md p-4 mb-5">
+        <ResponsiveContainer width={"100%"} height={300}>
+          <AreaChart
+            data={allInvoices}
+            margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
+          >
+            <defs>
+              <linearGradient id="total" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="#82ca9d" stopOpacity={0.8} />
+                <stop offset="95%" stopColor="#82ca9d" stopOpacity={0} />
+              </linearGradient>
+              <linearGradient id="paid" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="#8884d8" stopOpacity={0.8} />
+                <stop offset="95%" stopColor="#8884d8" stopOpacity={0} />
+              </linearGradient>
+              <linearGradient id="due" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="#f19c79" stopOpacity={0.8} />
+                <stop offset="95%" stopColor="#f19c79" stopOpacity={0} />
+              </linearGradient>
+              <linearGradient id="profit" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="#52b2cf" stopOpacity={0.8} />
+                <stop offset="95%" stopColor="#52b2cf" stopOpacity={0} />
+              </linearGradient>
+            </defs>
+            {/* <CartesianGrid strokeDasharray="3 3" /> */}
+            <XAxis dataKey="date" padding={{ left: 0, right: 0 }} />
+            <YAxis />
+            <Tooltip content={<CustomTooltip />} />
+            <Legend />
+            <Area
+              type="monotone"
+              dataKey="total"
+              stroke="#82ca9d"
+              fillOpacity={1}
+              fill="url(#total)"
+            />
+            <Area
+              type="monotone"
+              dataKey="paid"
+              stroke="#8884d8"
+              fillOpacity={1}
+              fill="url(#paid)"
+            />
+            <Area
+              type="monotone"
+              dataKey="due"
+              stroke="#f19c79"
+              fillOpacity={1}
+              fill="url(#due)"
+            />
+            <Area
+              type="monotone"
+              dataKey="profit"
+              stroke="#52b2cf"
+              fillOpacity={1}
+              fill="url(#profit)"
+            />
+          </AreaChart>
+        </ResponsiveContainer>
+      </div>
       {/* Query */}
       <Row className="!mx-0" gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
         <Col className="gutter-row w-full mb-5 !px-0" sm={24} md={8}>
