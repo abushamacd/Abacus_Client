@@ -20,6 +20,7 @@ import { SupplierDetails } from "../pages/Dashboard/store/SupplierDetails";
 import { ProductDetails } from "../pages/Dashboard/store/ProductDetails";
 import { Invoice } from "../pages/Dashboard/store/Invoice";
 import { InvoiceDetails } from "../pages/Dashboard/store/InvoiceDetails";
+import { StoreOverview } from "../pages/Dashboard/store/Overview";
 
 const db_url = import.meta.env.VITE_REDIRECT_URL;
 
@@ -59,12 +60,8 @@ const routes = createBrowserRouter([
         element: <UserDetails />,
       },
       {
-        path: `/${db_url}/products`,
-        element: <Product />,
-      },
-      {
-        path: `/${db_url}/products/:id`,
-        element: <ProductDetails />,
+        path: `/${db_url}/store`,
+        element: <StoreOverview />,
       },
       {
         path: `/${db_url}/invoices`,
@@ -73,6 +70,14 @@ const routes = createBrowserRouter([
       {
         path: `/${db_url}/invoices/:id`,
         element: <InvoiceDetails />,
+      },
+      {
+        path: `/${db_url}/products`,
+        element: <Product />,
+      },
+      {
+        path: `/${db_url}/products/:id`,
+        element: <ProductDetails />,
       },
       {
         path: `/${db_url}/suppliers`,
@@ -87,7 +92,7 @@ const routes = createBrowserRouter([
         element: <Units />,
       },
       {
-        path: `/${db_url}/vehicle/`,
+        path: `/${db_url}/vehicle`,
         element: <VehiclesOverview />,
       },
       {

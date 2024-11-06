@@ -64,8 +64,8 @@ export const VehiclesOverview = () => {
   const [sortOrder, setSortOrder] = useState<string>("");
   const [searchTerm, setSearchTerm] = useState<string>("");
 
-  query["limit"] = size;
   query["vehicleId"] = vId;
+  query["limit"] = size;
   query["page"] = page;
   query["sortBy"] = sortBy;
   query["sortOrder"] = sortOrder;
@@ -461,20 +461,6 @@ export const VehiclesOverview = () => {
         <Col className="gutter-row w-full mb-5 !px-0" sm={24} md={8}>
           <div className="mr-0 md:mr-5 overflow-hidden rounded-md">
             <Input
-              value={size}
-              type="text"
-              size="middle"
-              className="bg-white text-mirage placeholder:text-mirage dark:placeholder:text-white dark:bg-black dark:text-white focus-within:!border-primary hover:!border-primary"
-              placeholder="Number of Statements"
-              onChange={(e) => {
-                setSize(+e.target.value);
-              }}
-            />
-          </div>
-        </Col>
-        <Col className="gutter-row w-full mb-5 !px-0" sm={24} md={8}>
-          <div className="overflow-hidden rounded-md">
-            <Input
               value={searchTerm}
               type="text"
               size="middle"
@@ -482,6 +468,20 @@ export const VehiclesOverview = () => {
               placeholder="Search..."
               onChange={(e) => {
                 setSearchTerm(e.target.value);
+              }}
+            />
+          </div>
+        </Col>
+        <Col className="gutter-row w-full mb-5 !px-0" sm={24} md={8}>
+          <div className="overflow-hidden rounded-md">
+            <Input
+              value={size}
+              type="text"
+              size="middle"
+              className="bg-white text-mirage placeholder:text-mirage dark:placeholder:text-white dark:bg-black dark:text-white focus-within:!border-primary hover:!border-primary"
+              placeholder="Number of Statements"
+              onChange={(e) => {
+                setSize(+e.target.value);
               }}
             />
           </div>

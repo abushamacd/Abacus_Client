@@ -46,6 +46,10 @@ export const sidebarItems = (role: string) => {
       icon: <FaStore />,
       children: [
         {
+          label: <Link to={`/${db_url}/store`}>Overview</Link>,
+          key: `/${db_url}/store`,
+        },
+        {
           label: <Link to={`/${db_url}/invoices`}>Invoices</Link>,
           key: `/${db_url}/invoice`,
         },
