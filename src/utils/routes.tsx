@@ -26,6 +26,7 @@ import PrivateRoute from "./PrivateRoute";
 import Homepage from "../pages/Client/Homepage";
 import { ForgetPassword } from "../pages/Auth/ForgetPassword";
 import { ResetPassword } from "../pages/Auth/ResetPassword";
+import { Activation } from "../pages/Auth/Activation";
 
 const db_url = import.meta.env.VITE_REDIRECT_URL;
 
@@ -55,6 +56,10 @@ const routes = createBrowserRouter([
       {
         path: `/${db_url}/reset-password/:token`,
         element: <ResetPassword />,
+      },
+      {
+        path: `/${db_url}/account-active/:token`,
+        element: <Activation />,
       },
     ],
   },

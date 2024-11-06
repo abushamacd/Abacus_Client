@@ -9,8 +9,8 @@ const db_url = import.meta.env.VITE_REDIRECT_URL;
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const userLoggedIn = isLoggedIn();
   const navigate = useNavigate();
-  const { state } = useLocation();
-  const path = state?.path || `/${db_url}`;
+  const { pathname } = useLocation();
+  const path = pathname || `/${db_url}`;
   const [isLoading, setIsLoading] = useState<boolean>(false);
   //@ts-ignore
   const { role } = getUserInfo();

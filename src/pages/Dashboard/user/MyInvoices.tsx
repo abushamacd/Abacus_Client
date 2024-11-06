@@ -178,7 +178,7 @@ export const MyInvoices = () => {
               className="text-mirage dark:text-white !font-medium"
               level={4}
             >
-              My Invoices ({meta?.total})
+              My Invoices ({meta?.total || 0})
             </Title>
             <div className="flex items-center">
               {selectedIds?.length > 0 && (
