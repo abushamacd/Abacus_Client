@@ -96,8 +96,8 @@ export const Invoice = () => {
   const totalProfit = allProducts.reduce((acc, item) => acc + item.profit, 0);
   const totalAmount = allProducts.reduce((acc, item) => acc + item.total, 0);
 
-  const afterDiscount = +totalAmount.toFixed(2);
-  const due = +(afterDiscount - paid).toFixed(2);
+  const afterPaid = +totalAmount.toFixed(2);
+  const due = +(afterPaid - paid).toFixed(2);
 
   const productValues: {
     unit: any;
@@ -306,7 +306,7 @@ export const Invoice = () => {
       customerName: selectdUser?.name,
       date: invoiceDate,
       note: note,
-      total: afterDiscount || 0,
+      total: afterPaid || 0,
       paid: paid || 0,
       due: due || 0,
       profit: totalProfit || 0,
@@ -469,11 +469,11 @@ export const Invoice = () => {
   // Role setting based on selected user
   useEffect(() => {
     if (fullPaid) {
-      setPaid(afterDiscount);
+      setPaid(afterPaid);
     } else {
       setPaid(0);
     }
-  }, [afterDiscount, fullPaid]);
+  }, [afterPaid, fullPaid]);
 
   if (staffsLoading || productsLoading) {
     return <Loading />;
@@ -830,7 +830,7 @@ export const Invoice = () => {
                 <div className="flex justify-between items-center px-4 text-primary">
                   <span className="total !font-bold text-lg">Total: </span>
                   <span className="total !font-bold text-lg">
-                    {afterDiscount || 0}
+                    {afterPaid || 0}
                   </span>
                 </div>
                 <div className="flex justify-between items-center px-4">
@@ -849,10 +849,10 @@ export const Invoice = () => {
                     type="number"
                     variant={"filled"}
                     min={0}
-                    max={afterDiscount}
+                    max={afterPaid}
                     size="small"
                     defaultValue={0}
-                    placeholder="Discount"
+                    placeholder="Paid"
                     onChange={invoiceInputHandler}
                   />
                 </div>
@@ -906,11 +906,11 @@ export const Invoice = () => {
                       ? selectedProduct[0]?.purchase
                       : 0
                   }T`}
-                  // allowClear
+                  allowClear
                   className="w-full"
                   showSearch
                   placeholder="Search Product"
-                  optionFilterProp="label"
+                  optionFilterProp="value"
                   onChange={onProductChange}
                   options={products as SelectOptions[]}
                 />
@@ -1022,13 +1022,13 @@ export const Invoice = () => {
                     disabled
                     value={productValues?.profit}
                     className="bg-white text-mirage dark:bg-bg_dark dark:text-white focus-within:!border-primary hover:!border-primary disabled:text-mirage dark:disabled:text-white !placeholder:text-[#ddddddbb]"
-                    name="total"
+                    name="profit"
                     suffix={"৳"}
                     step={0.01}
                     type="number"
                     min={0}
                     size="middle"
-                    placeholder="Total"
+                    placeholder="Profit"
                     onChange={inputHandle}
                   />
                 </Col>
