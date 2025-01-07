@@ -751,7 +751,7 @@ export const Invoice = () => {
                             value={product?.total}
                             className="bg-white text-mirage dark:bg-bg_dark dark:text-white focus-within:!border-primary hover:!border-primary disabled:text-mirage dark:disabled:text-white !placeholder:text-[#ddddddbb] w-20"
                             name="total"
-                            step={0.01}
+                            step={0.1}
                             type="number"
                             variant={"filled"}
                             max={product?.rate * product?.quantity}
