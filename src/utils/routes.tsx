@@ -27,6 +27,8 @@ import Homepage from "../pages/Client/Homepage";
 import { ForgetPassword } from "../pages/Auth/ForgetPassword";
 import { ResetPassword } from "../pages/Auth/ResetPassword";
 import { Activation } from "../pages/Auth/Activation";
+import { LtoR } from "../pages/Dashboard/dbsync/LtoR";
+import { RtoL } from "../pages/Dashboard/dbsync/RtoL";
 
 const db_url = import.meta.env.VITE_REDIRECT_URL;
 
@@ -146,6 +148,22 @@ const routes = createBrowserRouter([
       {
         path: `/${db_url}/vehicle-statement/`,
         element: <VStatement />,
+      },
+      {
+        path: `/${db_url}/ltor/`,
+        element: (
+          <PrivateRoute>
+            <LtoR />
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: `/${db_url}/rtol/`,
+        element: (
+          <PrivateRoute>
+            <RtoL />
+          </PrivateRoute>
+        ),
       },
     ],
   },

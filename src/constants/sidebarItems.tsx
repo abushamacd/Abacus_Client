@@ -7,6 +7,7 @@ import { ImProfile } from "react-icons/im";
 import { USER_ROLE } from "./role";
 import { Link } from "react-router-dom";
 import { FaBus, FaStore } from "react-icons/fa";
+import { TbDatabaseCog } from "react-icons/tb";
 
 const db_url = import.meta.env.VITE_REDIRECT_URL;
 
@@ -107,6 +108,21 @@ export const sidebarItems = (role: string) => {
         {
           label: <Link to={`/${db_url}/vehicle-statement`}>Add Statement</Link>,
           key: `/${db_url}/vehicle-statement`,
+        },
+      ],
+    },
+    {
+      label: "DB Sync",
+      key: "db-sync",
+      icon: <TbDatabaseCog />,
+      children: [
+        {
+          label: <Link to={`/${db_url}/ltor`}>Local to Remote</Link>,
+          key: `/${db_url}/ltor`,
+        },
+        {
+          label: <Link to={`/${db_url}/rtol`}>Remote to Local</Link>,
+          key: `/${db_url}/rtol`,
         },
       ],
     },
