@@ -14,6 +14,10 @@ export const addUnitSchema = yup.object().shape({
   name: yup.string().required("Unit is required"),
 });
 
+export const searchSchema = yup.object().shape({
+  schemaName: yup.string().required("Schema name is required"),
+});
+
 export const addProductSchema = yup.object().shape({
   name: yup.string().required("Name is required"),
   supplierId: yup.string().optional(),

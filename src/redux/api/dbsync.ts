@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { IMeta } from "../../types";
 import { baseApi } from "./baseApi";
 
 export const dbsyncApi = baseApi.injectEndpoints({
@@ -9,7 +10,23 @@ export const dbsyncApi = baseApi.injectEndpoints({
         method: "GET",
       }),
     }),
+    getUnsyncsData: build.query({
+      query: (arg: Record<string, any>) => {
+        return {
+          url: "/",
+          method: "GET",
+          params: arg,
+        };
+      },
+      transformResponse: (response: any[], meta: IMeta) => {
+        return {
+          products: response,
+          meta,
+        };
+      },
+      // providesTags: [tagTypes.product],
+    }),
   }),
 });
 
-export const { useTestSBSyncQuery } = dbsyncApi;
+export const { useTestSBSyncQuery, useGetUnsyncsDataQuery } = dbsyncApi;
