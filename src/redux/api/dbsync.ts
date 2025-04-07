@@ -13,14 +13,14 @@ export const dbsyncApi = baseApi.injectEndpoints({
     getUnsyncsData: build.query({
       query: (arg: Record<string, any>) => {
         return {
-          url: "/",
+          url: "/dbsync/unsync",
           method: "GET",
           params: arg,
         };
       },
       transformResponse: (response: any[], meta: IMeta) => {
         return {
-          products: response,
+          unSyncsData: response,
           meta,
         };
       },

@@ -7,6 +7,8 @@ import Form from "../../../components/Forms/Forms";
 import { SubmitHandler } from "react-hook-form";
 import { searchSchema } from "../../../schemas/store";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { useGetUnsyncsDataQuery } from "../../../redux/api/dbsync";
+import { useState } from "react";
 
 type searchFormValues = {
   schemaName: string;
@@ -24,9 +26,20 @@ export const LtoR = () => {
     { label: "VehicleStatement", value: "vehicleStatement" },
   ];
 
+  const [searchParams, setSearchParams] = useState("");
+
   const getHandler: SubmitHandler<searchFormValues> = (data) => {
-    console.log(data);
+    setSearchParams(data?.schemaName); // trigger the query
   };
+
+  const { data, isLoading } = useGetUnsyncsDataQuery(
+    { schemaName: searchParams || "" }, // adjust based on API expectations
+    {
+      skip: !searchParams, // don't run the query until searchParams is set
+    }
+  );
+
+  console.log(data, isLoading);
 
   return (
     <div className="">
