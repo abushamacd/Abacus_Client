@@ -9,8 +9,12 @@ import Form from "../../../components/Forms/Forms";
 import { SubmitHandler } from "react-hook-form";
 import { searchSchema } from "../../../schemas/store";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { useGetUnsyncsDataQuery } from "../../../redux/api/dbsync";
+import {
+  useGetUnsyncsDataQuery,
+  useSendUnsyncsDataMutation,
+} from "../../../redux/api/dbLtoRsync";
 import { useState } from "react";
+import { toast } from "react-toastify";
 
 type searchFormValues = {
   schemaName: string;
@@ -41,10 +45,19 @@ export const LtoR = () => {
     }
   );
 
+  const [sendUnsyncsData] = useSendUnsyncsDataMutation();
+
   // @ts-ignore
   const unSyncs: any = data?.unSyncsData;
 
-  console.log(unSyncs);
+  const unSyncsHandler = async (data: any[]) => {
+    try {
+      await sendUnsyncsData({ schemaName: searchParams, data }).unwrap();
+      toast.success("Remote database update successfully");
+    } catch (err: any) {
+      toast.error(`${err.data?.message}`);
+    }
+  };
 
   return (
     <div className="">
@@ -118,6 +131,7 @@ export const LtoR = () => {
                   }}
                 >
                   <Button
+                    onClick={() => unSyncsHandler(unSyncs)}
                     className="bg-primary hover:!bg-primary text-mirage !bg-opacity-[.8] duration-300 transition-all md:mt-6 mt-2"
                     size="middle"
                     type="primary"
