@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import { Button, Card, Col, Row } from "antd";
 import { DBConnTest } from "../../../components/ui/DBConnTest";
@@ -32,14 +34,17 @@ export const LtoR = () => {
     setSearchParams(data?.schemaName); // trigger the query
   };
 
-  const { data, isLoading } = useGetUnsyncsDataQuery(
+  const { data } = useGetUnsyncsDataQuery(
     { schemaName: searchParams || "" }, // adjust based on API expectations
     {
       skip: !searchParams, // don't run the query until searchParams is set
     }
   );
 
-  console.log(data, isLoading);
+  // @ts-ignore
+  const unSyncs: any = data?.unSyncsData;
+
+  console.log(unSyncs);
 
   return (
     <div className="">
@@ -124,6 +129,37 @@ export const LtoR = () => {
               </Row>
             </Form>
           </div>
+          {unSyncs?.length > 0 && (
+            <div className="!border-secondary border-2 rounded-md">
+              <Row
+                className="!mx-0 items-center"
+                gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}
+              >
+                {unSyncs?.map((data: any) => (
+                  <Col
+                    className="gutter-row"
+                    sm={12}
+                    md={4}
+                    style={{
+                      marginBottom: "0px",
+                      width: "100%",
+                    }}
+                  >
+                    <div className="flex flex-col justify-center items-center p-4">
+                      <div className="border-secondary border h-10 w-10"></div>
+                      <p className="">
+                        {data?.name ||
+                          data?.vNumber ||
+                          data?.route ||
+                          data?.customerName ||
+                          data?.date}
+                      </p>
+                    </div>
+                  </Col>
+                ))}
+              </Row>
+            </div>
+          )}
         </Card>
       </div>
     </div>
