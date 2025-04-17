@@ -15,12 +15,14 @@ import {
 import { useState } from "react";
 import { toast } from "react-toastify";
 import { BsDatabaseCheck } from "react-icons/bs";
+import { useNavigate } from "react-router-dom";
 
 type searchFormValues = {
   schemaName: string;
 };
 
 export const LtoR = () => {
+  const navigate = useNavigate();
   const units = [
     { label: "User", value: "user" },
     { label: "Unit", value: "unit" },
@@ -54,6 +56,7 @@ export const LtoR = () => {
     try {
       await sendUnsyncsDataToR({ schemaName: searchParams, data }).unwrap();
       toast.success("Remote database update successfully");
+      navigate(`/adbmsdb/ltor`, { replace: true });
     } catch (err: any) {
       toast.error(`${err.data?.message}`);
     }

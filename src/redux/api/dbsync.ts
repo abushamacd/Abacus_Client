@@ -33,6 +33,28 @@ export const dbsyncApi = baseApi.injectEndpoints({
         data: data,
       }),
     }),
+    getUnsyncsDataFromR: build.query({
+      query: (arg: Record<string, any>) => {
+        return {
+          url: "/dbsync/unSyncRtoL",
+          method: "GET",
+          params: arg,
+        };
+      },
+      transformResponse: (response: any[], meta: IMeta) => {
+        return {
+          unSyncsData: response,
+          meta,
+        };
+      },
+    }),
+    sendUnsyncsDataToL: build.mutation({
+      query: (data: any) => ({
+        url: `/dbsync/unSyncRtoL`,
+        method: "PATCH",
+        data: data,
+      }),
+    }),
   }),
 });
 
@@ -40,4 +62,6 @@ export const {
   useTestSBSyncQuery,
   useGetUnsyncsDataFromLQuery,
   useSendUnsyncsDataToRMutation,
+  useGetUnsyncsDataFromRQuery,
+  useSendUnsyncsDataToLMutation,
 } = dbsyncApi;
