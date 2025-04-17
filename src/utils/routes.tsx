@@ -27,8 +27,9 @@ import Homepage from "../pages/Client/Homepage";
 import { ForgetPassword } from "../pages/Auth/ForgetPassword";
 import { ResetPassword } from "../pages/Auth/ResetPassword";
 import { Activation } from "../pages/Auth/Activation";
-import { LtoR } from "../pages/Dashboard/dbsync/LtoR";
-import { RtoL } from "../pages/Dashboard/dbsync/RtoL";
+// import { LtoR } from "../components/ui/LtoR";
+// import { RtoL } from "../components/ui/RtoL";
+import { DBSync } from "../pages/Dashboard/dbsync/dbsync";
 
 const db_url = import.meta.env.VITE_REDIRECT_URL;
 
@@ -150,21 +151,29 @@ const routes = createBrowserRouter([
         element: <VStatement />,
       },
       {
-        path: `/${db_url}/ltor/`,
+        path: `/${db_url}/DBSync/`,
         element: (
           <PrivateRoute>
-            <LtoR />
+            <DBSync />
           </PrivateRoute>
         ),
       },
-      {
-        path: `/${db_url}/rtol/`,
-        element: (
-          <PrivateRoute>
-            <RtoL />
-          </PrivateRoute>
-        ),
-      },
+      // {
+      //   path: `/${db_url}/ltor/`,
+      //   element: (
+      //     <PrivateRoute>
+      //       <LtoR />
+      //     </PrivateRoute>
+      //   ),
+      // },
+      // {
+      //   path: `/${db_url}/rtol/`,
+      //   element: (
+      //     <PrivateRoute>
+      //       <RtoL />
+      //     </PrivateRoute>
+      //   ),
+      // },
     ],
   },
   {

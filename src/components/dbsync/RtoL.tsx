@@ -1,17 +1,17 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import { Button, Card, Col, Row } from "antd";
-import { DBConnTest } from "../../../components/ui/DBConnTest";
-import FormSelectField from "../../../components/Forms/FormSelectField";
-import { SelectOptions } from "../../../types";
-import Form from "../../../components/Forms/Forms";
+import { DBConnTest } from "../dbsync/DBConnTest";
+import FormSelectField from "../Forms/FormSelectField";
+import { SelectOptions } from "../../types";
+import Form from "../Forms/Forms";
 import { SubmitHandler } from "react-hook-form";
-import { searchSchema } from "../../../schemas/store";
+import { searchSchema } from "../../schemas/store";
 import { yupResolver } from "@hookform/resolvers/yup";
 import {
-  useGetUnsyncsDataFromLQuery,
-  useSendUnsyncsDataToRMutation,
-} from "../../../redux/api/dbsync";
+  useGetUnsyncsDataFromRQuery,
+  useSendUnsyncsDataToLMutation,
+} from "../../redux/api/dbsync";
 import { useState } from "react";
 import { toast } from "react-toastify";
 import { BsDatabaseCheck } from "react-icons/bs";
@@ -21,7 +21,7 @@ type searchFormValues = {
   schemaName: string;
 };
 
-export const LtoR = () => {
+export const RtoL = () => {
   const navigate = useNavigate();
   const units = [
     { label: "User", value: "user" },
@@ -40,23 +40,23 @@ export const LtoR = () => {
     setSearchParams(data?.schemaName); // trigger the query
   };
 
-  const { data } = useGetUnsyncsDataFromLQuery(
+  const { data } = useGetUnsyncsDataFromRQuery(
     { schemaName: searchParams || "" }, // adjust based on API expectations
     {
       skip: !searchParams, // don't run the query until searchParams is set
     }
   );
 
-  const [sendUnsyncsDataToR] = useSendUnsyncsDataToRMutation();
+  const [sendUnsyncsDataToL] = useSendUnsyncsDataToLMutation();
 
   // @ts-ignore
   const unSyncs: any = data?.unSyncsData;
 
   const unSyncsHandler = async (data: any[]) => {
     try {
-      await sendUnsyncsDataToR({ schemaName: searchParams, data }).unwrap();
-      toast.success("Remote database update successfully");
-      navigate(`/adbmsdb/ltor`, { replace: true });
+      await sendUnsyncsDataToL({ schemaName: searchParams, data }).unwrap();
+      toast.success("Local database update successfully");
+      navigate(`/adbmsdb/dbsync`, { replace: true });
     } catch (err: any) {
       toast.error(`${err.data?.message}`);
     }
@@ -69,7 +69,7 @@ export const LtoR = () => {
           className="dark:bg-bg_dark bg-white text-mirage dark:text-white !border-secondary border-2"
           title=<>
             <div className="flex flex-wrap md:justify-between justify-center items-center gap-2 py-4">
-              <p>DB Sync L to R</p>
+              <p>DB Sync R to L</p>
               <DBConnTest />
             </div>
           </>
@@ -140,7 +140,7 @@ export const LtoR = () => {
                     type="primary"
                     // block
                   >
-                    Send Unsynces
+                    Send Local
                   </Button>
                 </Col>
               </Row>

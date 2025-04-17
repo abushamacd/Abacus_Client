@@ -112,19 +112,9 @@ export const sidebarItems = (role: string) => {
       ],
     },
     {
-      label: "DB Sync",
+      label: <Link to={`/${db_url}/dbsync`}>DB Syncs</Link>,
       key: "db-sync",
       icon: <TbDatabaseCog />,
-      children: [
-        {
-          label: <Link to={`/${db_url}/ltor`}>Local to Remote</Link>,
-          key: `/${db_url}/ltor`,
-        },
-        {
-          label: <Link to={`/${db_url}/rtol`}>Remote to Local</Link>,
-          key: `/${db_url}/rtol`,
-        },
-      ],
     },
   ];
 

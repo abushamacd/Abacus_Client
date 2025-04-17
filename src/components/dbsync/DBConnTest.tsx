@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Button } from "antd";
 import { useTestSBSyncQuery } from "../../redux/api/dbsync";
-import Loading from "./Loading";
 import { toast } from "react-toastify";
+import Loading from "../ui/Loading";
 
 export const DBConnTest = () => {
   const { isLoading, refetch } = useTestSBSyncQuery({ enabled: false });
