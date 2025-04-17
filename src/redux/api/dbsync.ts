@@ -10,7 +10,7 @@ export const dbsyncApi = baseApi.injectEndpoints({
         method: "GET",
       }),
     }),
-    getUnsyncsData: build.query({
+    getUnsyncsDataFromL: build.query({
       query: (arg: Record<string, any>) => {
         return {
           url: "/dbsync/unSyncLtoR",
@@ -26,7 +26,7 @@ export const dbsyncApi = baseApi.injectEndpoints({
       },
       // providesTags: [tagTypes.product],
     }),
-    sendUnsyncsData: build.mutation({
+    sendUnsyncsDataToR: build.mutation({
       query: (data: any) => ({
         url: `/dbsync/unSyncLtoR`,
         method: "PATCH",
@@ -38,6 +38,6 @@ export const dbsyncApi = baseApi.injectEndpoints({
 
 export const {
   useTestSBSyncQuery,
-  useGetUnsyncsDataQuery,
-  useSendUnsyncsDataMutation,
+  useGetUnsyncsDataFromLQuery,
+  useSendUnsyncsDataToRMutation,
 } = dbsyncApi;

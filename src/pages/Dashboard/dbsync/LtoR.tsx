@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import { Button, Card, Col, Row } from "antd";
 import { DBConnTest } from "../../../components/ui/DBConnTest";
@@ -10,11 +9,12 @@ import { SubmitHandler } from "react-hook-form";
 import { searchSchema } from "../../../schemas/store";
 import { yupResolver } from "@hookform/resolvers/yup";
 import {
-  useGetUnsyncsDataQuery,
-  useSendUnsyncsDataMutation,
-} from "../../../redux/api/dbLtoRsync";
+  useGetUnsyncsDataFromLQuery,
+  useSendUnsyncsDataToRMutation,
+} from "../../../redux/api/dbsync";
 import { useState } from "react";
 import { toast } from "react-toastify";
+import { BsDatabaseCheck } from "react-icons/bs";
 
 type searchFormValues = {
   schemaName: string;
@@ -38,21 +38,21 @@ export const LtoR = () => {
     setSearchParams(data?.schemaName); // trigger the query
   };
 
-  const { data } = useGetUnsyncsDataQuery(
+  const { data } = useGetUnsyncsDataFromLQuery(
     { schemaName: searchParams || "" }, // adjust based on API expectations
     {
       skip: !searchParams, // don't run the query until searchParams is set
     }
   );
 
-  const [sendUnsyncsData] = useSendUnsyncsDataMutation();
+  const [sendUnsyncsDataToR] = useSendUnsyncsDataToRMutation();
 
   // @ts-ignore
   const unSyncs: any = data?.unSyncsData;
 
   const unSyncsHandler = async (data: any[]) => {
     try {
-      await sendUnsyncsData({ schemaName: searchParams, data }).unwrap();
+      await sendUnsyncsDataToR({ schemaName: searchParams, data }).unwrap();
       toast.success("Remote database update successfully");
     } catch (err: any) {
       toast.error(`${err.data?.message}`);
@@ -160,7 +160,7 @@ export const LtoR = () => {
                     }}
                   >
                     <div className="flex flex-col justify-center items-center p-4">
-                      <div className="border-secondary border h-10 w-10"></div>
+                      <BsDatabaseCheck size="40" className="text-primary" />
                       <p className="">
                         {data?.name ||
                           data?.vNumber ||
