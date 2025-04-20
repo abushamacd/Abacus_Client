@@ -70,6 +70,13 @@ export const dbsyncApi = baseApi.injectEndpoints({
         };
       },
     }),
+    deleteUnMarge: build.mutation({
+      query: (data: any) => ({
+        url: `/dbsync/unmarge`,
+        method: "DELETE",
+        data: data,
+      }),
+    }),
   }),
 });
 
@@ -79,5 +86,6 @@ export const {
   useSendUnsyncsDataToRMutation,
   useGetUnsyncsDataFromRQuery,
   useSendUnsyncsDataToLMutation,
-  useGetUnMargeDataQuery
+  useGetUnMargeDataQuery,
+  useDeleteUnMargeMutation,
 } = dbsyncApi;

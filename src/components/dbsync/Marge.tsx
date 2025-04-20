@@ -9,8 +9,8 @@ import { SubmitHandler } from "react-hook-form";
 import { searchSchema } from "../../schemas/store";
 import { yupResolver } from "@hookform/resolvers/yup";
 import {
+  useDeleteUnMargeMutation,
   useGetUnMargeDataQuery,
-  useSendUnsyncsDataToRMutation,
 } from "../../redux/api/dbsync";
 import { useState } from "react";
 import { toast } from "react-toastify";
@@ -47,21 +47,23 @@ export const Marge = () => {
     }
   );
 
-  const [sendUnsyncsDataToR] = useSendUnsyncsDataToRMutation();
+  const [deleteUnMarge] = useDeleteUnMargeMutation();
 
   // @ts-ignore
   const unMarge: any = data?.unMargeData;
 
   const unMargeHandler = async (data: any[]) => {
     const unMargeIds = data.map((item: any) => item.id);
-    console.log(unMargeIds);
-    // try {
-    //   await sendUnsyncsDataToR({ schemaName: searchParams, data }).unwrap();
-    //   toast.success("Remote database update successfully");
-    //   navigate(`/adbmsdb/dbsync`, { replace: true });
-    // } catch (err: any) {
-    //   toast.error(`${err.data?.message}`);
-    // }
+    try {
+      await deleteUnMarge({
+        schemaName: searchParams,
+        data: unMargeIds,
+      }).unwrap();
+      toast.success("Data marge successfully");
+      navigate(`/adbmsdb/dbsync`, { replace: true });
+    } catch (err: any) {
+      toast.error(`${err.data?.message}`);
+    }
   };
 
   return (
