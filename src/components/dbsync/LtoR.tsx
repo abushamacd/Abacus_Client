@@ -147,13 +147,14 @@ export const LtoR = () => {
             </Form>
           </div>
           {unSyncs?.length > 0 && (
-            <div className="!border-secondary border-2 rounded-md">
+            <div className="!border-secondary border-2 rounded-md h-48 overflow-auto">
               <Row
                 className="!mx-0 items-center"
                 gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}
               >
                 {unSyncs?.map((data: any) => (
                   <Col
+                    key={data?.id}
                     className="gutter-row"
                     sm={12}
                     md={4}

@@ -55,6 +55,21 @@ export const dbsyncApi = baseApi.injectEndpoints({
         data: data,
       }),
     }),
+    getUnMargeData: build.query({
+      query: (arg: Record<string, any>) => {
+        return {
+          url: "/dbsync/unmarge",
+          method: "GET",
+          params: arg,
+        };
+      },
+      transformResponse: (response: any[], meta: IMeta) => {
+        return {
+          unMargeData: response,
+          meta,
+        };
+      },
+    }),
   }),
 });
 
@@ -64,4 +79,5 @@ export const {
   useSendUnsyncsDataToRMutation,
   useGetUnsyncsDataFromRQuery,
   useSendUnsyncsDataToLMutation,
+  useGetUnMargeDataQuery
 } = dbsyncApi;

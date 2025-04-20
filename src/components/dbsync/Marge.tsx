@@ -9,7 +9,7 @@ import { SubmitHandler } from "react-hook-form";
 import { searchSchema } from "../../schemas/store";
 import { yupResolver } from "@hookform/resolvers/yup";
 import {
-  useGetUnsyncsDataFromLQuery,
+  useGetUnMargeDataQuery,
   useSendUnsyncsDataToRMutation,
 } from "../../redux/api/dbsync";
 import { useState } from "react";
@@ -40,7 +40,7 @@ export const Marge = () => {
     setSearchParams(data?.schemaName); // trigger the query
   };
 
-  const { data } = useGetUnsyncsDataFromLQuery(
+  const { data } = useGetUnMargeDataQuery(
     { schemaName: searchParams || "" }, // adjust based on API expectations
     {
       skip: !searchParams, // don't run the query until searchParams is set
@@ -50,16 +50,18 @@ export const Marge = () => {
   const [sendUnsyncsDataToR] = useSendUnsyncsDataToRMutation();
 
   // @ts-ignore
-  const unSyncs: any = data?.unSyncsData;
+  const unMarge: any = data?.unMargeData;
 
-  const unSyncsHandler = async (data: any[]) => {
-    try {
-      await sendUnsyncsDataToR({ schemaName: searchParams, data }).unwrap();
-      toast.success("Remote database update successfully");
-      navigate(`/adbmsdb/dbsync`, { replace: true });
-    } catch (err: any) {
-      toast.error(`${err.data?.message}`);
-    }
+  const unMargeHandler = async (data: any[]) => {
+    const unMargeIds = data.map((item: any) => item.id);
+    console.log(unMargeIds);
+    // try {
+    //   await sendUnsyncsDataToR({ schemaName: searchParams, data }).unwrap();
+    //   toast.success("Remote database update successfully");
+    //   navigate(`/adbmsdb/dbsync`, { replace: true });
+    // } catch (err: any) {
+    //   toast.error(`${err.data?.message}`);
+    // }
   };
 
   return (
@@ -134,7 +136,7 @@ export const Marge = () => {
                   }}
                 >
                   <Button
-                    onClick={() => unSyncsHandler(unSyncs)}
+                    onClick={() => unMargeHandler(unMarge)}
                     className="bg-primary hover:!bg-primary text-mirage !bg-opacity-[.8] duration-300 transition-all md:mt-6 mt-2"
                     size="middle"
                     type="primary"
@@ -146,14 +148,15 @@ export const Marge = () => {
               </Row>
             </Form>
           </div>
-          {unSyncs?.length > 0 && (
-            <div className="!border-secondary border-2 rounded-md">
+          {unMarge?.length > 0 && (
+            <div className="!border-secondary border-2 rounded-md h-48 overflow-auto">
               <Row
                 className="!mx-0 items-center"
                 gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}
               >
-                {unSyncs?.map((data: any) => (
+                {unMarge?.map((data: any) => (
                   <Col
+                    key={data?.id}
                     className="gutter-row"
                     sm={12}
                     md={4}
