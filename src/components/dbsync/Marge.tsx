@@ -23,6 +23,9 @@ type searchFormValues = {
 
 export const Marge = () => {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useState("");
+
+  // Define all schema name
   const units = [
     { label: "User", value: "user" },
     { label: "Unit", value: "unit" },
@@ -34,24 +37,23 @@ export const Marge = () => {
     { label: "VehicleStatement", value: "vehicleStatement" },
   ];
 
-  const [searchParams, setSearchParams] = useState("");
-
-  const getHandler: SubmitHandler<searchFormValues> = (data) => {
-    setSearchParams(data?.schemaName); // trigger the query
-  };
-
-  const { data } = useGetUnMargeDataQuery(
-    { schemaName: searchParams || "" }, // adjust based on API expectations
-    {
-      skip: !searchParams, // don't run the query until searchParams is set
-    }
-  );
-
   const [deleteUnMarge] = useDeleteUnMargeMutation();
 
+  const { data } = useGetUnMargeDataQuery(
+    { schemaName: searchParams || "" },
+    {
+      skip: !searchParams,
+    }
+  );
   // @ts-ignore
   const unMarge: any = data?.unMargeData;
 
+  // Get schema name from input
+  const getHandler: SubmitHandler<searchFormValues> = (data) => {
+    setSearchParams(data?.schemaName);
+  };
+
+  // Send unmarge data ids
   const unMargeHandler = async (data: any[]) => {
     const unMargeIds = data.map((item: any) => item.id);
     try {

@@ -5,22 +5,25 @@ import { toast } from "react-toastify";
 import Loading from "../ui/Loading";
 
 export const DBConnTest = () => {
+  // Call connection test api
   const { isLoading, refetch } = useTestSBSyncQuery({ enabled: false });
 
   if (isLoading) {
     return <Loading />;
   }
 
+  // Test both database connection
   const handleTestConnection = async () => {
-    const result = await refetch(); // Manually trigger API call
+    const result = await refetch();
 
-    const connResult: any = result.data; // Access the fetched data
+    const connResult: any = result.data;
     if (connResult?.statusCode === 200) {
       toast.success("All databases connected successfully");
     } else {
       toast.error("❌ Error during database connection");
     }
   };
+
   return (
     <Button
       onClick={() => handleTestConnection()}

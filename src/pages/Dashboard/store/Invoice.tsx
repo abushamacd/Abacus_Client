@@ -754,7 +754,7 @@ export const Invoice = () => {
                             step={0.1}
                             type="number"
                             variant={"filled"}
-                            max={product?.rate * product?.quantity}
+                            // max={product?.rate * product?.quantity}
                             min={product?.purchase * product?.quantity}
                             size="small"
                             placeholder="Total"

@@ -23,6 +23,9 @@ type searchFormValues = {
 
 export const RtoL = () => {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useState("");
+
+  // Define all schema name
   const units = [
     { label: "User", value: "user" },
     { label: "Unit", value: "unit" },
@@ -34,11 +37,7 @@ export const RtoL = () => {
     { label: "VehicleStatement", value: "vehicleStatement" },
   ];
 
-  const [searchParams, setSearchParams] = useState("");
-
-  const getHandler: SubmitHandler<searchFormValues> = (data) => {
-    setSearchParams(data?.schemaName); // trigger the query
-  };
+  const [sendUnsyncsDataToL] = useSendUnsyncsDataToLMutation();
 
   const { data } = useGetUnsyncsDataFromRQuery(
     { schemaName: searchParams || "" }, // adjust based on API expectations
@@ -46,12 +45,15 @@ export const RtoL = () => {
       skip: !searchParams, // don't run the query until searchParams is set
     }
   );
-
-  const [sendUnsyncsDataToL] = useSendUnsyncsDataToLMutation();
-
   // @ts-ignore
   const unSyncs: any = data?.unSyncsData;
 
+  // Get schema name from input
+  const getHandler: SubmitHandler<searchFormValues> = (data) => {
+    setSearchParams(data?.schemaName); // trigger the query
+  };
+
+  // Send unsyncs data to local
   const unSyncsHandler = async (data: any[]) => {
     try {
       await sendUnsyncsDataToL({ schemaName: searchParams, data }).unwrap();
