@@ -16,6 +16,7 @@ import { useState } from "react";
 import { toast } from "react-toastify";
 import { BsDatabaseCheck } from "react-icons/bs";
 import { useNavigate } from "react-router-dom";
+import { units } from "../../constants/units";
 
 type searchFormValues = {
   schemaName: string;
@@ -24,18 +25,6 @@ type searchFormValues = {
 export const LtoR = () => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useState("");
-
-  // Define all schema name
-  const units = [
-    { label: "User", value: "user" },
-    { label: "Unit", value: "unit" },
-    { label: "Supplier", value: "supplier" },
-    { label: "Product", value: "product" },
-    { label: "Invoice", value: "invoice" },
-    { label: "VehicleRoute", value: "vehicleRoute" },
-    { label: "Vehicle", value: "vehicle" },
-    { label: "VehicleStatement", value: "vehicleStatement" },
-  ];
 
   const [sendUnsyncsDataToR] = useSendUnsyncsDataToRMutation();
 
