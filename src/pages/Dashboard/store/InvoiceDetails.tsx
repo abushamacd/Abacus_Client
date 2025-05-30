@@ -55,7 +55,6 @@ export const InvoiceDetails = () => {
   const roles = [
     { label: "Owner", value: "Owner" },
     { label: "Manager", value: "Manager" },
-    { label: "Staff", value: "Staff" },
     { label: "Retailer", value: "Retailer" },
     { label: "Consumer", value: "Consumer" },
   ];

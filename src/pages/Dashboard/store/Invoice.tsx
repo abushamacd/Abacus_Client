@@ -64,7 +64,6 @@ export const Invoice = () => {
   const roles = [
     { label: "Owner", value: "Owner" },
     { label: "Manager", value: "Manager" },
-    { label: "Staff", value: "Staff" },
     { label: "Retailer", value: "Retailer" },
     { label: "Consumer", value: "Consumer" },
   ];
@@ -449,7 +448,7 @@ export const Invoice = () => {
   useEffect(() => {
     if (role === "Owner") {
       setRate(selectedProduct[0]?.purchase || 0);
-    } else if (["Manager", "Staff", "Retailer"].includes(role)) {
+    } else if (["Manager", "Retailer"].includes(role)) {
       setRate(selectedProduct[0]?.retail || 0);
     } else {
       setRate(selectedProduct[0]?.sell || 0);

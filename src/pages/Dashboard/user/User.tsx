@@ -112,7 +112,6 @@ export const User = () => {
             options={[
               { id: user?.id, value: "Consumer", label: "Consumer" },
               { id: user?.id, value: "Retailer", label: "Retailer" },
-              { id: user?.id, value: "Staff", label: "Staff" },
               { id: user?.id, value: "Manager", label: "Manager" },
               { id: user?.id, value: "Owner", label: "Owner" },
             ]}
