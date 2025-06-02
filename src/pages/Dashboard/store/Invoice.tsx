@@ -52,6 +52,8 @@ type UserFormValues = {
 
 export const Invoice = () => {
   const navigate = useNavigate();
+  const code = Math.floor(100 + Math.random() * 900).toString();
+
   // Date formatting
   const formattedDate = new Date().toLocaleString("en-GB", {
     timeZone: "Asia/Dhaka",
@@ -725,7 +727,9 @@ export const Invoice = () => {
                       <tr key={i} className="hover:bg-secondary duration-300">
                         <td className="p-2 text-start flex justify-between items-center">
                           <span> {product?.product}</span>{" "}
-                          <span>{`ADS-${product?.purchase}T`}</span>
+                          <span>{`${code.slice(0, 2)}${
+                            product?.purchase
+                          }${code.slice(2)}`}</span>
                         </td>
                         <td className="p-2 text-right">
                           <Input
@@ -900,11 +904,11 @@ export const Invoice = () => {
                 </div>
                 <Select
                   value={selectedProduct[0]?.name}
-                  suffixIcon={`ADS-${
+                  suffixIcon={`${code.slice(0, 2)}${
                     selectedProduct[0]?.purchase > 0
                       ? selectedProduct[0]?.purchase
                       : 0
-                  }T`}
+                  }${code.slice(2)}`}
                   allowClear
                   className="w-full"
                   showSearch

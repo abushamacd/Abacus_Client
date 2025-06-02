@@ -42,6 +42,7 @@ const formatedDate = (date: string) => {
 };
 
 export const InvoiceDetails = () => {
+  const code = Math.floor(100 + Math.random() * 900).toString();
   const params = useParams();
   const navigate = useNavigate();
   const { data: invoiceData, isLoading: invoiceLoading } = useGetInvoiceQuery(
@@ -527,7 +528,9 @@ export const InvoiceDetails = () => {
                         <tr key={i} className="hover:bg-secondary duration-300">
                           <td className="p-2 text-start flex justify-between items-center">
                             <span> {product?.product}</span>{" "}
-                            <span>{`ADS-${product?.purchase}T`}</span>
+                            <span>{`${code.slice(0, 2)}${
+                              product?.purchase
+                            }${code.slice(2)}`}</span>
                           </td>
                           <td className="p-2 text-right">
                             <Input
