@@ -27,6 +27,7 @@ import { addProductSchema, addSupplierSchema } from "../../../schemas/store";
 
 type ProductFormValues = {
   name: string;
+  slug: string;
   supplierId: string;
   unitId: string;
   quantity: number;
@@ -79,6 +80,7 @@ export const ProductDetails = () => {
 
   const defaultValues = {
     name: product?.name || "",
+    slug: product?.slug || "",
     comment: product?.comment || "",
     supplierId: product?.supplierId || "",
     unitId: product?.unitId || "",
@@ -279,7 +281,7 @@ export const ProductDetails = () => {
                   <Col
                     className="gutter-row"
                     sm={24}
-                    md={6}
+                    md={8}
                     style={{
                       marginBottom: "15px",
                       paddingLeft: "0px",
@@ -298,7 +300,26 @@ export const ProductDetails = () => {
                   <Col
                     className="gutter-row"
                     sm={24}
-                    md={6}
+                    md={8}
+                    style={{
+                      marginBottom: "15px",
+                      paddingLeft: "0px",
+                      width: "100%",
+                    }}
+                  >
+                    <FormInput
+                      name="slug"
+                      type="text"
+                      size="middle"
+                      label="Product Slug"
+                      placeholder="Enter product slug"
+                      required
+                    />
+                  </Col>
+                  <Col
+                    className="gutter-row"
+                    sm={24}
+                    md={8}
                     style={{
                       marginBottom: "15px",
                       paddingLeft: "0px",
@@ -317,7 +338,7 @@ export const ProductDetails = () => {
                   <Col
                     className="gutter-row"
                     sm={24}
-                    md={6}
+                    md={8}
                     style={{
                       marginBottom: "15px",
                       paddingLeft: "0px",
@@ -325,6 +346,7 @@ export const ProductDetails = () => {
                     }}
                   >
                     <FormInput
+                      step={0.01}
                       name="quantity"
                       type="number"
                       size="middle"
@@ -336,7 +358,7 @@ export const ProductDetails = () => {
                   <Col
                     className="gutter-row"
                     sm={24}
-                    md={6}
+                    md={8}
                     style={{
                       marginBottom: "15px",
                       paddingLeft: "0px",
@@ -344,6 +366,7 @@ export const ProductDetails = () => {
                     }}
                   >
                     <FormInput
+                      step={0.01}
                       name="minQuantity"
                       type="number"
                       size="middle"
@@ -353,66 +376,9 @@ export const ProductDetails = () => {
                     />
                   </Col>
                   <Col
-                    className="gutter-row"
-                    sm={24}
-                    md={6}
-                    style={{
-                      marginBottom: "15px",
-                      paddingLeft: "0px",
-                      width: "100%",
-                    }}
-                  >
-                    <FormInput
-                      name="purchase"
-                      type="number"
-                      size="middle"
-                      label="Purchase Price"
-                      placeholder="Enter purchase price"
-                      required
-                    />
-                  </Col>
-                  <Col
-                    className="gutter-row"
-                    sm={24}
-                    md={6}
-                    style={{
-                      marginBottom: "15px",
-                      paddingLeft: "0px",
-                      width: "100%",
-                    }}
-                  >
-                    <FormInput
-                      name="sell"
-                      type="number"
-                      size="middle"
-                      label="Selling Price"
-                      placeholder="Enter selling price"
-                      required
-                    />
-                  </Col>
-                  <Col
-                    className="gutter-row"
-                    sm={24}
-                    md={6}
-                    style={{
-                      marginBottom: "15px",
-                      paddingLeft: "0px",
-                      width: "100%",
-                    }}
-                  >
-                    <FormInput
-                      name="retail"
-                      type="number"
-                      size="middle"
-                      label="Retail Price"
-                      placeholder="Enter retail price"
-                      required
-                    />
-                  </Col>
-                  <Col
                     className="gutter-row relative w-full"
                     sm={24}
-                    md={6}
+                    md={8}
                     style={{
                       marginBottom: "15px",
                       paddingLeft: "0px",
@@ -438,6 +404,67 @@ export const ProductDetails = () => {
                       ></Badge.Ribbon>
                     </div>
                   </Col>
+                  <Col
+                    className="gutter-row"
+                    sm={24}
+                    md={8}
+                    style={{
+                      marginBottom: "15px",
+                      paddingLeft: "0px",
+                      width: "100%",
+                    }}
+                  >
+                    <FormInput
+                      step={0.01}
+                      name="purchase"
+                      type="number"
+                      size="middle"
+                      label="Purchase Price"
+                      placeholder="Enter purchase price"
+                      required
+                    />
+                  </Col>
+                  <Col
+                    className="gutter-row"
+                    sm={24}
+                    md={8}
+                    style={{
+                      marginBottom: "15px",
+                      paddingLeft: "0px",
+                      width: "100%",
+                    }}
+                  >
+                    <FormInput
+                      step={0.01}
+                      name="sell"
+                      type="number"
+                      size="middle"
+                      label="Selling Price"
+                      placeholder="Enter selling price"
+                      required
+                    />
+                  </Col>
+                  <Col
+                    className="gutter-row"
+                    sm={24}
+                    md={8}
+                    style={{
+                      marginBottom: "15px",
+                      paddingLeft: "0px",
+                      width: "100%",
+                    }}
+                  >
+                    <FormInput
+                      step={0.01}
+                      name="retail"
+                      type="number"
+                      size="middle"
+                      label="Retail Price"
+                      placeholder="Enter retail price"
+                      required
+                    />
+                  </Col>
+
                   <Col
                     className="gutter-row"
                     sm={24}

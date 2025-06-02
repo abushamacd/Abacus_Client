@@ -20,7 +20,8 @@ export const searchSchema = yup.object().shape({
 
 export const addProductSchema = yup.object().shape({
   name: yup.string().required("Name is required"),
-  supplierId: yup.string().optional(),
+  slug: yup.string().required("Slug is required"),
+  supplierId: yup.string().required("Supplier is required"),
   unitId: yup.string().required("Unit ID is required"),
   quantity: yup
     .number()
