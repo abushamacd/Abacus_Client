@@ -328,7 +328,7 @@ export const User = () => {
               className="text-mirage dark:text-white !font-medium"
               level={4}
             >
-              All Users
+              All Users ({meta?.total})
             </Title>
             <div className="flex items-center">
               <Input
