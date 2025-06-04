@@ -47,7 +47,7 @@ export const RtoL = () => {
     try {
       await sendUnsyncsDataToL({ schemaName: searchParams, data }).unwrap();
       toast.success("Local database update successfully");
-      navigate(`/adbmsdb/dbsync`, { replace: true });
+      navigate(`/abacusdb/dbsync`, { replace: true });
     } catch (err: any) {
       toast.error(`${err.data?.message}`);
     }

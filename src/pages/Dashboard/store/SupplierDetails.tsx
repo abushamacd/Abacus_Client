@@ -113,7 +113,7 @@ export const SupplierDetails = () => {
   ];
 
   const openView = (porduct: any) => {
-    navigate(`/adbmsdb/products/${porduct.id}`, { replace: true });
+    navigate(`/abacusdb/products/${porduct.id}`, { replace: true });
   };
 
   const deleteHandler = async (id: string) => {

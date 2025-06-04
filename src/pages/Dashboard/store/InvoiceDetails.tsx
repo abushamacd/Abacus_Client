@@ -264,7 +264,7 @@ export const InvoiceDetails = () => {
       }).unwrap();
       toast.success("Update invoice successfully");
       if (allProducts?.length <= 0) {
-        navigate(`/adbmsdb/invoices`, { replace: true });
+        navigate(`/abacusdb/invoices`, { replace: true });
       } else {
         navigate(0);
       }

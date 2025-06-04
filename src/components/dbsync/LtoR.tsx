@@ -47,7 +47,7 @@ export const LtoR = () => {
     try {
       await sendUnsyncsDataToR({ schemaName: searchParams, data }).unwrap();
       toast.success("Remote database update successfully");
-      navigate(`/adbmsdb/dbsync`, { replace: true });
+      navigate(`/abacusdb/dbsync`, { replace: true });
     } catch (err: any) {
       toast.error(`${err.data?.message}`);
     }

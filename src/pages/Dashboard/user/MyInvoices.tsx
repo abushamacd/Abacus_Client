@@ -156,7 +156,7 @@ export const MyInvoices = () => {
   };
 
   const openView = (id: string) => {
-    navigate(`/adbmsdb/invoices/${id}`, { replace: true });
+    navigate(`/abacusdb/invoices/${id}`, { replace: true });
   };
 
   const resetFilters = () => {

@@ -185,7 +185,7 @@ export const StoreOverview = () => {
   };
 
   const openView = (id: string) => {
-    navigate(`/adbmsdb/invoices/${id}`, { replace: true });
+    navigate(`/abacusdb/invoices/${id}`, { replace: true });
   };
 
   const CustomTooltip = ({

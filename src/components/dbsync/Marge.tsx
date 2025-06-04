@@ -51,7 +51,7 @@ export const Marge = () => {
         data: unMargeIds,
       }).unwrap();
       toast.success("Data marge successfully");
-      navigate(`/adbmsdb/dbsync`, { replace: true });
+      navigate(`/abacusdb/dbsync`, { replace: true });
     } catch (err: any) {
       toast.error(`${err.data?.message}`);
     }
