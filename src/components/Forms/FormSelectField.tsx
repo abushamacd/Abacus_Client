@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Select } from "antd";
 import { useFormContext, Controller } from "react-hook-form";
 import { getErrorMessageByPropertyName } from "../../utils/schema-validator";
@@ -20,7 +19,6 @@ type SelectFieldProps = {
 const FormSelectField = ({
   name,
   size = "large",
-  value,
   placeholder = "select",
   options,
   label,
@@ -66,23 +64,6 @@ const FormSelectField = ({
             style={{ width: "100%" }}
             {...field}
           />
-          //   <select
-          //     // @ts-ignore
-          //     size={size}
-          //     // @ts-ignore
-          //     onChange={handleChange ? handleChange : onChange}
-          //     options={options}
-          //     value={value}
-          //     style={{ width: "100%" }}
-          //     placeholder={placeholder}
-          //     className="w-full bg-dark_text dark:text-dark_bg rounded-md border border-light_primary dark:border-dark_primary focus:ring-2 focus:ring-light_primary dark:focus:ring-dark_primary focus:border-light_primary dark:focus:border-dark_primary text-base outline-none px-3 leading-8 transition-colors duration-300 ease-in-out py-[6px]"
-          //   >
-          //     {options?.map((option: any, index: any) => (
-          //       <option key={index} value={option.value}>
-          //         {option?.label}
-          //       </option>
-          //     ))}
-          //   </select>
         )}
       />
       <small style={{ color: "red" }}>{errorMessage}</small>

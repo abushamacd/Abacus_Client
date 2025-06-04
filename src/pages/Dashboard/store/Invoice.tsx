@@ -52,6 +52,8 @@ type UserFormValues = {
 
 export const Invoice = () => {
   const navigate = useNavigate();
+  const code = Math.floor(100 + Math.random() * 900).toString();
+
   // Date formatting
   const formattedDate = new Date().toLocaleString("en-GB", {
     timeZone: "Asia/Dhaka",
@@ -64,7 +66,6 @@ export const Invoice = () => {
   const roles = [
     { label: "Owner", value: "Owner" },
     { label: "Manager", value: "Manager" },
-    { label: "Staff", value: "Staff" },
     { label: "Retailer", value: "Retailer" },
     { label: "Consumer", value: "Consumer" },
   ];
@@ -449,7 +450,7 @@ export const Invoice = () => {
   useEffect(() => {
     if (role === "Owner") {
       setRate(selectedProduct[0]?.purchase || 0);
-    } else if (["Manager", "Staff", "Retailer"].includes(role)) {
+    } else if (["Manager", "Retailer"].includes(role)) {
       setRate(selectedProduct[0]?.retail || 0);
     } else {
       setRate(selectedProduct[0]?.sell || 0);
@@ -492,7 +493,7 @@ export const Invoice = () => {
               className="w-auto h-[2rem] md:h-[4rem] mx-auto"
             />
             <h4 className="text-center text-[.6rem] md:text-[1rem]">
-              Notun Dorbespur, Meherpur.
+              121/9, Dowlatdiar, Chuadanga.
             </h4>
             <p className="text-center text-[.6rem] md:text-[1rem]">
               {formattedDate}
@@ -726,7 +727,9 @@ export const Invoice = () => {
                       <tr key={i} className="hover:bg-secondary duration-300">
                         <td className="p-2 text-start flex justify-between items-center">
                           <span> {product?.product}</span>{" "}
-                          <span>{`ADS-${product?.purchase}T`}</span>
+                          <span>{`${code.slice(0, 2)}${
+                            product?.purchase
+                          }${code.slice(2)}`}</span>
                         </td>
                         <td className="p-2 text-right">
                           <Input
@@ -901,11 +904,11 @@ export const Invoice = () => {
                 </div>
                 <Select
                   value={selectedProduct[0]?.name}
-                  suffixIcon={`ADS-${
+                  suffixIcon={`${code.slice(0, 2)}${
                     selectedProduct[0]?.purchase > 0
                       ? selectedProduct[0]?.purchase
                       : 0
-                  }T`}
+                  }${code.slice(2)}`}
                   allowClear
                   className="w-full"
                   showSearch

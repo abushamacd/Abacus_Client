@@ -112,7 +112,6 @@ export const User = () => {
             options={[
               { id: user?.id, value: "Consumer", label: "Consumer" },
               { id: user?.id, value: "Retailer", label: "Retailer" },
-              { id: user?.id, value: "Staff", label: "Staff" },
               { id: user?.id, value: "Manager", label: "Manager" },
               { id: user?.id, value: "Owner", label: "Owner" },
             ]}
@@ -329,7 +328,7 @@ export const User = () => {
               className="text-mirage dark:text-white !font-medium"
               level={4}
             >
-              All Users
+              All Users ({meta?.total})
             </Title>
             <div className="flex items-center">
               <Input

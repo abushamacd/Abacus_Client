@@ -3,10 +3,9 @@
 import type { MenuProps } from "antd";
 import { MdHomeRepairService } from "react-icons/md";
 import { ImProfile } from "react-icons/im";
-// import { AiOutlineControl } from "react-icons/ai";
 import { USER_ROLE } from "./role";
 import { Link } from "react-router-dom";
-import { FaBus, FaStore } from "react-icons/fa";
+import { FaStore } from "react-icons/fa";
 import { TbDatabaseCog } from "react-icons/tb";
 
 const db_url = import.meta.env.VITE_REDIRECT_URL;
@@ -88,29 +87,6 @@ export const sidebarItems = (role: string) => {
   const adminSidebarItems: MenuProps["items"] = [
     ...managerSidebarItemsWithoutStore,
     ...(storeItemCopy ? [storeItemCopy] : []),
-    {
-      label: "Vehicles",
-      key: "vehicles",
-      icon: <FaBus />,
-      children: [
-        {
-          label: <Link to={`/${db_url}/vehicle`}>Overview</Link>,
-          key: `/${db_url}/vehicle`,
-        },
-        {
-          label: <Link to={`/${db_url}/vehicles`}>Vehicles</Link>,
-          key: `/${db_url}/vehicles`,
-        },
-        {
-          label: <Link to={`/${db_url}/vehicle-routes`}>Vehicle Routes</Link>,
-          key: `/${db_url}/vehicle-routes`,
-        },
-        {
-          label: <Link to={`/${db_url}/vehicle-statement`}>Add Statement</Link>,
-          key: `/${db_url}/vehicle-statement`,
-        },
-      ],
-    },
     {
       label: <Link to={`/${db_url}/dbsync`}>DB Syncs</Link>,
       key: "db-sync",

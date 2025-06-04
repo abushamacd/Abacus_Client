@@ -13,7 +13,7 @@ const Homepage = () => {
       <CustomHead title="Welcome" />
       <div className="text-center text-mirage dark:text-white">
         <h2 className="md:text-7xl text-3xl mb-4 text-primary ao p-4">
-          Welcome to <span className="italic ao">Allardan</span>
+          Welcome to <span className="italic ao">Abacus</span>
         </h2>
         <p className="text-light_text dark:text-dark_text text-xl">
           Have a good day 😊

@@ -42,6 +42,7 @@ const formatedDate = (date: string) => {
 };
 
 export const InvoiceDetails = () => {
+  const code = Math.floor(100 + Math.random() * 900).toString();
   const params = useParams();
   const navigate = useNavigate();
   const { data: invoiceData, isLoading: invoiceLoading } = useGetInvoiceQuery(
@@ -55,7 +56,6 @@ export const InvoiceDetails = () => {
   const roles = [
     { label: "Owner", value: "Owner" },
     { label: "Manager", value: "Manager" },
-    { label: "Staff", value: "Staff" },
     { label: "Retailer", value: "Retailer" },
     { label: "Consumer", value: "Consumer" },
   ];
@@ -301,7 +301,7 @@ export const InvoiceDetails = () => {
                 className="w-auto h-[2rem] md:h-[4rem] mx-auto"
               />
               <h4 className="text-center text-[.6rem] md:text-[1rem]">
-                Notun Dorbespur, Meherpur.
+                121/9, Dowlatdiar, Chuadanga.
               </h4>
               <p className="text-center text-[.6rem] md:text-[1rem]">
                 {invoiceDate}
@@ -528,7 +528,9 @@ export const InvoiceDetails = () => {
                         <tr key={i} className="hover:bg-secondary duration-300">
                           <td className="p-2 text-start flex justify-between items-center">
                             <span> {product?.product}</span>{" "}
-                            <span>{`ADS-${product?.purchase}T`}</span>
+                            <span>{`${code.slice(0, 2)}${
+                              product?.purchase
+                            }${code.slice(2)}`}</span>
                           </td>
                           <td className="p-2 text-right">
                             <Input

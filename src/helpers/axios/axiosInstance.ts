@@ -1,13 +1,14 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { authKey } from "../../constants/storageKey";
-import { getNewAccessToken } from "../../services/auth.service";
+import { getNewAccessToken, removeUserInfo } from "../../services/auth.service";
 import { IGenericErrorResponse, ResponseSuccessType } from "../../types";
 import {
   getFromLocalStorage,
   setToLocalStorage,
 } from "../../utils/local-storage";
 import axios from "axios";
+const db_url = import.meta.env.VITE_REDIRECT_URL;
 
 const instance = axios.create();
 
@@ -46,13 +47,28 @@ instance.interceptors.response.use(
       // @ts-ignore
       config.sent = true;
 
-      const response = await getNewAccessToken();
-      const accessToken = response?.data?.accessToken;
-      if (accessToken) {
-        config.headers.Authorization = accessToken;
-        setToLocalStorage(authKey, accessToken);
+      try {
+        const response = await getNewAccessToken();
+        const accessToken = response?.data?.accessToken;
+        if (accessToken) {
+          config.headers.Authorization = accessToken;
+          setToLocalStorage(authKey, accessToken);
+        }
+        return instance(config);
+      } catch (error) {
+        if (
+          // @ts-ignore
+          error?.response?.status === 401 ||
+          // @ts-ignore
+          error?.response?.data?.message ===
+            "You have no access. Please contact to the Owner"
+        ) {
+          removeUserInfo(authKey);
+          window.location.href = `/${db_url}/signin`;
+        } else {
+          console.error("Unexpected token error:", error);
+        }
       }
-      return instance(config);
     } else {
       // @ts-ignore
       const responseObject: IGenericErrorResponse = {

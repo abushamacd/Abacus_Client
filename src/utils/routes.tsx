@@ -8,11 +8,6 @@ import { AdminLayout } from "../layouts/AdminLayout";
 import { Profile } from "../pages/Dashboard/Profile";
 import { UserDetails } from "../pages/Dashboard/user/UserDetails";
 import { User } from "../pages/Dashboard/user/User";
-import { VehiclesOverview } from "../pages/Dashboard/vehicle/Overview";
-import { Vehicle } from "../pages/Dashboard/vehicle/Vehicle";
-import { VehicleRoutes } from "../pages/Dashboard/vehicle/VehicleRoutes";
-import { VStatement } from "../pages/Dashboard/vehicle/VStatement";
-import { VehicleDetails } from "../pages/Dashboard/vehicle/VehicleDetails";
 import { Product } from "../pages/Dashboard/store/Product";
 import { Supplier } from "../pages/Dashboard/store/Supplier";
 import { Units } from "../pages/Dashboard/store/Unit";
@@ -125,30 +120,6 @@ const routes = createBrowserRouter([
       {
         path: `/${db_url}/units`,
         element: <Units />,
-      },
-      {
-        path: `/${db_url}/vehicle`,
-        element: (
-          <PrivateRoute>
-            <VehiclesOverview />
-          </PrivateRoute>
-        ),
-      },
-      {
-        path: `/${db_url}/vehicles/`,
-        element: <Vehicle />,
-      },
-      {
-        path: `/${db_url}/vehicles/:id`,
-        element: <VehicleDetails />,
-      },
-      {
-        path: `/${db_url}/vehicle-routes/`,
-        element: <VehicleRoutes />,
-      },
-      {
-        path: `/${db_url}/vehicle-statement/`,
-        element: <VStatement />,
       },
       {
         path: `/${db_url}/DBSync/`,
