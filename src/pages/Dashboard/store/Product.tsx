@@ -556,7 +556,7 @@ export const Product = () => {
                 type="text"
                 size="middle"
                 label="Supplier Name"
-                placeholder="Allardan Treders"
+                placeholder="Abacus Treders"
                 required
               />
             </Col>

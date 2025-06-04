@@ -301,7 +301,7 @@ export const InvoiceDetails = () => {
                 className="w-auto h-[2rem] md:h-[4rem] mx-auto"
               />
               <h4 className="text-center text-[.6rem] md:text-[1rem]">
-                Notun Dorbespur, Meherpur.
+                121/9, Dowlatdiar, Chuadanga.
               </h4>
               <p className="text-center text-[.6rem] md:text-[1rem]">
                 {invoiceDate}
