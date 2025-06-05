@@ -63,6 +63,7 @@ const Loading = () => {
           </div>
         </div>
       </div>
+      <p>Note: Site is hosted in free hosting, so it's maybe slow.</p>
     </Row>
   );
 };
