@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-extra-boolean-cast */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -6,6 +7,9 @@ import text_logo from "../../../assets/text_logo.png";
 import Loading from "../../../components/ui/Loading";
 import { useGetUsersQuery } from "../../../redux/api/userApi";
 import { useDebounced } from "../../../redux/hooks";
+import React, { useMemo, useRef } from "react";
+import debounce from "lodash/debounce";
+import { useLazyGetProductsQuery } from "../../../redux/api/product";
 import {
   Badge,
   Button,
@@ -16,10 +20,11 @@ import {
   Input,
   Row,
   Select,
+  Spin,
 } from "antd";
 import { SelectOptions } from "../../../types";
 import { MdDeleteForever } from "react-icons/md";
-import { useGetProductsQuery } from "../../../redux/api/product";
+// import { useGetProductsQuery } from "../../../redux/api/product";
 import dayjs from "dayjs";
 import TextArea from "antd/es/input/TextArea";
 import {
@@ -88,8 +93,13 @@ export const Invoice = () => {
   const [paid, setPaid] = useState<number>(0);
   const [allProducts, setAllProducts] = useState<any[]>([]);
   const [rate, setRate] = useState(0);
+  const [value, setValue] = useState<any>();
+  const [options, setOptions] = useState<any[]>([]);
+  const [searchProducts, setSearchProducts] = useState<any[]>([]);
+  const fetchRef = useRef(0);
   const [customerSearchTerm, setCustomerSearchTerm] =
     useState<string>("Unknown");
+  const [fetchProducts, { isFetching }] = useLazyGetProductsQuery();
   const [createInvoice] = useCreateInvoiceMutation();
   const [deleteInvoices] = useDeleteInvoicesMutation();
   const [signUp] = useSignUpMutation();
@@ -99,6 +109,36 @@ export const Invoice = () => {
 
   const afterPaid = +totalAmount.toFixed(2);
   const due = +(afterPaid - paid).toFixed(2);
+
+  const debounceFetcher = useMemo(() => {
+    const loadOptions = async (search: string) => {
+      fetchRef.current += 1;
+      const fetchId = fetchRef.current;
+
+      const res: any = await fetchProducts({ searchTerm: search }).unwrap();
+
+      setSearchProducts(res?.products);
+
+      if (fetchId !== fetchRef.current) return; // prevent race condition
+
+      const items = (res?.products || []).map((product: any) => ({
+        label: (
+          <span
+            className={
+              product?.quantity <= 0 ? "text-[#D31818] !font-bold" : ""
+            }
+          >
+            {product?.name} ({product?.quantity} {product?.unit?.name})
+          </span>
+        ),
+        value: product.name,
+      }));
+
+      setOptions(items);
+    };
+
+    return debounce(loadOptions, 300);
+  }, [fetchProducts]);
 
   const productValues: {
     unit: any;
@@ -144,23 +184,6 @@ export const Invoice = () => {
     value: user?.id,
   }));
 
-  // Product query
-  const { data: productsData, isLoading: productsLoading } =
-    useGetProductsQuery({});
-  // @ts-ignore
-  const allProduct: any = productsData?.products;
-
-  const products = allProduct?.map((product: any) => ({
-    label: (
-      <span
-        className={product?.quantity <= 0 ? "text-[#D31818] !font-bold" : ""}
-      >
-        {product?.name} ({product?.quantity} {product?.unit?.name})
-      </span>
-    ),
-    value: product?.name,
-  }));
-
   // invoice query
   const query: Record<string, any> = {};
   const [page, setPage] = useState<number>(1);
@@ -203,7 +226,7 @@ export const Invoice = () => {
   };
 
   const onProductChange = (value: string) => {
-    const filteredProduct = allProduct.filter(
+    const filteredProduct = searchProducts.filter(
       (product: any) => product.name === value
     );
     setSelectedProduct(filteredProduct);
@@ -476,7 +499,11 @@ export const Invoice = () => {
     }
   }, [afterPaid, fullPaid]);
 
-  if (staffsLoading || productsLoading) {
+  useEffect(() => {
+    onProductChange(value?.value);
+  }, [value?.value]);
+
+  if (staffsLoading) {
     return <Loading />;
   }
 
@@ -902,7 +929,7 @@ export const Invoice = () => {
                     Select Product
                   </span>
                 </div>
-                <Select
+                {/* <Select
                   value={selectedProduct[0]?.name}
                   suffixIcon={`${code.slice(0, 2)}${
                     selectedProduct[0]?.purchase > 0
@@ -913,9 +940,27 @@ export const Invoice = () => {
                   className="w-full"
                   showSearch
                   placeholder="Search Product"
-                  optionFilterProp="value"
+                  optionFilterProp="label"
+                  optionLabelProp="label"
                   onChange={onProductChange}
                   options={products as SelectOptions[]}
+                /> */}
+
+                <Select
+                  allowClear
+                  showSearch
+                  labelInValue
+                  value={value}
+                  filterOption={false}
+                  onSearch={debounceFetcher}
+                  onChange={(newValue) => setValue(newValue)}
+                  // onChange={onProductChange}
+                  placeholder="Search product"
+                  notFoundContent={
+                    isFetching ? <Spin size="small" /> : "No results found"
+                  }
+                  options={options}
+                  style={{ width: "100%" }}
                 />
                 {errMessage?.includes("product") && (
                   <small style={{ color: "red" }}>{errMessage}</small>
