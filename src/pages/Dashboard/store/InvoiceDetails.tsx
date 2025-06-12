@@ -560,7 +560,9 @@ export const InvoiceDetails = () => {
                               step={0.01}
                               type="number"
                               variant={"filled"}
-                              max={product?.rate * product?.quantity}
+                              max={(product?.rate * product?.quantity).toFixed(
+                                2
+                              )}
                               min={product?.purchase * product?.quantity}
                               size="small"
                               placeholder="Total"
@@ -661,7 +663,7 @@ export const InvoiceDetails = () => {
                         type="number"
                         variant={"filled"}
                         min={0}
-                        max={afterDiscount}
+                        max={afterDiscount.toFixed(2)}
                         size="small"
                         defaultValue={0}
                         placeholder="Discount"
