@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable no-extra-boolean-cast */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from "react";
 import { useDebounced } from "../../../redux/hooks";
 import {
@@ -18,7 +19,8 @@ import { FaRegEye } from "react-icons/fa";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
+const db_url = import.meta.env.VITE_REDIRECT_URL;
+
 export const MyInvoices = () => {
   const navigate = useNavigate();
   const { data, isLoading: userLoading } = useGetUserProfileQuery({});
@@ -58,10 +60,6 @@ export const MyInvoices = () => {
 
   const [deleteInvoice] = useDeleteInvoiceMutation();
   const [deleteInvoices] = useDeleteInvoicesMutation();
-
-  useEffect(() => {
-    setUId(res?.response?.id);
-  }, [res]);
 
   const columns = [
     {
@@ -106,16 +104,22 @@ export const MyInvoices = () => {
       render: function (invoice: any) {
         return (
           <div className="flex gap-2 ml-3">
-            <FaRegEye
-              style={{ color: "#008A3F" }}
-              onClick={() => openView(invoice?.id)}
-              size={22}
-            />
-            <MdDeleteForever
-              onClick={() => deleteHandler(invoice?.id)}
-              size={22}
-              style={{ color: "#D92728" }}
-            />
+            {(res?.response?.role === "Owner" ||
+              res?.response?.role === "Manager") && (
+              <FaRegEye
+                style={{ color: "#008A3F" }}
+                onClick={() => openView(invoice?.id)}
+                size={22}
+              />
+            )}
+            {(res?.response?.role === "Owner" ||
+              res?.response?.role === "Manager") && (
+              <MdDeleteForever
+                onClick={() => deleteHandler(invoice?.id)}
+                size={22}
+                style={{ color: "#D92728" }}
+              />
+            )}
           </div>
         );
       },
@@ -126,6 +130,7 @@ export const MyInvoices = () => {
     setPage(page);
     setSize(pageSize);
   };
+
   // @ts-ignore
   const onTableChange = (pagination: any, filter: any, sorter: any) => {
     const { order, field } = sorter;
@@ -137,6 +142,7 @@ export const MyInvoices = () => {
     setSelectedIds(ids);
   };
 
+  // Handlers
   const deletesHandler = async (data: React.Key[]) => {
     try {
       await deleteInvoices(data).unwrap();
@@ -156,7 +162,7 @@ export const MyInvoices = () => {
   };
 
   const openView = (id: string) => {
-    navigate(`/abacusdb/invoices/${id}`, { replace: true });
+    navigate(`/${db_url}/invoices/${id}`, { replace: true });
   };
 
   const resetFilters = () => {
@@ -165,9 +171,14 @@ export const MyInvoices = () => {
     setSearchTerm("");
   };
 
+  useEffect(() => {
+    setUId(res?.response?.id);
+  }, [res]);
+
   if (userLoading || invoicesLoading) {
     return <Loading />;
   }
+
   return (
     <div>
       {/* all Invoice */}

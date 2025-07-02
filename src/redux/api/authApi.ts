@@ -5,6 +5,7 @@ const AUTH_URL = "/auth";
 
 export const authApi = baseApi.injectEndpoints({
   endpoints: (build) => ({
+    // sign in
     signIn: build.mutation({
       query: (userData: any) => ({
         url: `${AUTH_URL}/signin`,
@@ -12,6 +13,7 @@ export const authApi = baseApi.injectEndpoints({
         data: userData,
       }),
     }),
+    // sign up
     signUp: build.mutation({
       query: (userData: any) => ({
         url: `${AUTH_URL}/signup`,
@@ -20,12 +22,14 @@ export const authApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: [tagTypes.user],
     }),
+    // profile activation
     activation: build.mutation({
       query: (token: string) => ({
         url: `${AUTH_URL}/account-active/${token}`,
         method: "PATCH",
       }),
     }),
+    // change password
     changePassword: build.mutation({
       query: (userData: any) => ({
         url: `${AUTH_URL}/change-password`,
@@ -33,6 +37,7 @@ export const authApi = baseApi.injectEndpoints({
         data: userData,
       }),
     }),
+    // forget password
     forgetPassword: build.mutation({
       query: (data: any) => ({
         url: `${AUTH_URL}/forget-password`,
@@ -40,6 +45,7 @@ export const authApi = baseApi.injectEndpoints({
         data: data,
       }),
     }),
+    // reset password
     resetPassword: build.mutation({
       query: ({ token, data }: { token: string | undefined; data: any }) => ({
         url: `${AUTH_URL}/reset-password/${token}`,

@@ -12,9 +12,6 @@ import { useSignInMutation } from "../../redux/api/authApi";
 import { storeUserInfo } from "../../services/auth.service";
 import Loading from "../../components/ui/Loading";
 
-const adminPhone = import.meta.env.VITE_PHONE;
-const adminPass = import.meta.env.VITE_PASS;
-
 type FormValues = {
   phone: string;
   password: string;
@@ -25,11 +22,6 @@ const SignIn = () => {
   const navigate = useNavigate();
   const { state } = useLocation();
   const path = state?.path || import.meta.env.VITE_REDIRECT_URL;
-
-  const defaultValues = {
-    phone: adminPhone,
-    password: adminPass,
-  };
 
   if (isLoading) {
     return <Loading />;
@@ -45,6 +37,7 @@ const SignIn = () => {
       toast.error(`${err.data?.message}`);
     }
   };
+
   return (
     <div>
       <CustomHead title="Sign In" />
@@ -56,11 +49,7 @@ const SignIn = () => {
             <h3 className="mb-4 text-2xl ao text-center text-primary">
               Sign In
             </h3>
-            <Form
-              submitHandler={onSubmit}
-              resolver={yupResolver(signInSchema)}
-              defaultValues={defaultValues}
-            >
+            <Form submitHandler={onSubmit} resolver={yupResolver(signInSchema)}>
               <div>
                 <FormInput
                   name="phone"

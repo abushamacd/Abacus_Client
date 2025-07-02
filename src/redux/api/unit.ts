@@ -6,7 +6,7 @@ import { baseApi } from "./baseApi.ts";
 
 export const unitApi = baseApi.injectEndpoints({
   endpoints: (build: any) => ({
-    // create
+    // create unit
     createUnit: build.mutation({
       query: (data: any) => ({
         url: `/unit`,
@@ -40,7 +40,7 @@ export const unitApi = baseApi.injectEndpoints({
       }),
       providesTags: [tagTypes.unit],
     }),
-    // update
+    // update unit
     updateUnit: build.mutation({
       query: (data: { id: any; body: any }) => ({
         url: `/unit/${data.id}`,

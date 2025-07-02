@@ -40,7 +40,7 @@ export const productApi = baseApi.injectEndpoints({
       }),
       providesTags: [tagTypes.product],
     }),
-    // update
+    // update product
     updateProduct: build.mutation({
       query: (data: { id: any; body: any }) => ({
         url: `/product/${data.id}`,
@@ -57,7 +57,7 @@ export const productApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: [tagTypes.product, tagTypes.supplier],
     }),
-    // delete product
+    // delete products
     deleteProducts: build.mutation({
       query: (data: any) => ({
         url: `/product`,

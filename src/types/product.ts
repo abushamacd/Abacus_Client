@@ -1,6 +1,7 @@
 export interface IProduct {
   id: string;
   name: string;
+  slug: string;
   supplierId?: string;
   unitId: string;
   quantity: number;

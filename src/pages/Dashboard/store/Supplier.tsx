@@ -112,6 +112,7 @@ export const Supplier = () => {
     setPage(page);
     setSize(pageSize);
   };
+
   // @ts-ignore
   const onTableChange = (pagination: any, filter: any, sorter: any) => {
     const { order, field } = sorter;
@@ -129,6 +130,7 @@ export const Supplier = () => {
     navigate(`${supplier.id}`, { replace: true });
   };
 
+  // Handlers
   const createHandler: SubmitHandler<SupplierFormValues> = async (
     data: SupplierFormValues
   ) => {
@@ -178,7 +180,7 @@ export const Supplier = () => {
                   type="text"
                   size="middle"
                   label="Supplier Name"
-                  placeholder="Abacus Treders"
+                  placeholder="Allardan Treders"
                   required
                 />
               </Col>
@@ -336,7 +338,6 @@ export const Supplier = () => {
                     size="middle"
                     htmlType="submit"
                     type="primary"
-                    // block
                   >
                     <ReloadOutlined />
                   </Button>

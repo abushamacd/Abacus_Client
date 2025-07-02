@@ -14,9 +14,9 @@ type FormValues = {
   email: string;
 };
 
-export const ForgetPassword = () => {
-  const db_url = import.meta.env.VITE_REDIRECT_URL;
+const db_url = import.meta.env.VITE_REDIRECT_URL;
 
+export const ForgetPassword = () => {
   const [forgetPassword] = useForgetPasswordMutation();
 
   const onSubmit: SubmitHandler<FormValues> = async (data: any) => {
@@ -27,6 +27,7 @@ export const ForgetPassword = () => {
       toast.error(`${err.data?.message}`);
     }
   };
+
   return (
     <div>
       <CustomHead title="Forget Password" />

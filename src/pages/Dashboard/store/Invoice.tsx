@@ -2,6 +2,7 @@
 /* eslint-disable no-extra-boolean-cast */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { useEffect, useState } from "react";
 import text_logo from "../../../assets/text_logo.png";
 import Loading from "../../../components/ui/Loading";
@@ -24,7 +25,6 @@ import {
 } from "antd";
 import { SelectOptions } from "../../../types";
 import { MdDeleteForever } from "react-icons/md";
-// import { useGetProductsQuery } from "../../../redux/api/product";
 import dayjs from "dayjs";
 import TextArea from "antd/es/input/TextArea";
 import {
@@ -110,6 +110,7 @@ export const Invoice = () => {
   const afterPaid = +totalAmount.toFixed(2);
   const due = +(afterPaid - paid).toFixed(2);
 
+  // Search product
   const debounceFetcher = useMemo(() => {
     const loadOptions = async (search: string) => {
       fetchRef.current += 1;
@@ -119,7 +120,7 @@ export const Invoice = () => {
 
       setSearchProducts(res?.products);
 
-      if (fetchId !== fetchRef.current) return; // prevent race condition
+      if (fetchId !== fetchRef.current) return;
 
       const items = (res?.products || []).map((product: any) => ({
         label: (
@@ -140,6 +141,7 @@ export const Invoice = () => {
     return debounce(loadOptions, 300);
   }, [fetchProducts]);
 
+  // Product values
   const productValues: {
     unit: any;
     purchase: any;
@@ -207,6 +209,7 @@ export const Invoice = () => {
   }
   const { data: invoicesData, isLoading: invoicesLoading } =
     useGetInvoicesQuery({ ...query });
+
   // @ts-ignore
   const allInvoices: any = invoicesData?.invoices;
   // @ts-ignore
@@ -241,12 +244,6 @@ export const Invoice = () => {
   ) => {
     setInvoiceDate(dateString);
   };
-
-  useEffect(() => {
-    if (customerSearchTerm === "") {
-      setCustomerSearchTerm("Unknown");
-    }
-  }, [customerSearchTerm]);
 
   const inputHandle = (e: any) => {
     if (e.target.name === "rate") {
@@ -443,6 +440,7 @@ export const Invoice = () => {
     setPage(page);
     setSize(pageSize);
   };
+
   // @ts-ignore
   const onTableChange = (pagination: any, filter: any, sorter: any) => {
     const { order, field } = sorter;
@@ -485,12 +483,12 @@ export const Invoice = () => {
     setRole(selectdUser?.role);
   }, [selectdUser]);
 
-  // Role setting based on selected user
+  // Set Products
   useEffect(() => {
     setAllProducts(allProducts);
   }, [allProducts, reduce]);
 
-  // Role setting based on selected user
+  // Set Paid
   useEffect(() => {
     if (fullPaid) {
       setPaid(afterPaid);
@@ -499,17 +497,26 @@ export const Invoice = () => {
     }
   }, [afterPaid, fullPaid]);
 
+  // Set product on select
   useEffect(() => {
     onProductChange(value?.value);
   }, [value?.value]);
 
+  // Set customer searchterm to unknown
+  useEffect(() => {
+    if (customerSearchTerm === "") {
+      setCustomerSearchTerm("Unknown");
+    }
+  }, [customerSearchTerm]);
+
+  // Loading
   if (staffsLoading) {
     return <Loading />;
   }
 
   return (
-    <div className="">
-      {/* create invoice */}
+    <>
+      {/* Create Invoice */}
       <section className="dark:bg-bg_dark bg-white p-4 rounded-md">
         <div className="dark:bg-bg_dark bg-white text-mirage dark:text-white !border-secondary border-2 rounded-md">
           {/* store info */}
@@ -950,6 +957,11 @@ export const Invoice = () => {
                   allowClear
                   showSearch
                   labelInValue
+                  suffixIcon={`${code.slice(0, 2)}${
+                    selectedProduct[0]?.purchase > 0
+                      ? selectedProduct[0]?.purchase
+                      : 0
+                  }${code.slice(2)}`}
                   value={value}
                   filterOption={false}
                   onSearch={debounceFetcher}
@@ -1106,7 +1118,7 @@ export const Invoice = () => {
           </div>
         </div>
       </section>
-      {/* all Invoice */}
+      {/* All Invoice */}
       <div className="dark:bg-bg_dark bg-white p-4 rounded-md mt-5">
         <div className="">
           <div className="w-full dark:bg-bg_dark bg-white py-5 rounded-md md:mb-0 mb-5 flex md:flex-row flex-col justify-between md:items-center items-start">
@@ -1170,6 +1182,7 @@ export const Invoice = () => {
           />
         </div>
       </div>
+      {/* Add New Customer */}
       <Modal
         title={`Add New Customer`}
         open={isAdd}
@@ -1283,6 +1296,6 @@ export const Invoice = () => {
           </Row>
         </Form>
       </Modal>
-    </div>
+    </>
   );
 };

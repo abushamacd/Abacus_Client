@@ -40,7 +40,7 @@ export const invoiceApi = baseApi.injectEndpoints({
       }),
       providesTags: [tagTypes.invoice],
     }),
-    // update
+    // update invoice
     updateInvoice: build.mutation({
       query: (data: { id: any; body: any }) => ({
         url: `/invoice/${data.id}`,
@@ -57,7 +57,7 @@ export const invoiceApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: [tagTypes.invoice, tagTypes.product],
     }),
-    // delete invoice
+    // delete invoices
     deleteInvoices: build.mutation({
       query: (data: any) => ({
         url: `/invoice`,

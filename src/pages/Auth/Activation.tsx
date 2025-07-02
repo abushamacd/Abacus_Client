@@ -6,9 +6,10 @@ import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useActivationMutation } from "../../redux/api/authApi";
 
+const db_url = import.meta.env.VITE_REDIRECT_URL;
+
 export const Activation = () => {
   const params = useParams();
-  const db_url = import.meta.env.VITE_REDIRECT_URL;
   const navigate = useNavigate();
   const { token } = params;
   const [activation, { isSuccess }] = useActivationMutation();

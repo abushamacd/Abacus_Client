@@ -55,6 +55,7 @@ const FormSelectField = ({
         name={name}
         render={({ field }) => (
           <Select
+            allowClear
             mode={mode}
             className="bg-bg text-mirage dark:bg-black dark:text-white focus-within:!border-primary hover:!border-primary disabled:text-mirage dark:disabled:text-white"
             options={options}

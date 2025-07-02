@@ -87,11 +87,15 @@ export const sidebarItems = (role: string) => {
   const adminSidebarItems: MenuProps["items"] = [
     ...managerSidebarItemsWithoutStore,
     ...(storeItemCopy ? [storeItemCopy] : []),
-    {
-      label: <Link to={`/${db_url}/dbsync`}>DB Syncs</Link>,
-      key: "db-sync",
-      icon: <TbDatabaseCog />,
-    },
+    ...(import.meta.env.VITE_NODE_ENV !== "production"
+      ? [
+          {
+            label: <Link to={`/${db_url}/dbsync`}>DB Syncs</Link>,
+            key: "db-sync",
+            icon: <TbDatabaseCog />,
+          },
+        ]
+      : []),
   ];
 
   if (role === USER_ROLE.MANAGER) return managerSidebarItems;

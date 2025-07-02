@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable no-extra-boolean-cast */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from "react";
 import { useDebounced } from "../../../redux/hooks";
 import { useGetInvoicesQuery } from "../../../redux/api/invoice";
@@ -7,7 +8,7 @@ import Title from "antd/es/typography/Title";
 import { Button, Col, Input, Row, Select } from "antd";
 import { ReloadOutlined } from "@ant-design/icons";
 import DataTable from "../../../components/ui/DataTable";
-import { FaRegEye } from "react-icons/fa";
+import { FaPercentage, FaRegEye } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { TbSum } from "react-icons/tb";
 import { FaSackDollar } from "react-icons/fa6";
@@ -28,7 +29,8 @@ import {
   Area,
 } from "recharts";
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
+const db_url = import.meta.env.VITE_REDIRECT_URL;
+
 export const StoreOverview = () => {
   const navigate = useNavigate();
   // invoice query
@@ -73,6 +75,7 @@ export const StoreOverview = () => {
     searchQuery: customerSearchTerm,
     delay: 600,
   });
+
   const customerQuery: Record<string, any> = customerDebouncedTerm
     ? { searchTerm: customerDebouncedTerm }
     : {};
@@ -80,6 +83,7 @@ export const StoreOverview = () => {
   const { data: usersData, isLoading: staffsLoading } = useGetUsersQuery({
     ...customerQuery,
   });
+
   // @ts-ignore
   const allUser: any = usersData?.users;
 
@@ -92,14 +96,31 @@ export const StoreOverview = () => {
     setCustomerSearchTerm(value);
   };
 
+  // Calculation
   const totalSum = allInvoices?.reduce(
     (sum: any, record: { total: any }) => sum + record.total,
     0
   );
-  const dueSum = allInvoices?.reduce(
+
+  const totalDiscount = allInvoices?.reduce(
+    (sum: any, record: { discount: any }) => sum + record.discount,
+    0
+  );
+
+  const { data: usersInfo, isLoading: userLoading } = useGetUsersQuery({});
+  // @ts-ignore
+  const usersdata: any = usersInfo?.users;
+
+  const dueSum = usersdata?.reduce(
     (sum: any, record: { due: any }) => sum + record.due,
     0
   );
+
+  const queryDue = allInvoices?.reduce(
+    (sum: any, record: { due: any }) => sum + record.due,
+    0
+  );
+
   const profitSum = allInvoices?.reduce(
     (sum: any, record: { profit: any }) => sum + record.profit,
     0
@@ -169,6 +190,7 @@ export const StoreOverview = () => {
     setPage(page);
     setSize(pageSize);
   };
+
   // @ts-ignore
   const onTableChange = (pagination: any, filter: any, sorter: any) => {
     const { order, field } = sorter;
@@ -185,7 +207,7 @@ export const StoreOverview = () => {
   };
 
   const openView = (id: string) => {
-    navigate(`/abacusdb/invoices/${id}`, { replace: true });
+    navigate(`/${db_url}/invoices/${id}`, { replace: true });
   };
 
   const CustomTooltip = ({
@@ -212,11 +234,14 @@ export const StoreOverview = () => {
           <p className="label capitalize">{`${
             payload[2]?.dataKey
           } : ${payload[2]?.value?.toFixed(2)}`}</p>
+          <p className="label capitalize">{`${
+            payload[3]?.dataKey
+          } : ${payload[3]?.value?.toFixed(2)}`}</p>
           <p
             className={`label capitalize ${
-              payload[3]?.value > 0 ? "text-primary" : "text-[#D31818]"
+              payload[4]?.value > 0 ? "text-primary" : "text-[#D31818]"
             }`}
-          >{`Profit: ${payload[3]?.value.toFixed(2)}`}</p>
+          >{`Profit: ${payload[4]?.value.toFixed(2)}`}</p>
         </div>
       );
     }
@@ -224,7 +249,8 @@ export const StoreOverview = () => {
     return null;
   };
 
-  if (invoicesLoading || isLoading || staffsLoading) return <Loading />;
+  if (invoicesLoading || isLoading || staffsLoading || userLoading)
+    return <Loading />;
 
   return (
     <div>
@@ -267,7 +293,7 @@ export const StoreOverview = () => {
       </Row>
       {/* invoice calculation */}
       <Row className="!mx-0" gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
-        <Col className="gutter-row w-full mb-5 !px-0" sm={24} md={12} lg={8}>
+        <Col className="gutter-row w-full mb-5 !px-0" sm={24} md={12} lg={6}>
           <div className="mr-0 md:mr-5 overflow-hidden rounded-md">
             <div
               className={`card_container before:bg-[#cdb4db] after:bg-[#cdb4db] relative bg-secondary p-4 rounded-md text-mirage dark:text-white`}
@@ -277,13 +303,31 @@ export const StoreOverview = () => {
                   size={40}
                   className="border border-primary p-2 rounded-md"
                 />
-                <h1 className="text-3xl ao my-4">{totalSum?.toFixed(2)} ৳</h1>
-                <p className="text-lg my-2">Total Selling</p>
+                <h1 className="text-3xl ao my-2">{totalSum?.toFixed(2)} ৳</h1>
+                <p className="text-lg">Total Selling</p>
               </div>
             </div>
           </div>
         </Col>
-        <Col className="gutter-row w-full mb-5 !px-0" sm={24} md={12} lg={8}>
+        <Col className="gutter-row w-full mb-5 !px-0" sm={24} md={12} lg={6}>
+          <div className="mr-0 md:mr-5 overflow-hidden rounded-md">
+            <div
+              className={`card_container before:bg-[#b4dbca] after:bg-[#b4dbca] relative bg-secondary p-4 rounded-md text-mirage dark:text-white`}
+            >
+              <div className="relative z-10">
+                <FaPercentage
+                  size={40}
+                  className="border border-primary p-2 rounded-md"
+                />
+                <h1 className="text-3xl ao my-2">
+                  {totalDiscount?.toFixed(2)} ৳
+                </h1>
+                <p className="text-lg">Total Discount</p>
+              </div>
+            </div>
+          </div>
+        </Col>
+        <Col className="gutter-row w-full mb-5 !px-0" sm={24} md={12} lg={6}>
           <div className="mr-0 md:mr-0 lg:mr-5 overflow-hidden rounded-md">
             <div
               className={`card_container before:bg-[#b5c6e0] after:bg-[#b5c6e0] relative bg-secondary p-4 rounded-md text-mirage dark:text-white`}
@@ -293,13 +337,18 @@ export const StoreOverview = () => {
                   size={40}
                   className="border border-primary p-2 rounded-md"
                 />
-                <h1 className="text-3xl ao my-4">{dueSum?.toFixed(2)} ৳</h1>
-                <p className="text-lg my-2">Total Due</p>
+                <h1 className="text-3xl ao my-2">
+                  {uId || searchTerm
+                    ? queryDue?.toFixed(2)
+                    : dueSum?.toFixed(2)}{" "}
+                  ৳
+                </h1>
+                <p className="text-lg">Total Due</p>
               </div>
             </div>
           </div>
         </Col>
-        <Col className="gutter-row w-full mb-5 !px-0" sm={24} md={24} lg={8}>
+        <Col className="gutter-row w-full mb-5 !px-0" sm={24} md={24} lg={6}>
           <div className="overflow-hidden rounded-md">
             <div
               className={`card_container before:bg-[#c3cfa0] after:bg-[#c3cfa0] relative bg-secondary p-4 rounded-md text-mirage dark:text-white`}
@@ -309,8 +358,8 @@ export const StoreOverview = () => {
                   size={40}
                   className="border border-primary p-2 rounded-md"
                 />
-                <h1 className="text-3xl ao my-4">{profitSum?.toFixed(2)} ৳</h1>
-                <p className="text-lg my-2">Total Profit</p>
+                <h1 className="text-3xl ao my-2">{profitSum?.toFixed(2)} ৳</h1>
+                <p className="text-lg">Net Profit</p>
               </div>
             </div>
           </div>
@@ -331,6 +380,10 @@ export const StoreOverview = () => {
               <linearGradient id="paid" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="5%" stopColor="#8884d8" stopOpacity={0.8} />
                 <stop offset="95%" stopColor="#8884d8" stopOpacity={0} />
+              </linearGradient>
+              <linearGradient id="discount" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="#b4dbca" stopOpacity={0.8} />
+                <stop offset="95%" stopColor="#b4dbca" stopOpacity={0} />
               </linearGradient>
               <linearGradient id="due" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="5%" stopColor="#f19c79" stopOpacity={0.8} />
@@ -359,6 +412,13 @@ export const StoreOverview = () => {
               stroke="#8884d8"
               fillOpacity={1}
               fill="url(#paid)"
+            />
+            <Area
+              type="monotone"
+              dataKey="discount"
+              stroke="#b4dbca"
+              fillOpacity={1}
+              fill="url(#discount)"
             />
             <Area
               type="monotone"

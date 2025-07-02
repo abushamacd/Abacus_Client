@@ -41,14 +41,18 @@ const formatedDate = (date: string) => {
   return result;
 };
 
+const db_url = import.meta.env.VITE_REDIRECT_URL;
+
 export const InvoiceDetails = () => {
   const code = Math.floor(100 + Math.random() * 900).toString();
   const params = useParams();
   const navigate = useNavigate();
+
+  const [updateInvoice] = useUpdateInvoiceMutation();
+
   const { data: invoiceData, isLoading: invoiceLoading } = useGetInvoiceQuery(
     params?.id
   );
-  const [updateInvoice] = useUpdateInvoiceMutation();
 
   const invoice: any = invoiceData;
 
@@ -60,6 +64,7 @@ export const InvoiceDetails = () => {
     { label: "Consumer", value: "Consumer" },
   ];
 
+  // State Management
   const [isEdit, setIsEdit] = useState(false);
   const [reduce, setReduce] = useState(false);
   const [errMessage, setErrMessage] = useState("");
@@ -70,11 +75,12 @@ export const InvoiceDetails = () => {
   const [note, setNote] = useState("");
   const [afterReturnDue, setAfterReturnDue] = useState<number>(0);
   const [afterReturnPaid, setAfterReturnPaid] = useState<number>(0);
+  const [discount, setDiscount] = useState<number>(0);
+  const [netProfit, setNetProfit] = useState<number>(0);
   const [returnAmount, setReturnAmount] = useState<number>(0);
   const [remainAmount, setRemainAmount] = useState<number>(0);
   const [allProducts, setAllProducts] = useState<any[]>([]);
   const [removedProducts, setRemovedProducts] = useState<any[]>([]);
-
   let products: [];
 
   // Customer query
@@ -94,6 +100,7 @@ export const InvoiceDetails = () => {
   const { data: usersData, isLoading: userLoading } = useGetUsersQuery({
     ...customerQuery,
   });
+
   // @ts-ignore
   const allUser: any = usersData?.users;
 
@@ -102,6 +109,7 @@ export const InvoiceDetails = () => {
     value: user?.id,
   }));
 
+  // Handlers
   const onCustomerSearch = (value: string) => {
     setCustomerSearchTerm(value);
     setErrMessage("");
@@ -126,86 +134,17 @@ export const InvoiceDetails = () => {
     const { name, value } = e.target;
     if (name === "note") setNote(value);
     if (name === "paid") {
-      setAfterReturnPaid(+value);
-      setAfterReturnDue(remainAmount - +value);
+      const paid = +value;
+      setAfterReturnPaid(paid);
+      setAfterReturnDue(remainAmount - paid - discount);
+    }
+    if (name === "discount") {
+      const newDiscount = +value;
+      setDiscount(newDiscount);
+      setAfterReturnDue(remainAmount - afterReturnPaid - newDiscount);
+      setNetProfit(totalProfit - newDiscount);
     }
   };
-
-  useEffect(() => {
-    if (customerSearchTerm === "") {
-      setCustomerSearchTerm("Unknown");
-    } else if (customerSearchTerm?.length > 0) {
-      setCustomerSearchTerm(customerSearchTerm);
-    } else {
-      setCustomerSearchTerm(invoice?.customerName);
-    }
-  }, [customerSearchTerm, invoice]);
-
-  useEffect(() => {
-    setInvoiceDate(invoice?.date);
-    setAfterReturnDue(invoice?.due);
-    setRemainAmount(invoice?.total);
-  }, [invoice]);
-
-  useEffect(() => {
-    const returns = removedProducts?.reduce(
-      (acc: any, item: { total: any }) => acc + item.total,
-      0
-    );
-
-    if (invoice?.due > 0 && returns > 0) {
-      const afterReturn = returns - invoice?.due;
-      if (afterReturn > 0) {
-        setReturnAmount(+afterReturn.toFixed(2));
-        setAfterReturnDue(0);
-        setRemainAmount(+(invoice?.total - returns).toFixed(2));
-      } else {
-        setAfterReturnDue(-afterReturn.toFixed(2));
-        setRemainAmount(+(invoice?.total - returns).toFixed(2));
-      }
-    } else if (returns > 0) {
-      setReturnAmount(+returns.toFixed(2));
-      setRemainAmount(+(invoice?.total - returns).toFixed(2));
-    }
-
-    // setReturnAmount(returns);
-  }, [removedProducts, invoice, allProducts]);
-
-  // console.log(invoice);
-
-  useEffect(() => {
-    setSelectdUser(allUser?.[0]);
-  }, [allUser]);
-
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    if (invoice) products = JSON.parse(invoice?.products);
-    setAllProducts(products);
-  }, [invoice]);
-
-  useEffect(() => {
-    if (returnAmount > 0) {
-      setAfterReturnPaid(invoice?.paid - returnAmount);
-    } else {
-      setAfterReturnPaid(invoice?.paid);
-    }
-  }, [invoice, returnAmount]);
-
-  if (invoiceLoading || userLoading) {
-    return <Loading />;
-  }
-
-  const totalProfit = allProducts?.reduce(
-    (acc: any, item: { profit: any }) => acc + item.profit,
-    0
-  );
-
-  const totalAmount = allProducts?.reduce(
-    (acc: any, item: { total: any }) => acc + item.total,
-    0
-  );
-
-  const afterDiscount = +totalAmount?.toFixed(2);
 
   const productHandler = (e: any, index: number) => {
     const { name, value } = e.target;
@@ -250,9 +189,10 @@ export const InvoiceDetails = () => {
       date: invoiceDate,
       note: note,
       due: +afterReturnDue?.toFixed(2) || 0,
+      discount: +discount?.toFixed(2) || 0,
       paid: afterReturnPaid || 0,
-      profit: +totalProfit.toFixed(2) || 0,
-      total: afterDiscount || 0,
+      profit: +netProfit.toFixed(2) || 0,
+      total: total || 0,
       products: allProducts,
       removed: removedProducts,
     };
@@ -264,7 +204,7 @@ export const InvoiceDetails = () => {
       }).unwrap();
       toast.success("Update invoice successfully");
       if (allProducts?.length <= 0) {
-        navigate(`/abacusdb/invoices`, { replace: true });
+        navigate(`/${db_url}/invoices`, { replace: true });
       } else {
         navigate(0);
       }
@@ -273,8 +213,99 @@ export const InvoiceDetails = () => {
     }
   };
 
+  // Calculations
+  const totalProfit = allProducts?.reduce(
+    (acc: any, item: { profit: any }) => acc + item.profit,
+    0
+  );
+
+  const totalAmount = allProducts?.reduce(
+    (acc: any, item: { total: any }) => acc + item.total,
+    0
+  );
+
+  const total = +totalAmount?.toFixed(2);
+
+  // Set customer seach term
+  useEffect(() => {
+    if (customerSearchTerm === "") {
+      setCustomerSearchTerm("Unknown");
+    } else if (customerSearchTerm?.length > 0) {
+      setCustomerSearchTerm(customerSearchTerm);
+    } else {
+      setCustomerSearchTerm(invoice?.customerName);
+    }
+  }, [customerSearchTerm, invoice]);
+
+  // Set Invoice Info
+  useEffect(() => {
+    setInvoiceDate(invoice?.date);
+    setAfterReturnDue(invoice?.due);
+    setRemainAmount(invoice?.total);
+    setDiscount(invoice?.discount);
+  }, [invoice]);
+
+  // Product Remove Update
+  useEffect(() => {
+    const returns = removedProducts?.reduce(
+      (acc: any, item: { total: any }) => acc + item.total,
+      0
+    );
+
+    if (invoice?.due > 0 && returns > 0) {
+      const afterReturn = returns - invoice?.due;
+      if (afterReturn > 0) {
+        setReturnAmount(+afterReturn.toFixed(2));
+        setAfterReturnDue(0);
+        setRemainAmount(+(invoice?.total - returns).toFixed(2));
+      } else {
+        setAfterReturnDue(-afterReturn.toFixed(2));
+        setRemainAmount(+(invoice?.total - returns).toFixed(2));
+      }
+    } else if (returns > 0) {
+      setReturnAmount(+returns.toFixed(2));
+      setRemainAmount(+(invoice?.total - returns).toFixed(2));
+    }
+  }, [removedProducts, invoice, allProducts]);
+
+  // Set Selected User
+  useEffect(() => {
+    setSelectdUser(allUser?.[0]);
+  }, [allUser]);
+
+  // Set Invoiced Product
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    if (invoice) products = JSON.parse(invoice?.products);
+    setAllProducts(products);
+  }, [invoice]);
+
+  // Set Return Amount
+  useEffect(() => {
+    if (returnAmount > 0) {
+      setAfterReturnPaid(invoice?.paid - returnAmount);
+    } else {
+      setAfterReturnPaid(invoice?.paid);
+    }
+  }, [invoice, returnAmount]);
+
+  // Set Total profit
+  useEffect(() => {
+    setNetProfit(totalProfit);
+  }, [totalProfit]);
+
+  // Set Net Profit
+  useEffect(() => {
+    setNetProfit(invoice?.profit);
+  }, [invoice?.profit]);
+
+  // Show Loading
+  if (invoiceLoading || userLoading) {
+    return <Loading />;
+  }
+
   return (
-    <div>
+    <>
       <section className="dark:bg-bg_dark bg-white p-4 rounded-md">
         <Card
           title={
@@ -301,7 +332,7 @@ export const InvoiceDetails = () => {
                 className="w-auto h-[2rem] md:h-[4rem] mx-auto"
               />
               <h4 className="text-center text-[.6rem] md:text-[1rem]">
-                121/9, Dowlatdiar, Chuadanga.
+                Notun Dorbespur, Meherpur.
               </h4>
               <p className="text-center text-[.6rem] md:text-[1rem]">
                 {invoiceDate}
@@ -428,7 +459,6 @@ export const InvoiceDetails = () => {
                 </Col>
               </Row>
             </div>
-
             {/* products info */}
             <div className="">
               <Row
@@ -593,7 +623,7 @@ export const InvoiceDetails = () => {
                         </td>
 
                         <td className="p-2 text-right">
-                          {+totalProfit.toFixed(2)}
+                          <p> {+netProfit.toFixed(2)}</p>
                         </td>
                         {isEdit && <td className="p-2 text-right"></td>}
                       </tr>
@@ -649,21 +679,18 @@ export const InvoiceDetails = () => {
                   <div className="p-4 border-2 border-primary rounded-md">
                     <span className="tracking-wide flex justify-between">
                       <span className="!font-bold">Total:</span>
-                      {/* <span className={`italic `}>{invoice?.total || 0}</span> */}
                       <span className={`italic `}>{remainAmount || 0}</span>
                     </span>
-                    <span className="tracking-wide flex justify-between border-b">
+                    <span className="tracking-wide flex justify-between">
                       <span className="!font-bold">Paid:</span>
-                      {/* <span className={`italic `}> {invoice?.paid || 0}</span> */}
                       <Input
                         value={afterReturnPaid}
                         className="bg-white text-mirage dark:bg-bg_dark dark:text-white focus-within:!border-primary hover:!border-primary disabled:text-mirage dark:disabled:text-white !placeholder:text-[#ddddddbb] w-20 relative left-[15px]"
                         name="paid"
-                        step={0.01}
                         type="number"
                         variant={"filled"}
                         min={0}
-                        max={afterDiscount.toFixed(2)}
+                        max={total.toFixed(2)}
                         size="small"
                         defaultValue={0}
                         placeholder="Discount"
@@ -671,19 +698,33 @@ export const InvoiceDetails = () => {
                       />
                     </span>
                     <span className="tracking-wide flex justify-between">
-                      <span className="!font-bold">Due:</span>
+                      <span className="!font-bold">Discount:</span>
                       {/* <span
                         className={`italic ${invoice?.due > 0 && "!font-bold"}`}
                       >
                         {invoice?.due || 0}
                       </span> */}
-                      <span
+                      {/* <span
                         className={`italic ${
                           afterReturnDue > 0 && "text-[#D31818] !font-bold"
                         }`}
                       >
                         {+afterReturnDue?.toFixed(2) || 0}
-                      </span>
+                      </span> */}
+                      <Input
+                        value={discount}
+                        className="bg-white text-mirage dark:bg-bg_dark dark:text-white focus-within:!border-primary hover:!border-primary disabled:text-mirage dark:disabled:text-white !placeholder:text-[#ddddddbb] w-20 relative left-[15px]"
+                        name="discount"
+                        step={0.01}
+                        type="number"
+                        variant={"filled"}
+                        min={0}
+                        max={netProfit?.toFixed(2)}
+                        size="small"
+                        defaultValue={0}
+                        placeholder="Discount"
+                        onChange={invoiceInputHandler}
+                      />
                     </span>
                   </div>
                 </Col>
@@ -702,7 +743,7 @@ export const InvoiceDetails = () => {
                     <span className="tracking-wide flex justify-between">
                       <span className="!font-bold">Return PP:</span>
                       <span className={`italic `}>
-                        {invoice?.total - remainAmount || 0}
+                        {(invoice?.total - remainAmount || 0).toFixed(2)}
                       </span>
                     </span>
                     <span className="tracking-wide flex justify-between border-b">
@@ -712,7 +753,7 @@ export const InvoiceDetails = () => {
                           afterReturnDue > 0 && "text-[#D31818] !font-bold"
                         }`}
                       >
-                        {+afterReturnDue?.toFixed(2) || 0}
+                        {afterReturnDue?.toFixed(2) || 0}
                       </span>
                       {/* <span
                         className={`italic ${invoice?.due > 0 && "!font-bold"}`}
@@ -733,7 +774,7 @@ export const InvoiceDetails = () => {
                           returnAmount > 0 && "text-[#D31818] !font-bold"
                         }`}
                       >
-                        {returnAmount || 0}
+                        {returnAmount.toFixed(2) || 0}
                       </span>
                     </span>
                     {/* <span className="tracking-wide flex justify-between ">
@@ -758,6 +799,6 @@ export const InvoiceDetails = () => {
           </div>
         </Card>
       </section>
-    </div>
+    </>
   );
 };

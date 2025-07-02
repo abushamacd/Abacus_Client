@@ -30,7 +30,6 @@ export const DBConnTest = () => {
       className="bg-primary hover:!bg-primary text-mirage !bg-opacity-[.8] duration-300 transition-all"
       size="middle"
       type="primary"
-      // block
     >
       Test Connection
     </Button>

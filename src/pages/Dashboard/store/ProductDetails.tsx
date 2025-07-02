@@ -56,13 +56,15 @@ export const ProductDetails = () => {
   const { data: productData, isLoading: productLoading } = useGetProductQuery(
     params?.id
   );
+
   const [createSupplier] = useCreateSupplierMutation();
   const [updateProduct] = useUpdateProductMutation();
   const { data: unitsData } = useGetUnitsQuery({});
+  const { data: supplersData } = useGetSuppliersQuery({});
+
   // @ts-ignore
   const allUnits: any = unitsData?.units;
 
-  const { data: supplersData } = useGetSuppliersQuery({});
   // @ts-ignore
   const allSuppliers: any = supplersData?.suppliers;
 
@@ -91,9 +93,7 @@ export const ProductDetails = () => {
     sell: product?.sell || 0,
   };
 
-  if (productLoading) {
-    return <Loading />;
-  }
+  // Handlers
   const updateHandler: SubmitHandler<ProductFormValues> = async (
     data: ProductFormValues
   ) => {
@@ -118,9 +118,14 @@ export const ProductDetails = () => {
       toast.error(`${err.data?.message}`);
     }
   };
+
+  if (productLoading) {
+    return <Loading />;
+  }
+
   return (
     <div>
-      {/* product details */}
+      {/* Product details */}
       <section className="dark:bg-bg_dark bg-white p-4 rounded-md">
         <Card
           title={
@@ -137,6 +142,7 @@ export const ProductDetails = () => {
           }
           className="dark:bg-bg_dark bg-white text-mirage dark:text-white !border-secondary border-2"
         >
+          {/* show product details */}
           <Row className="!mx-0" gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
             <Col
               className="gutter-row"
@@ -266,7 +272,7 @@ export const ProductDetails = () => {
               </Col>
             )}
           </Row>
-
+          {/* edit products */}
           {!isEdit && (
             <div className="edit_details border-t border-secondary mt-4 pt-4">
               <Form
@@ -498,6 +504,7 @@ export const ProductDetails = () => {
           )}
         </Card>
       </section>
+      {/* add new supplier */}
       <Modal
         title={`Add New Supplier`}
         open={isAdd}
@@ -525,7 +532,7 @@ export const ProductDetails = () => {
                 type="text"
                 size="middle"
                 label="Supplier Name"
-                placeholder="Abacus Treders"
+                placeholder="Allardan Treders"
                 required
               />
             </Col>

@@ -3,17 +3,18 @@ import { isLoggedIn } from "../../services/auth.service";
 import { Button } from "antd";
 import { CustomHead } from "../../components/CustomHead";
 
+const db_url = import.meta.env.VITE_REDIRECT_URL;
+
 const Homepage = () => {
   const userLoggedIn = isLoggedIn();
-  const db_url = import.meta.env.VITE_REDIRECT_URL;
-
   const navigate = useNavigate();
+
   return (
     <div>
       <CustomHead title="Welcome" />
       <div className="text-center text-mirage dark:text-white">
         <h2 className="md:text-7xl text-3xl mb-4 text-primary ao p-4">
-          Welcome to <span className="italic ao">Abacus</span>
+          Welcome to <span className="italic ao">Allardan</span>
         </h2>
         <p className="text-light_text dark:text-dark_text text-xl">
           Have a good day 😊
@@ -28,7 +29,6 @@ const Homepage = () => {
               size="middle"
               htmlType="submit"
               type="primary"
-              // block
             >
               Dashboard
             </Button>
@@ -41,7 +41,6 @@ const Homepage = () => {
               size="middle"
               htmlType="submit"
               type="primary"
-              // block
             >
               Sign In
             </Button>

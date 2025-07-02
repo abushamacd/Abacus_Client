@@ -6,7 +6,7 @@ export const CustomHead = ({ title }: { title: string }) => {
     // @ts-ignore
     <Helmet>
       <meta charSet="utf-8" />
-      <title>{title} || Abacus</title>
+      <title>{title} || Allardan</title>
     </Helmet>
   );
 };

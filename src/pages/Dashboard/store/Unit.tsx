@@ -104,6 +104,7 @@ export const Units = () => {
     setPage(page);
     setSize(pageSize);
   };
+
   // @ts-ignore
   const onTableChange = (pagination: any, filter: any, sorter: any) => {
     const { order, field } = sorter;
@@ -125,6 +126,7 @@ export const Units = () => {
     dispatch(setEdit({ data: null, state: false }));
   };
 
+  // Handlers
   const createHandler: SubmitHandler<UnitFormValues> = async (data: {
     name: string;
   }) => {

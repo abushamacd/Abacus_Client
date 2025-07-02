@@ -6,7 +6,7 @@ import { baseApi } from "./baseApi";
 
 export const supplierApi = baseApi.injectEndpoints({
   endpoints: (build: any) => ({
-    // create
+    // create supplier
     createSupplier: build.mutation({
       query: (data: any) => ({
         url: `/supplier`,
@@ -40,7 +40,7 @@ export const supplierApi = baseApi.injectEndpoints({
       }),
       providesTags: [tagTypes.supplier],
     }),
-    // update
+    // update supplier
     updateSupplier: build.mutation({
       query: (data: { id: any; body: any }) => ({
         url: `/supplier/${data.id}`,

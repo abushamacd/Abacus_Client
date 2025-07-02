@@ -31,6 +31,8 @@ type SupplierFormValues = {
   comment?: string;
 };
 
+const db_url = import.meta.env.VITE_REDIRECT_URL;
+
 export const SupplierDetails = () => {
   const params = useParams();
   const navigate = useNavigate();
@@ -113,9 +115,14 @@ export const SupplierDetails = () => {
   ];
 
   const openView = (porduct: any) => {
-    navigate(`/abacusdb/products/${porduct.id}`, { replace: true });
+    navigate(`/${db_url}/products/${porduct.id}`, { replace: true });
   };
 
+  const onSelection = (ids: React.Key[]) => {
+    setSelectedIds(ids);
+  };
+
+  // Handlers
   const deleteHandler = async (id: string) => {
     try {
       await deleteProduct(id).unwrap();
@@ -137,10 +144,6 @@ export const SupplierDetails = () => {
     } catch (err: any) {
       toast.error(`${err.data?.message}`);
     }
-  };
-
-  const onSelection = (ids: React.Key[]) => {
-    setSelectedIds(ids);
   };
 
   const deletesHandler = async (data: React.Key[]) => {
@@ -258,7 +261,7 @@ export const SupplierDetails = () => {
               </Col>
             )}
           </Row>
-
+          {/* edit supplier */}
           {!isEdit && (
             <div className="edit_details border-t border-secondary mt-4 pt-4">
               <Form submitHandler={updateHandler} defaultValues={defaultValues}>
@@ -281,7 +284,7 @@ export const SupplierDetails = () => {
                       type="text"
                       size="middle"
                       label="Supplier Name"
-                      placeholder="Abacus Treders"
+                      placeholder="Allardan Treders"
                     />
                   </Col>
                   <Col
@@ -407,7 +410,7 @@ export const SupplierDetails = () => {
           )}
         </Card>
       </section>
-      {/* supplier's product */}
+      {/* Supplier's product */}
       {supplier?.products?.length > 0 && (
         <div className="dark:bg-bg_dark bg-white p-4 rounded-md mt-5">
           <div className="">

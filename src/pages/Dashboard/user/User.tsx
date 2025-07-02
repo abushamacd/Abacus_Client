@@ -39,7 +39,6 @@ export const User = () => {
   const [signUp] = useSignUpMutation();
   const [deleteUser] = useDeleteUserMutation();
   const [updateRole] = useUpdateRoleMutation();
-
   const [updateUserAccess] = useUpdateUserAccessMutation();
 
   const query: Record<string, any> = {};
@@ -70,27 +69,6 @@ export const User = () => {
   // @ts-ignore
   const meta = data?.meta;
 
-  const handleUpdate = async (_value: any, options: any) => {
-    try {
-      await updateRole({ id: options?.id, role: options?.value }).unwrap();
-      toast.success("Update Role");
-    } catch (err: any) {
-      toast.error(`${err.data?.message}`);
-    }
-  };
-
-  const handleAccess = async (_value: any, options: any) => {
-    try {
-      await updateUserAccess({
-        id: options?.id,
-        body: { value: options?.value },
-      }).unwrap();
-      toast.success("Update Access");
-    } catch (err: any) {
-      toast.error(`${err.data?.message}`);
-    }
-  };
-
   const columns = [
     {
       title: "Name",
@@ -108,7 +86,7 @@ export const User = () => {
             disabled={user.role === "Owner"}
             defaultValue={user?.role}
             style={{ width: 130 }}
-            onChange={handleUpdate}
+            onChange={roleUpdate}
             options={[
               { id: user?.id, value: "Consumer", label: "Consumer" },
               { id: user?.id, value: "Retailer", label: "Retailer" },
@@ -128,7 +106,7 @@ export const User = () => {
             disabled={user.role === "Owner"}
             defaultValue={user?.hasAccess}
             style={{ width: 120 }}
-            onChange={handleAccess}
+            onChange={updateAccess}
             options={[
               { id: user?.id, value: true, label: "Unblock" },
               { id: user?.id, value: false, label: "Block" },
@@ -172,6 +150,7 @@ export const User = () => {
     setPage(page);
     setSize(pageSize);
   };
+
   // @ts-ignore
   const onTableChange = (pagination: any, filter: any, sorter: any) => {
     const { order, field } = sorter;
@@ -209,8 +188,29 @@ export const User = () => {
     }
   };
 
+  const roleUpdate = async (_value: any, options: any) => {
+    try {
+      await updateRole({ id: options?.id, role: options?.value }).unwrap();
+      toast.success("Update Role");
+    } catch (err: any) {
+      toast.error(`${err.data?.message}`);
+    }
+  };
+
+  const updateAccess = async (_value: any, options: any) => {
+    try {
+      await updateUserAccess({
+        id: options?.id,
+        body: { value: options?.value },
+      }).unwrap();
+      toast.success("Update Access");
+    } catch (err: any) {
+      toast.error(`${err.data?.message}`);
+    }
+  };
+
   return (
-    <div className="">
+    <>
       {/* add user */}
       <div className="dark:bg-bg_dark bg-white p-4 rounded-md">
         <Card
@@ -319,7 +319,6 @@ export const User = () => {
           </Form>
         </Card>
       </div>
-
       {/* all users */}
       <div className="dark:bg-bg_dark bg-white p-4 rounded-md mt-5">
         <div className="">
@@ -369,6 +368,6 @@ export const User = () => {
           />
         </div>
       </div>
-    </div>
+    </>
   );
 };

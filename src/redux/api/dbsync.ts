@@ -4,12 +4,14 @@ import { baseApi } from "./baseApi";
 
 export const dbsyncApi = baseApi.injectEndpoints({
   endpoints: (build: any) => ({
+    // test database connections
     testSBSync: build.query({
       query: () => ({
         url: `/dbsync`,
         method: "GET",
       }),
     }),
+    // get data from local
     getUnsyncsDataFromL: build.query({
       query: (arg: Record<string, any>) => {
         return {
@@ -24,8 +26,8 @@ export const dbsyncApi = baseApi.injectEndpoints({
           meta,
         };
       },
-      // providesTags: [tagTypes.product],
     }),
+    // send data to remote
     sendUnsyncsDataToR: build.mutation({
       query: (data: any) => ({
         url: `/dbsync/unSyncLtoR`,
@@ -33,6 +35,7 @@ export const dbsyncApi = baseApi.injectEndpoints({
         data: data,
       }),
     }),
+    // get data from remote
     getUnsyncsDataFromR: build.query({
       query: (arg: Record<string, any>) => {
         return {
@@ -48,6 +51,7 @@ export const dbsyncApi = baseApi.injectEndpoints({
         };
       },
     }),
+    // send data to local
     sendUnsyncsDataToL: build.mutation({
       query: (data: any) => ({
         url: `/dbsync/unSyncRtoL`,
@@ -55,6 +59,7 @@ export const dbsyncApi = baseApi.injectEndpoints({
         data: data,
       }),
     }),
+    // get unmarge data
     getUnMargeData: build.query({
       query: (arg: Record<string, any>) => {
         return {
@@ -70,6 +75,7 @@ export const dbsyncApi = baseApi.injectEndpoints({
         };
       },
     }),
+    // delete unmarge data
     deleteUnMarge: build.mutation({
       query: (data: any) => ({
         url: `/dbsync/unmarge`,

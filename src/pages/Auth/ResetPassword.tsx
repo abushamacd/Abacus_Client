@@ -15,12 +15,14 @@ type FormValues = {
   confirmPassword: string;
 };
 
+const db_url = import.meta.env.VITE_REDIRECT_URL;
+
 export const ResetPassword = () => {
   const params = useParams();
-  const db_url = import.meta.env.VITE_REDIRECT_URL;
   const navigate = useNavigate();
   const { token } = params;
   const [resetPassword] = useResetPasswordMutation();
+
   const onSubmit: SubmitHandler<FormValues> = async (data: any) => {
     if (data.password === data.confirmPassword) {
       delete data["confirmPassword"];
@@ -38,6 +40,7 @@ export const ResetPassword = () => {
       toast.error(`Password not match`);
     }
   };
+
   return (
     <div>
       <div>
@@ -72,10 +75,6 @@ export const ResetPassword = () => {
                     required
                   />
                 </div>
-
-                {/* <div className="text-sm mb-4 text-primary">
-                  <Link to={`/${db_url}/signin`}>Remember Password ?</Link>
-                </div> */}
 
                 <Row justify="center" align="middle">
                   <Button

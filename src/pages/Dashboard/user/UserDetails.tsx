@@ -31,6 +31,8 @@ type FormValues = {
   address: string;
 };
 
+const db_url = import.meta.env.VITE_REDIRECT_URL;
+
 export const UserDetails = () => {
   const params = useParams();
   const navigate = useNavigate();
@@ -129,11 +131,6 @@ export const UserDetails = () => {
               onClick={() => openView(invoice?.id)}
               size={22}
             />
-            {/* <MdDeleteForever
-              onClick={() => deleteHandler(user?.id)}
-              size={22}
-              style={{ color: "#D92728" }}
-            /> */}
           </div>
         );
       },
@@ -158,7 +155,7 @@ export const UserDetails = () => {
   };
 
   const openView = (id: string) => {
-    navigate(`/abacusdb/invoices/${id}`, { replace: true });
+    navigate(`/${db_url}/invoices/${id}`, { replace: true });
   };
 
   if (loading) {
@@ -166,7 +163,7 @@ export const UserDetails = () => {
   }
 
   return (
-    <div>
+    <>
       <section className="dark:bg-bg_dark bg-white p-4 pb-0 rounded-md">
         <div className="flex flex-col">
           <img
@@ -199,7 +196,6 @@ export const UserDetails = () => {
           </div>
         </div>
       </section>
-
       {/* datails */}
       <div className="profile_update my-4">
         <Card
@@ -391,6 +387,6 @@ export const UserDetails = () => {
           />
         </div>
       </div>
-    </div>
+    </>
   );
 };

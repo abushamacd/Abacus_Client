@@ -22,6 +22,8 @@ type searchFormValues = {
   schemaName: string;
 };
 
+const db_url = import.meta.env.VITE_REDIRECT_URL;
+
 export const Marge = () => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useState("");
@@ -34,6 +36,7 @@ export const Marge = () => {
       skip: !searchParams,
     }
   );
+
   // @ts-ignore
   const unMarge: any = data?.unMargeData;
 
@@ -51,14 +54,14 @@ export const Marge = () => {
         data: unMargeIds,
       }).unwrap();
       toast.success("Data marge successfully");
-      navigate(`/abacusdb/dbsync`, { replace: true });
+      navigate(`/${db_url}/dbsync`, { replace: true });
     } catch (err: any) {
       toast.error(`${err.data?.message}`);
     }
   };
 
   return (
-    <div className="">
+    <>
       <div className="dark:bg-bg_dark bg-white p-4 rounded-md">
         <Card
           className="dark:bg-bg_dark bg-white text-mirage dark:text-white !border-secondary border-2"
@@ -69,78 +72,75 @@ export const Marge = () => {
             </div>
           </>
         >
-          <div className="">
-            <Form
-              submitHandler={getHandler}
-              resolver={yupResolver(searchSchema)}
+          {/* Query form */}
+          <Form submitHandler={getHandler} resolver={yupResolver(searchSchema)}>
+            <Row
+              className="!mx-0 items-center"
+              gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}
             >
-              <Row
-                className="!mx-0 items-center"
-                gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}
+              <Col
+                className="gutter-row"
+                sm={24}
+                md={6}
+                style={{
+                  marginBottom: "15px",
+                  paddingLeft: "0px",
+                  width: "100%",
+                }}
               >
-                <Col
-                  className="gutter-row"
-                  sm={24}
-                  md={6}
-                  style={{
-                    marginBottom: "15px",
-                    paddingLeft: "0px",
-                    width: "100%",
-                  }}
+                <FormSelectField
+                  name="schemaName"
+                  label="Schema Name"
+                  options={units as SelectOptions[]}
+                  size="middle"
+                  placeholder="Select Schema"
+                  required
+                />
+              </Col>
+              <Col
+                className="gutter-row"
+                sm={24}
+                md={6}
+                style={{
+                  marginBottom: "15px",
+                  paddingLeft: "0px",
+                  width: "100%",
+                }}
+              >
+                <Button
+                  className="bg-primary hover:!bg-primary text-mirage !bg-opacity-[.8] duration-300 transition-all md:mt-6 mt-2"
+                  size="middle"
+                  htmlType="submit"
+                  type="primary"
+                  // block
                 >
-                  <FormSelectField
-                    name="schemaName"
-                    label="Schema Name"
-                    options={units as SelectOptions[]}
-                    size="middle"
-                    placeholder="Select Schema"
-                    required
-                  />
-                </Col>
-                <Col
-                  className="gutter-row"
-                  sm={24}
-                  md={6}
-                  style={{
-                    marginBottom: "15px",
-                    paddingLeft: "0px",
-                    width: "100%",
-                  }}
+                  Get Data
+                </Button>
+              </Col>
+              <Col
+                className="gutter-row md:flex justify-end"
+                sm={24}
+                md={12}
+                style={{
+                  marginBottom: "15px",
+                  paddingLeft: "0px",
+                  paddingRight: "0px",
+                  width: "100%",
+                }}
+              >
+                <Button
+                  onClick={() => unMargeHandler(unMarge)}
+                  className="bg-primary hover:!bg-primary text-mirage !bg-opacity-[.8] duration-300 transition-all md:mt-6 mt-2"
+                  size="middle"
+                  type="primary"
+                  // block
                 >
-                  <Button
-                    className="bg-primary hover:!bg-primary text-mirage !bg-opacity-[.8] duration-300 transition-all md:mt-6 mt-2"
-                    size="middle"
-                    htmlType="submit"
-                    type="primary"
-                    // block
-                  >
-                    Get Data
-                  </Button>
-                </Col>
-                <Col
-                  className="gutter-row md:flex justify-end"
-                  sm={24}
-                  md={12}
-                  style={{
-                    marginBottom: "15px",
-                    paddingLeft: "0px",
-                    paddingRight: "0px",
-                    width: "100%",
-                  }}
-                >
-                  <Button
-                    onClick={() => unMargeHandler(unMarge)}
-                    className="bg-primary hover:!bg-primary text-mirage !bg-opacity-[.8] duration-300 transition-all md:mt-6 mt-2"
-                    size="middle"
-                    type="primary"
-                    // block
-                  >
-                    Marge
-                  </Button>
-                </Col>
-              </Row>
-            </Form>
-          </div>
+                  Marge
+                </Button>
+              </Col>
+            </Row>
+          </Form>
+          {/* Show search data */}
           {unMarge?.length > 0 && (
             <div className="!border-secondary border-2 rounded-md h-48 overflow-auto">
               <Row
@@ -175,6 +175,6 @@ export const Marge = () => {
           )}
         </Card>
       </div>
-    </div>
+    </>
   );
 };

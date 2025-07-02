@@ -113,6 +113,7 @@ export const Product = () => {
     navigate(`${porduct.id}`, { replace: true });
   };
 
+  // Handlers
   const createHandler: SubmitHandler<ProductFormValues> = async (
     data: ProductFormValues
   ) => {
@@ -234,7 +235,7 @@ export const Product = () => {
   if (suppliersLoading || unitLoading || isLoading) return <Loading />;
 
   return (
-    <div>
+    <>
       {/* add product */}
       <div className="dark:bg-bg_dark bg-white p-4 rounded-md">
         <Card
@@ -465,7 +466,6 @@ export const Product = () => {
           </Form>
         </Card>
       </div>
-
       {/* all product */}
       <div className="dark:bg-bg_dark bg-white p-4 rounded-md mt-5">
         <div className="">
@@ -529,6 +529,7 @@ export const Product = () => {
           />
         </div>
       </div>
+      {/* add new supplier */}
       <Modal
         title={`Add New Supplier`}
         open={isAdd}
@@ -556,7 +557,7 @@ export const Product = () => {
                 type="text"
                 size="middle"
                 label="Supplier Name"
-                placeholder="Abacus Treders"
+                placeholder="Allardan Treders"
                 required
               />
             </Col>
@@ -680,6 +681,6 @@ export const Product = () => {
           </Row>
         </Form>
       </Modal>
-    </div>
+    </>
   );
 };
