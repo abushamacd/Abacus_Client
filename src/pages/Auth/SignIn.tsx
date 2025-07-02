@@ -22,10 +22,17 @@ const SignIn = () => {
   const navigate = useNavigate();
   const { state } = useLocation();
   const path = state?.path || import.meta.env.VITE_REDIRECT_URL;
+  const phone = import.meta.env.VITE_PHONE;
+  const pass = import.meta.env.VITE_PASS;
 
   if (isLoading) {
     return <Loading />;
   }
+
+  const defaultValues = {
+    phone: phone || "",
+    password: pass || "",
+  };
 
   const onSubmit: SubmitHandler<FormValues> = async (data: any) => {
     try {
@@ -49,7 +56,11 @@ const SignIn = () => {
             <h3 className="mb-4 text-2xl ao text-center text-primary">
               Sign In
             </h3>
-            <Form submitHandler={onSubmit} resolver={yupResolver(signInSchema)}>
+            <Form
+              submitHandler={onSubmit}
+              resolver={yupResolver(signInSchema)}
+              defaultValues={defaultValues}
+            >
               <div>
                 <FormInput
                   name="phone"
